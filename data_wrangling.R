@@ -2,31 +2,100 @@ library(haven)
 library(tidyverse)
 
 # The data is saved in an encrypted file
-df_raw <- read_sav("G:\\693 Georgina Krebs BDD and victimisation Jan2025.sav")
-
+if(exists("df_raw")==F){
+  # Load it just once
+  df_raw <- read_sav("G:\\693 Georgina Krebs BDD and victimisation Jan2025.sav")
+}
 # Create a new df to store the variables that we will need
-df <- data.frame(dcq_26_1=rep(NA, nrow(df_raw)))
+df <- data.frame(to_remove=rep(NA, nrow(df_raw)))
+
+#################
+# Miscallenious #
+#################
+
+df$twin_id <- df_raw$randomtwinid
+df$fam_id <- df_raw$randomfamid
+df$twin_order <- df_raw$twin
+df$random_twin_from_pair <- df_raw$random
+df$school_cohort <- df_raw$cohort
+df$sex_1 <- df_raw$sex1
+df$sex_2 <- df_raw$sex2
+df$zygosity_binary <- df_raw$zygos
+df$zygosity_ternary <- df_raw$x3zygos
+df$zygosity_quinary <- df_raw$sexzyg
 
 
-# DCQ total score at age 26 
-# Total scale, from all 7 items of the DCQ-BDD measure in the twin MHQ. 
-# Each item has values 0/1/2/3, hence the scale values have range 0 to 21.
-# See: (https://datadictionary.teds.ac.uk/studies/derived_variables/26yr_derived_variables.htm#zmhbddt)
-df$dcq_26_1 <- df_raw$zmhbddt1
-df$dcq_26_2 <- df_raw$zmhbddt2
-
-df$bdd_diagnosis_26_1 <- df_raw$zmhmhddx1m1
-df$bdd_diagnosis_26_2 <- df_raw$zmhmhddx1m2
-table(df$bdd_diagnosis_26_1, df$bdd_diagnosis_26_2)
 
 
+
+
+##########
+# AGE 12 #
+##########
+
+# MPVS at the age of 12
+# See https://datadictionary.teds.ac.uk/studies/measures/12yr_measures.htm
+# lcvicph1/2, lcvicpr1/2, lcvicso1/2, lcvicve1/2
+df$mpvs_physical_12_1 <- df_raw$lcvicph1
+df$mpvs_physical_12_2 <- df_raw$lcvicph2
+df$mpvs_verbal_12_1 <- df_raw$lcvicve1
+df$mpvs_verbal_12_2 <- df_raw$lcvicve2
+df$mpvs_social_12_1 <- df_raw$lcvicso1
+df$mpvs_social_12_2 <- df_raw$lcvicso2
+df$mpvs_property_12_1 <- df_raw$lcvicpr1 
+df$mpvs_property_12_2 <- df_raw$lcvicpr2
+
+
+##########
+# AGE 14 #
+##########
+
+# MPVS at the age of 14
+# See: https://datadictionary.teds.ac.uk/studies/derived_variables/14yr_derived_variables.htm#vic
+df$mpvs_physical_14_1_parent <- df_raw$npvicph1
+df$mpvs_physical_14_2_parent <- df_raw$npvicph2
+df$mpvs_verbal_14_1_parent <- df_raw$npvicve1
+df$mpvs_verbal_14_2_parent <- df_raw$npvicve2
+df$mpvs_social_14_1_parent <- df_raw$npvicso1
+df$mpvs_social_14_2_parent <- df_raw$npvicso2
+df$mpvs_property_14_1_parent <- df_raw$npvicpr1 
+df$mpvs_property_14_2_parent <- df_raw$npvicpr2
+
+df$mpvs_physical_14_1_child <- df_raw$ncvicph1
+df$mpvs_physical_14_2_child <- df_raw$ncvicph2
+df$mpvs_verbal_14_1_child <- df_raw$ncvicve1
+df$mpvs_verbal_14_2_child <- df_raw$ncvicve2
+df$mpvs_social_14_1_child <- df_raw$ncvicso1
+df$mpvs_social_14_2_child <- df_raw$ncvicso2
+df$mpvs_property_14_1_child <- df_raw$ncvicpr1 
+df$mpvs_property_14_2_child <- df_raw$ncvicpr2
+
+df$mpvs_physical_14_1_teacher <- df_raw$ntvicph1
+df$mpvs_physical_14_2_teacher <- df_raw$ntvicph2
+df$mpvs_verbal_14_1_teacher <- df_raw$ntvicve1
+df$mpvs_verbal_14_2_teacher <- df_raw$ntvicve2
+df$mpvs_social_14_1_teacher <- df_raw$ntvicso1
+df$mpvs_social_14_2_teacher <- df_raw$ntvicso2
+df$mpvs_property_14_1_teacher <- df_raw$ntvicpr1 
+df$mpvs_property_14_2_teacher <- df_raw$ntvicpr2
+
+
+##########
+# AGE 16 #
+##########
 
 # MPVS at 16 years
 # See: https://datadictionary.teds.ac.uk/studies/derived_variables/16yr_derived_variables.htm#pcpevit
 df$mpvs_total_16_1 <- df_raw$pcpevit1
 df$mpvs_total_16_2 <- df_raw$pcpevit2
 
+# Eating Disorders Diagnostic Scale
+df$eat_dis_scale_16_1 <- df_raw$pcbheddsm1
+df$eat_dis_scale_16_2 <- df_raw$pcbheddsm2
 
+##########
+# AGE 21 #
+##########
 
 # MPVS at 21 years
 # See: https://datadictionary.teds.ac.uk/studies/derived_variables/21yr_derived_variables.htm#u2cvict
@@ -44,6 +113,41 @@ df$mpvs_total_21_cov4_1<- df_raw$ucv4victt1
 df$mpvs_total_21_cov4_2<- df_raw$ucv4victt2
 
 
+# Anorexia nervosa diagnosis
+df$anorexia_diag_21_phase1_1 <- df_raw$u1ceatd11
+df$anorexia_diag_21_phase1_2 <- df_raw$u1ceatd12
+# Bulimia
+df$bulimia_diag_21_phase1_1 <- df_raw$u1ceatd21
+df$bulimia_diag_21_phase1_2 <- df_raw$u1ceatd22
+# Binge eating disorder
+df$binge_eat_diag_21_phase1_1 <- df_raw$u1ceatd31
+df$binge_eat_diag_21_phase1_2 <- df_raw$u1ceatd32
+
+# Eating disorders symptoms scale
+# https://datadictionary.teds.ac.uk/studies/derived_variables/21yr_derived_variables.htm#eats
+
+# Binge-eating total score (TEDS21 phase 1 twin qnr), 0-15
+df$bing_eat_scale_phase1_1 <- df_raw$u1ceatsbint1
+df$bing_eat_scale_phase1_2 <- df_raw$u1ceatsbint2
+
+# Body preoccupation total score (0-40)
+df$body_preoccup_phase1_1 <- df_raw$u1ceatsbodt1
+df$body_preoccup_phase1_2 <- df_raw$u1ceatsbodt2
+
+##########
+# AGE 26 #
+##########
+
+# DCQ total score at age 26 
+# Total scale, from all 7 items of the DCQ-BDD measure in the twin MHQ. 
+# Each item has values 0/1/2/3, hence the scale values have range 0 to 21.
+# See: (https://datadictionary.teds.ac.uk/studies/derived_variables/26yr_derived_variables.htm#zmhbddt)
+df$dcq_26_1 <- df_raw$zmhbddt1
+df$dcq_26_2 <- df_raw$zmhbddt2
+
+df$bdd_diagnosis_26_1 <- df_raw$zmhmhddx1m1
+df$bdd_diagnosis_26_2 <- df_raw$zmhmhddx1m2
+table(df$bdd_diagnosis_26_1, df$bdd_diagnosis_26_2)
 
 
 
@@ -55,10 +159,12 @@ df$mpvs_total_21_cov4_2<- df_raw$ucv4victt2
 
 
 # Last but not least, drop the rows that contain NA across all columns only!
+# We can impute the remaining NA!
 # See: https://stackoverflow.com/a/70325350
 
 df <- df %>%
   filter(!if_all(colnames(df), is.na))
 
-
+df <- df %>%
+  select(-to_remove)
 
