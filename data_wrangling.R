@@ -150,7 +150,7 @@ df$bdd_diagnosis_26_2 <- df_raw$zmhmhddx1m2
 table(df$bdd_diagnosis_26_1, df$bdd_diagnosis_26_2)
 
 
-
+#
 
 
 
@@ -165,6 +165,5 @@ table(df$bdd_diagnosis_26_1, df$bdd_diagnosis_26_2)
 df <- df %>%
   filter(!if_all(colnames(df), is.na))
 
-df <- df %>%
-  select(-to_remove)
+df <- df %>% dplyr::select(-to_remove)
 
