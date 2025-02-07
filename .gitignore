@@ -1,0 +1,4 @@
+*.sav
+.Rproj.user
+.Rhistory
+*.encr
