@@ -6,11 +6,22 @@ if(exists("df_raw")==F){
   # Load it just once
   df_raw <- read_sav("G:\\693 Georgina Krebs BDD and victimisation Jan2025.sav")
 }
+
+#############
+# IMPORTANT #
+#############
+
+# See: https://datadictionary.teds.ac.uk/studies/data_processing/data_processing.htm#Double_entering_parent
+# The variables having names ending 
+# in '1' contain data for this twin (whether elder or younger). 
+# The variables having names ending in '2' contain data for this twin's co-twin.
+
+
 # Create a new df to store the variables that we will need
 df <- data.frame(to_remove=rep(NA, nrow(df_raw)))
 
 #################
-# Miscallenious #
+# Miscellaneous #
 #################
 
 df$twin_id <- df_raw$randomtwinid
@@ -45,6 +56,13 @@ df$mpvs_social_12_2 <- df_raw$lcvicso2
 df$mpvs_property_12_1 <- df_raw$lcvicpr1 
 df$mpvs_property_12_2 <- df_raw$lcvicpr2
 
+# Age
+df$age_parent_12 <- df_raw$lpqage
+df$age_teach_12_1 <- df_raw$ltqage1
+df$age_teach_12_2 <- df_raw$ltqage2
+df$age_child_12_1 <- df_raw$lcqage1
+df$age_child_12_2 <- df_raw$lcqage2
+
 
 ##########
 # AGE 14 #
@@ -52,32 +70,41 @@ df$mpvs_property_12_2 <- df_raw$lcvicpr2
 
 # MPVS at the age of 14
 # See: https://datadictionary.teds.ac.uk/studies/derived_variables/14yr_derived_variables.htm#vic
-df$mpvs_physical_14_1_parent <- df_raw$npvicph1
-df$mpvs_physical_14_2_parent <- df_raw$npvicph2
-df$mpvs_verbal_14_1_parent <- df_raw$npvicve1
-df$mpvs_verbal_14_2_parent <- df_raw$npvicve2
-df$mpvs_social_14_1_parent <- df_raw$npvicso1
-df$mpvs_social_14_2_parent <- df_raw$npvicso2
-df$mpvs_property_14_1_parent <- df_raw$npvicpr1 
-df$mpvs_property_14_2_parent <- df_raw$npvicpr2
+df$mpvs_physical_14_parent_1 <- df_raw$npvicph1
+df$mpvs_physical_14_parent_2 <- df_raw$npvicph2
+df$mpvs_verbal_14_parent_1 <- df_raw$npvicve1
+df$mpvs_verbal_14_parent_2 <- df_raw$npvicve2
+df$mpvs_social_14_parent_1 <- df_raw$npvicso1
+df$mpvs_social_14_parent_2 <- df_raw$npvicso2
+df$mpvs_property_14_parent_1 <- df_raw$npvicpr1 
+df$mpvs_property_14_parent_2 <- df_raw$npvicpr2
 
-df$mpvs_physical_14_1_child <- df_raw$ncvicph1
-df$mpvs_physical_14_2_child <- df_raw$ncvicph2
-df$mpvs_verbal_14_1_child <- df_raw$ncvicve1
-df$mpvs_verbal_14_2_child <- df_raw$ncvicve2
-df$mpvs_social_14_1_child <- df_raw$ncvicso1
-df$mpvs_social_14_2_child <- df_raw$ncvicso2
-df$mpvs_property_14_1_child <- df_raw$ncvicpr1 
-df$mpvs_property_14_2_child <- df_raw$ncvicpr2
+df$mpvs_physical_14_child_1 <- df_raw$ncvicph1
+df$mpvs_physical_14_child_2 <- df_raw$ncvicph2
+df$mpvs_verbal_14_child_1_ <- df_raw$ncvicve1
+df$mpvs_verbal_14_child_2 <- df_raw$ncvicve2
+df$mpvs_social_14_child_1 <- df_raw$ncvicso1
+df$mpvs_social_14_child_2 <- df_raw$ncvicso2
+df$mpvs_property_14_child_1 <- df_raw$ncvicpr1 
+df$mpvs_property_14_child_2 <- df_raw$ncvicpr2
 
-df$mpvs_physical_14_1_teacher <- df_raw$ntvicph1
-df$mpvs_physical_14_2_teacher <- df_raw$ntvicph2
-df$mpvs_verbal_14_1_teacher <- df_raw$ntvicve1
-df$mpvs_verbal_14_2_teacher <- df_raw$ntvicve2
-df$mpvs_social_14_1_teacher <- df_raw$ntvicso1
-df$mpvs_social_14_2_teacher <- df_raw$ntvicso2
-df$mpvs_property_14_1_teacher <- df_raw$ntvicpr1 
-df$mpvs_property_14_2_teacher <- df_raw$ntvicpr2
+df$mpvs_physical_14_teacher_1 <- df_raw$ntvicph1
+df$mpvs_physical_14_teacher_2 <- df_raw$ntvicph2
+df$mpvs_verbal_14_teacher_1 <- df_raw$ntvicve1
+df$mpvs_verbal_14_teacher_2 <- df_raw$ntvicve2
+df$mpvs_social_14_teacher_1 <- df_raw$ntvicso1
+df$mpvs_social_14_teacher_2 <- df_raw$ntvicso2
+df$mpvs_property_14_teacher_1 <- df_raw$ntvicpr1 
+df$mpvs_property_14_teacher_2 <- df_raw$ntvicpr2
+
+# Age
+
+df$age_parent_14 <- df_raw$npqage
+df$age_teach_14_1 <- df_raw$ntqage1
+df$age_teach_14_2 <- df_raw$ntqage2
+df$age_child_14_1 <- df_raw$ncqage1
+df$age_child_14_2 <- df_raw$ncqage2
+
 
 
 ##########
@@ -92,6 +119,14 @@ df$mpvs_total_16_2 <- df_raw$pcpevit2
 # Eating Disorders Diagnostic Scale
 df$eat_dis_scale_16_1 <- df_raw$pcbheddsm1
 df$eat_dis_scale_16_2 <- df_raw$pcbheddsm2
+
+# Age
+df$age_16_web_1 <- df_raw$pcwebage1
+df$age_16_web_2 <- df_raw$pcwebage2
+df$age_16_child_1 <- df_raw$pcbhage1
+df$age_16_child_2 <- df_raw$pcbhage2
+df$age_16_parent <- df_raw$ppbhage
+df$age_16_leap_study_parent <- df_raw$ppl2age
 
 ##########
 # AGE 21 #
@@ -134,6 +169,23 @@ df$bing_eat_scale_phase1_2 <- df_raw$u1ceatsbint2
 df$body_preoccup_phase1_1 <- df_raw$u1ceatsbodt1
 df$body_preoccup_phase1_2 <- df_raw$u1ceatsbodt2
 
+# Age
+df$age_21_phase1_parent <- df_raw$u1page
+df$age_21_phase1_child_1 <- df_raw$u1cage1
+df$age_21_phase1_child_2 <- df_raw$u1cage2
+df$age_21_phase2_child_1 <- df_raw$u2cage1
+df$age_21_phase2_child_2 <- df_raw$u2cage2
+df$age_21_cov1_child_1 <- df_raw$ucv1age1
+df$age_21_cov1_child_2 <- df_raw$ucv1age2
+df$age_21_cov2_child_1 <- df_raw$ucv2age1
+df$age_21_cov2_child_2 <- df_raw$ucv2age2
+df$age_21_cov3_child_1 <- df_raw$ucv3age1
+df$age_21_cov3_child_2 <- df_raw$ucv3age2
+df$age_21_cov4_child_1 <- df_raw$ucv1age4
+df$age_21_cov4_child_2 <- df_raw$ucv1age4
+
+
+
 ##########
 # AGE 26 #
 ##########
@@ -149,11 +201,9 @@ df$bdd_diagnosis_26_1 <- df_raw$zmhmhddx1m1
 df$bdd_diagnosis_26_2 <- df_raw$zmhmhddx1m2
 table(df$bdd_diagnosis_26_1, df$bdd_diagnosis_26_2)
 
-
-#
-
-
-
+# Age
+df$age_21_1 <- df_raw$zmhage1
+df$age_21_2 <- df_raw$zmhage2
 
 
 
