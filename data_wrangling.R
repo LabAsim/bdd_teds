@@ -35,11 +35,6 @@ df$zygosity_binary <- df_raw$zygos
 df$zygosity_ternary <- df_raw$x3zygos
 df$zygosity_quinary <- df_raw$sexzyg
 
-
-
-
-
-
 ##########
 # AGE 12 #
 ##########
@@ -55,6 +50,17 @@ df$mpvs_social_12_1 <- df_raw$lcvicso1
 df$mpvs_social_12_2 <- df_raw$lcvicso2
 df$mpvs_property_12_1 <- df_raw$lcvicpr1 
 df$mpvs_property_12_2 <- df_raw$lcvicpr2
+
+table(df$mpvs_physical_12_1, df$mpvs_verbal_12_1, useNA = "always")
+
+df$mpvs_total_12_1 <- rowSums(
+  x=df[,c(
+    "mpvs_physical_12_1",
+    "mpvs_verbal_12_1",
+    "mpvs_social_12_1",
+    "mpvs_property_12_1"
+  )]
+)
 
 # Age
 df$age_parent_12 <- df_raw$lpqage
@@ -79,14 +85,32 @@ df$mpvs_social_14_parent_2 <- df_raw$npvicso2
 df$mpvs_property_14_parent_1 <- df_raw$npvicpr1 
 df$mpvs_property_14_parent_2 <- df_raw$npvicpr2
 
+df$mpvs_total_14_parent_1 <- rowSums(
+  x=df[,c(
+    "mpvs_physical_14_parent_1",
+    "mpvs_verbal_14_parent_1",
+    "mpvs_social_14_parent_1",
+    "mpvs_property_14_parent_1"
+  )]
+)
+
 df$mpvs_physical_14_child_1 <- df_raw$ncvicph1
 df$mpvs_physical_14_child_2 <- df_raw$ncvicph2
-df$mpvs_verbal_14_child_1_ <- df_raw$ncvicve1
+df$mpvs_verbal_14_child_1 <- df_raw$ncvicve1
 df$mpvs_verbal_14_child_2 <- df_raw$ncvicve2
 df$mpvs_social_14_child_1 <- df_raw$ncvicso1
 df$mpvs_social_14_child_2 <- df_raw$ncvicso2
 df$mpvs_property_14_child_1 <- df_raw$ncvicpr1 
 df$mpvs_property_14_child_2 <- df_raw$ncvicpr2
+
+df$mpvs_total_14_child_1 <- rowSums(
+  x=df[,c(
+    "mpvs_physical_14_child_1",
+    "mpvs_verbal_14_child_1",
+    "mpvs_social_14_child_1",
+    "mpvs_property_14_child_1"
+  )]
+)
 
 df$mpvs_physical_14_teacher_1 <- df_raw$ntvicph1
 df$mpvs_physical_14_teacher_2 <- df_raw$ntvicph2
@@ -96,6 +120,17 @@ df$mpvs_social_14_teacher_1 <- df_raw$ntvicso1
 df$mpvs_social_14_teacher_2 <- df_raw$ntvicso2
 df$mpvs_property_14_teacher_1 <- df_raw$ntvicpr1 
 df$mpvs_property_14_teacher_2 <- df_raw$ntvicpr2
+
+df$mpvs_total_14_teacher_1 <- rowSums(
+  x=df[,c(
+    "mpvs_physical_14_teacher_1",
+    "mpvs_verbal_14_teacher_1",
+    "mpvs_social_14_teacher_1",
+    "mpvs_property_14_teacher_1"
+  )]
+)
+
+
 
 # Age
 
@@ -181,8 +216,8 @@ df$age_21_cov2_child_1 <- df_raw$ucv2age1
 df$age_21_cov2_child_2 <- df_raw$ucv2age2
 df$age_21_cov3_child_1 <- df_raw$ucv3age1
 df$age_21_cov3_child_2 <- df_raw$ucv3age2
-df$age_21_cov4_child_1 <- df_raw$ucv1age4
-df$age_21_cov4_child_2 <- df_raw$ucv1age4
+df$age_21_cov4_child_1 <- df_raw$ucv4age1
+df$age_21_cov4_child_2 <- df_raw$ucv4age2
 
 
 
@@ -202,18 +237,26 @@ df$bdd_diagnosis_26_2 <- df_raw$zmhmhddx1m2
 table(df$bdd_diagnosis_26_1, df$bdd_diagnosis_26_2)
 
 # Age
-df$age_21_1 <- df_raw$zmhage1
-df$age_21_2 <- df_raw$zmhage2
+df$age_26_1 <- df_raw$zmhage1
+df$age_26_2 <- df_raw$zmhage2
 
 
 
 
-# Last but not least, drop the rows that contain NA across all columns only!
+# Last but not least, drop only the rows that contain NA in MPVS columns!
 # We can impute the remaining NA!
 # See: https://stackoverflow.com/a/70325350
+# https://www.geeksforgeeks.org/how-to-check-if-characters-are-present-in-a-string-in-r/
 
 df <- df %>%
-  filter(!if_all(colnames(df), is.na))
+  #filter(!if_all(colnames(df), is.na))
+  filter(
+    !if_all(
+      # Get the column names containing "mpvs"
+      colnames(df)[grepl(pattern="mpvs", x=colnames(df))],
+      is.na
+    )
+  )
 
 df <- df %>% dplyr::select(-to_remove)
 
