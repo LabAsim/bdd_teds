@@ -2,7 +2,7 @@ library(tidyverse)
 
 test <- df
 
-fill_single_var_twin_from_cotwin <- function(df, var){
+fill_single_var_twin_from_cotwin2 <- function(df, var){
   calculate <- data.frame(f_id=1)
   for (f_id in unique(getElement(df, "fam_id"))){
     twin_df <- df[getElement(df, "fam_id")==f_id,]
@@ -27,6 +27,27 @@ fill_single_var_twin_from_cotwin <- function(df, var){
   print(glue::glue(paste("Found {dim(calculate)[1]} pair(s) for '{var}'!")))
   return(df)
 }
+
+
+fill_single_var_twin_from_cotwin <- function(df, var){
+  df <- df %>%
+    dplyr::group_by(fam_id) %>%
+    fill({{var}}, .direction = "downup") %>%
+    dplyr::ungroup()
+  return(df)
+}
+
+s <- fill_single_var_twin_from_cotwin(
+  df=df, var=c("mpvs_total_12_1", "mpvs_physical_12_1", "mpvs_physical_12_2")
+)
+
+stopifnot(all.equal(s[80,"mpvs_total_12_1"], s[79,"mpvs_total_12_1"]))
+stopifnot(all.equal(s[80,"mpvs_physical_12_1"], s[79,"mpvs_physical_12_1"]))
+stopifnot(all.equal(s[80,"mpvs_physical_12_2"], s[79,"mpvs_physical_12_2"]))
+stopifnot(all.equal(s[80,"mpvs_total_12_1"], s[79,"mpvs_total_12_1"]))
+
+
+s <- df %>% group_by(fam_id) %>% count() %>% arrange(desc(n))
 
 # Test it
 # A co-twin of this pair had NA in MPVS
