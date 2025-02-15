@@ -100,8 +100,36 @@ stopifnot(all.equal(s[1,"age_26_1"], s[2,"age_26_1"]))
 stopifnot(all.equal(s[1,"age_26_2"], s[2,"age_26_2"]))
 
 
+
+
+
+t1 <- test[1:150,] %>% fill_multiple_vars_twin_from_cotwin(
+  vars=c(
+    colnames(
+      test[1:150,]
+    )[grepl(pattern="age", x=colnames(test[1:150,]))] %>% purrr::discard(is.na)
+  ) 
+)
+
+t2 <- test[1:150,] %>% fill_multiple_vars_twin_from_cotwin2(
+  vars=c(
+    colnames(
+      test[1:150,]
+    )[grepl(pattern="age", x=colnames(test[1:150,]))] %>% purrr::discard(is.na)
+  ) 
+)
+
+comp <- janitor::compare_df_cols(t1,t2, return = "mismatch")
+stopifnot(dim(comp)[1]==0)
+
+# See: https://cran.r-project.org/web/packages/arsenal/vignettes/comparedf.html#example-1
+s <- arsenal::diffs(arsenal::comparedf(t1,t2))
+stopifnot(dim(s)[1]==0)
+
+
+
 # Remove test objects
-rm(list=c("test", "s"))
+rm(list=c("test", "s", "t1", "t2", "comp"))
 
 
 
