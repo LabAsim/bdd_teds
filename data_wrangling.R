@@ -260,3 +260,19 @@ df <- df %>%
 
 df <- df %>% dplyr::select(-to_remove)
 
+source("helper.R")
+
+
+# Drop the cotwin variables
+df_12 <- df
+df_1 <- df %>% select(!matches("_2$"))
+
+
+df_1 <- df_1 %>% fill_multiple_vars_twin_from_cotwin(
+  vars=c(
+    colnames(
+      df_1
+    )[grepl(pattern="age", x=colnames(df))] %>% purrr::discard(is.na)
+  ) 
+)
+colSums(is.na(df_1[,c(colnames(df_1)[grepl(pattern="age", x=colnames(df_1))])]))
