@@ -156,12 +156,12 @@ df$eat_dis_scale_16_1 <- df_raw$pcbheddsm1
 df$eat_dis_scale_16_2 <- df_raw$pcbheddsm2
 
 # Age
-df$age_16_web_1 <- df_raw$pcwebage1
-df$age_16_web_2 <- df_raw$pcwebage2
-df$age_16_child_1 <- df_raw$pcbhage1
-df$age_16_child_2 <- df_raw$pcbhage2
-df$age_16_parent <- df_raw$ppbhage
-df$age_16_leap_study_parent <- df_raw$ppl2age
+df$age_web_16_1 <- df_raw$pcwebage1
+df$age_web_16_2 <- df_raw$pcwebage2
+df$age_child_16_1 <- df_raw$pcbhage1
+df$age_child_16_2 <- df_raw$pcbhage2
+df$age_parent_16 <- df_raw$ppbhage
+df$age_leap_study_parent_16 <- df_raw$ppl2age
 
 ##########
 # AGE 21 #
@@ -205,19 +205,19 @@ df$body_preoccup_phase1_1 <- df_raw$u1ceatsbodt1
 df$body_preoccup_phase1_2 <- df_raw$u1ceatsbodt2
 
 # Age
-df$age_21_phase1_parent <- df_raw$u1page
-df$age_21_phase1_child_1 <- df_raw$u1cage1
-df$age_21_phase1_child_2 <- df_raw$u1cage2
-df$age_21_phase2_child_1 <- df_raw$u2cage1
-df$age_21_phase2_child_2 <- df_raw$u2cage2
-df$age_21_cov1_child_1 <- df_raw$ucv1age1
-df$age_21_cov1_child_2 <- df_raw$ucv1age2
-df$age_21_cov2_child_1 <- df_raw$ucv2age1
-df$age_21_cov2_child_2 <- df_raw$ucv2age2
-df$age_21_cov3_child_1 <- df_raw$ucv3age1
-df$age_21_cov3_child_2 <- df_raw$ucv3age2
-df$age_21_cov4_child_1 <- df_raw$ucv4age1
-df$age_21_cov4_child_2 <- df_raw$ucv4age2
+df$age_phase1_parent_21 <- df_raw$u1page
+df$age_phase1_child_21_1 <- df_raw$u1cage1
+df$age_phase1_child_21_2 <- df_raw$u1cage2
+df$age_phase2_child_21_1 <- df_raw$u2cage1
+df$age_phase2_child_21_2 <- df_raw$u2cage2
+df$age_cov1_child_21_1 <- df_raw$ucv1age1
+df$age_cov1_child_21_2 <- df_raw$ucv1age2
+df$age_cov2_child_1 <- df_raw$ucv2age1
+df$age_cov2_child_21_2 <- df_raw$ucv2age2
+df$age_cov3_child_21_1 <- df_raw$ucv3age1
+df$age_cov3_child_21_2 <- df_raw$ucv3age2
+df$age_cov4_child_21_1 <- df_raw$ucv4age1
+df$age_cov4_child_21_2 <- df_raw$ucv4age2
 
 
 
@@ -258,14 +258,14 @@ df <- df %>%
     )
   )
 
-df <- df %>% dplyr::select(-to_remove)
-
-source("helper.R")
+df <- df %>% dplyr::select(-all_of("to_remove"))
 
 
 # Drop the cotwin variables
 df_12 <- df
 df_1 <- df %>% select(!matches("_2$"))
+
+source("helper.R")
 
 
 df_1 <- df_1 %>% fill_multiple_vars_twin_from_cotwin(
@@ -275,4 +275,23 @@ df_1 <- df_1 %>% fill_multiple_vars_twin_from_cotwin(
     )[grepl(pattern="age", x=colnames(df))] %>% purrr::discard(is.na)
   ) 
 )
-colSums(is.na(df_1[,c(colnames(df_1)[grepl(pattern="age", x=colnames(df_1))])]))
+
+df_1 <- fill_age(
+  df=df_1,
+  primary = "age_parent_12",
+  secondary = "age_child_12_1",
+  tertiary = "age_teach_12_1",
+  new_column = "age_12_1"
+)
+
+df_1 <- fill_age(
+  df=df_1,
+  primary = "age_parent_14",
+  secondary = "age_child_14_1",
+  tertiary = "age_teach_14_1",
+  new_column = "age_14_1"
+)
+
+# At age 16, MPVS questionnaire  was answered only by the twins.
+# Thus, first, we need age_child_16_1. 
+# If NA exists, pull age from web and parent
