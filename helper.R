@@ -126,10 +126,63 @@ stopifnot(dim(comp)[1]==0)
 s <- arsenal::diffs(arsenal::comparedf(t1,t2))
 stopifnot(dim(s)[1]==0)
 
+test <- df_1
+
+test1 <- df_1
+test1$age_12_1 <- NA
+test1$age_12_1 <- ifelse(
+  test = is.na(test1$age_parent_12), 
+  yes = ifelse(
+    test=is.na(test1$age_child_12_1),
+    yes = test1$age_teach_12_1,
+    no = test1$age_child_12_1
+  ),
+  no=test1$age_parent_12
+)
+
+colSums(is.na(test1[,c(colnames(test1)[grepl(pattern="age", x=colnames(test1))])]))
+
+fill_age <- function(df, primary, secondary, tertiary, new_column){
+  df[,c(new_column)] <- rep(NA, times=dim(df)[1])
+  print(rlang::as_name(new_column))
+  df <- df %>% 
+    mutate(
+      "{new_column}" := case_when(
+        is.na(.data[[!!new_column]]) ~ .data[[!!primary]]
+      )
+    )
+  df <- df %>% 
+    mutate(
+      "{new_column}" := case_when(
+        is.na(.data[[!!new_column]]) ~ .data[[!!secondary]],
+        .default = .data[[!!new_column]]
+      )
+    )
+  df <- df %>% 
+    mutate(
+      "{new_column}" := case_when(
+        is.na(.data[[!!new_column]]) ~ .data[[!!tertiary]],
+        .default = .data[[!!new_column]]
+      )
+    )
+  return(df)
+}
+
+test <- fill_age(
+  df=df_1, 
+  primary = "age_parent_12",
+  secondary = "age_child_12_1",
+  tertiary = "age_teach_12_1",
+  new_column = "age_12_1"
+)
+t1 <- colSums(is.na(test1[,c(colnames(test1)[grepl(pattern="age", x=colnames(test1))])]))
+t2 <- colSums(is.na(test[,c(colnames(test)[grepl(pattern="age", x=colnames(test))])]))
+stopifnot(t1 == t2)
+stopifnot(t1["age_12_1"] == 3269)
 
 
 # Remove test objects
-rm(list=c("test", "s", "t1", "t2", "comp"))
+rm(list=c("test", "s", "t1", "t2", "comp", "test1"))
 
 
 
