@@ -292,6 +292,25 @@ df_1 <- fill_age(
   new_column = "age_14_1"
 )
 
-# At age 16, MPVS questionnaire  was answered only by the twins.
-# Thus, first, we need age_child_16_1. 
-# If NA exists, pull age from web and parent
+# At age 16, MPVS questionnaire  was answered only by the twins
+# (cohort 1 & 2) during the web study.
+# From TEDS' website: https://datadictionary.teds.ac.uk/studies/16yr.htm
+# The initial booklet study was administered in two waves: 
+# wave 1 (cohort 1), called the Behaviour study, 
+# started immediately after the end of cohort 1's web study; 
+# wave 2 (cohorts 2, 3 and 4), called the LEAP study, 
+# started after the end of cohort 2's web study. 
+# Twin ages ranged from roughly 15 (cohort 4) up to 17.5 (cohorts 1 and 2) 
+# when booklets were returned. 
+# Thus, first, we need age_web_16_1. 
+# If NA exists, we could pull age from parent and then, from child.
+
+
+df_1 <- fill_age(
+  df=df_1,
+  primary = "age_web_16_1",
+  secondary = "age_parent_16",
+  tertiary = "age_child_16_1",
+  new_column = "age_16_1"
+)
+
