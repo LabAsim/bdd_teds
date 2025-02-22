@@ -276,7 +276,7 @@ df_1 <- df_1 %>% fill_multiple_vars_twin_from_cotwin(
   ) 
 )
 
-df_1 <- fill_age(
+df_1 <- fill_var(
   df=df_1,
   primary = "age_parent_12",
   secondary = "age_child_12_1",
@@ -284,7 +284,7 @@ df_1 <- fill_age(
   new_column = "age_12_1"
 )
 
-df_1 <- fill_age(
+df_1 <- fill_var(
   df=df_1,
   primary = "age_parent_14",
   secondary = "age_child_14_1",
@@ -306,11 +306,15 @@ df_1 <- fill_age(
 # If NA exists, we could pull age from parent and then, from child.
 
 
-df_1 <- fill_age(
+df_1 <- fill_var(
   df=df_1,
   primary = "age_web_16_1",
   secondary = "age_parent_16",
   tertiary = "age_child_16_1",
   new_column = "age_16_1"
 )
+
+
+# At age 21, MPVS questionnaire was answered twin phase1,
+# Covid phase 1,2,3 & 4.
 

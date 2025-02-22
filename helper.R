@@ -142,7 +142,7 @@ test1$age_12_1 <- ifelse(
 
 colSums(is.na(test1[,c(colnames(test1)[grepl(pattern="age", x=colnames(test1))])]))
 
-fill_age <- function(df, primary, secondary, tertiary, new_column){
+fill_var <- function(df, primary, secondary, tertiary, new_column){
   df[,c(new_column)] <- rep(NA, times=dim(df)[1])
   print(rlang::as_name(new_column))
   df <- df %>% 
