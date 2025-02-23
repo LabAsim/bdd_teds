@@ -212,7 +212,7 @@ df$age_phase2_child_21_1 <- df_raw$u2cage1
 df$age_phase2_child_21_2 <- df_raw$u2cage2
 df$age_cov1_child_21_1 <- df_raw$ucv1age1
 df$age_cov1_child_21_2 <- df_raw$ucv1age2
-df$age_cov2_child_1 <- df_raw$ucv2age1
+df$age_cov2_child_21_1 <- df_raw$ucv2age1
 df$age_cov2_child_21_2 <- df_raw$ucv2age2
 df$age_cov3_child_21_1 <- df_raw$ucv3age1
 df$age_cov3_child_21_2 <- df_raw$ucv3age2
