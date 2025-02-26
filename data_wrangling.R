@@ -318,3 +318,24 @@ df_1 <- fill_var(
 # At age 21, MPVS questionnaire was answered twin phase1,
 # Covid phase 1,2,3 & 4.
 
+df_1 <- fill_age_covid_21(df=df_1)
+df_1 <- fill_age_covid_21(df=df_1, order="desceding")
+
+
+# Fill age from co-twin 
+df_1 <- df_1 %>% fill_multiple_vars_twin_from_cotwin(
+  vars=c(
+    colnames(
+      df_1
+    )[grepl(pattern="age_cov", x=colnames(df_1))] %>% purrr::discard(is.na)
+  ) 
+)
+
+
+df_1 <- df_1 %>% fill_multiple_vars_twin_from_cotwin(
+  vars=c(
+    colnames(
+      df_1
+    )[grepl(pattern="age_phase", x=colnames(df_1))] %>% purrr::discard(is.na)
+  ) 
+)
