@@ -462,11 +462,136 @@ stopifnot(t1["age_cov4_child_21_1"] ==7996)
 
 
 
+test <- df_1 %>%
+  select(all_of(c("fam_id", "age_phase2_child_21_1")))
+
+check_twins_values <- function(
+    df,
+    group_var="fam_id",
+    var,
+    drop_same_value, 
+    drop_na
+){
+  # Some twins have the SAME value in few vars.
+  # For this reason, there is no variance within these clusters
+  # and lavaan throws an error.
+  
+  if ("tbl_df" %in% class(df)){
+    df <- as.data.frame(df)
+  }
+  dflist <- split(df, f = list(df[,c(group_var)]), drop = TRUE)
+  to_return <- lapply(
+    X=dflist, FUN=function(df){
+      # If either of the twins has NA, drop both
+      if (drop_na==T){
+        if (is.na(df[1,var]) ==T | is.na(df[2,var])==T){
+          return(NULL)
+        }
+      }
+      # Manipulate twins with the same value in `var`
+      if ((is.na(df[1,var]) ==F) & (is.na(df[2,var])==F)){
+        if (drop_same_value==F){
+          if (round(df[1,var]) == round(df[2,var])){
+            return(df)
+          }
+        }else if (drop_same_value==T){
+          if (round(df[1,var]) == round(df[2,var])){
+            return(NULL)
+          }
+        }
+      }else{
+        return(df)
+      }
+    }
+  )
+  # https://stackoverflow.com/a/35951683
+  to_return <- unname(to_return)
+  to_return <- do.call(rbind, to_return)
+  return(to_return)
+}
+
+pins <- check_twins_values(
+  df=test, group_var="fam_id", var="age_phase2_child_21_1",
+  drop_na = T, drop_same_value=T
+  
+)
+
+pins <- check_twins_values(
+  df=test, group_var="fam_id", var="age_phase2_child_21_1",
+  drop_na = T, drop_same_value=T
+)
+
+stopifnot(is.null(pins) == T)
+
+
+pins <- check_twins_values(
+  df=test, group_var="fam_id", var="age_phase2_child_21_1",
+  drop_na = T, drop_same_value=F
+)
+stopifnot(pins[1,2] == pins[2,2])
+
+
+pins <- check_twins_values(
+  df=test, group_var="fam_id", var="age_phase2_child_21_1",
+  drop_na = F, drop_same_value=T
+)
+
+stopifnot(is.na(pins[3,2]) == T)
+stopifnot(is.na(pins[4,2]) == T)
+
+pins <- check_twins_values(
+  df=test, group_var="fam_id", var="age_phase2_child_21_1",
+  drop_na = F, drop_same_value=F
+  
+)
+
+stopifnot(dim(pins)== c(15144,2))
+
+test <- df_1 %>%
+  select(all_of(c("fam_id", "age_phase2_child_21_1")))
+
+fix_different_twins_values <- function(
+    df,
+    group_var="fam_id",
+    var
+){
+  # Few variables contain twins that have different values within each family.
+  # For example, ~1000 twins have different age values, which is not possible
+  # In this function, we just simply replace the second twin value with the
+  # first one.
+  
+  if ("tbl_df" %in% class(df)){
+    df <- as.data.frame(df)
+  }
+  dflist <- split(df, f = list(df[,c(group_var)]), drop = TRUE)
+  to_return <- lapply(
+    X=dflist, FUN=function(df){
+      if (is.na(df[1,var]) ==T | is.na(df[2,var])==T){
+        return(df)
+      }else if(round(df[2,var],1) != round(df[1,var],1)){
+        df[2,var] <- df[1,var]
+        return(df)
+      }else{
+        return(df)
+      }
+    }
+  )
+  # https://stackoverflow.com/a/35951683
+  to_return <- unname(to_return)
+  to_return <- do.call(rbind, to_return)
+  return(to_return)
+}
+
+pins <- fix_different_twins_values(df=test, var="age_phase2_child_21_1")
+stopifnot(dim(pins) == c(16112,2))
+stopifnot(
+  round(pins[19,"age_phase2_child_21_1"],1) == round(pins[20,"age_phase2_child_21_1"],1)
+)
+
+
 
 # Remove test objects
-rm(list=c("test", "s", "t1", "t2", "comp", "test1", "extracted"))
-
-
+rm(list=c("test", "s", "t1", "t2", "comp", "test1", "extracted","pins"))
 
 
 
