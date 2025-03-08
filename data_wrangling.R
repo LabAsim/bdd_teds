@@ -59,7 +59,8 @@ df$mpvs_total_12_1 <- rowSums(
     "mpvs_verbal_12_1",
     "mpvs_social_12_1",
     "mpvs_property_12_1"
-  )]
+  )],
+  na.rm = F
 )
 
 # Age
@@ -264,6 +265,7 @@ df <- df %>% dplyr::select(-all_of("to_remove"))
 # Drop the cotwin variables
 df_12 <- df
 df_1 <- df %>% select(!matches("_2$"))
+rm(df)
 
 source("helper.R")
 
@@ -290,6 +292,14 @@ df_1 <- fill_var(
   secondary = "age_child_14_1",
   tertiary = "age_teach_14_1",
   new_column = "age_14_1"
+)
+
+df_1 <-fill_var(
+  df=df_1, 
+  primary = "mpvs_total_14_child_1",
+  secondary = "mpvs_total_14_parent_1",
+  tertiary = "mpvs_total_14_teacher_1",
+  new_column = "mpvs_total_14_1"
 )
 
 # At age 16, MPVS questionnaire  was answered only by the twins
