@@ -461,11 +461,16 @@ stopifnot(t1["age_cov3_child_21_1"] == 7996)
 stopifnot(t1["age_cov4_child_21_1"] ==7996)
 
 
+# Some twin pairs have the same values, 
+# so there is no variance in these families.
+# We could drop these rows, they don't contribute to the MSEM model
 
-test <- df_1 %>%
-  select(all_of(c("fam_id", "age_phase2_child_21_1")))
+test <- data.frame(
+  fam_id = c(1,1,2,2,3,3,4,4),
+  test_var = c(12,12,13,13,14,NA,NA,NA)
+)
 
-check_twins_values <- function(
+drop_identical_values <- function(
     df,
     group_var="fam_id",
     var,
@@ -474,7 +479,7 @@ check_twins_values <- function(
 ){
   # Some twins have the SAME value in few vars.
   # For this reason, there is no variance within these clusters
-  # and lavaan throws an error.
+  # and lavaan throws an error in MSEM.
   
   if ("tbl_df" %in% class(df)){
     df <- as.data.frame(df)
@@ -491,15 +496,20 @@ check_twins_values <- function(
       # Manipulate twins with the same value in `var`
       if ((is.na(df[1,var]) ==F) & (is.na(df[2,var])==F)){
         if (drop_same_value==F){
-          if (round(df[1,var]) == round(df[2,var])){
-            return(df)
-          }
+          # Return df in all cases 
+          # (the same or different values between the twins)
+          return(df)
         }else if (drop_same_value==T){
           if (round(df[1,var]) == round(df[2,var])){
             return(NULL)
+          }else{
+            # The values are different, we should retain them
+            return(df)
           }
         }
-      }else{
+      }
+      else{
+        # One of twins or both have NA 
         return(df)
       }
     }
@@ -507,45 +517,85 @@ check_twins_values <- function(
   # https://stackoverflow.com/a/35951683
   to_return <- unname(to_return)
   to_return <- do.call(rbind, to_return)
+  # Reset index
+  row.names(to_return) <- NULL
   return(to_return)
 }
 
-pins <- check_twins_values(
-  df=test, group_var="fam_id", var="age_phase2_child_21_1",
-  drop_na = T, drop_same_value=T
-  
+
+testit <- drop_identical_values(
+  df=test,
+  var="test_var",
+  drop_same_value = F,
+  drop_na = F
+)
+stopifnot(all.equal(testit, test))
+
+testit <- drop_identical_values(
+  df=test,
+  var="test_var",
+  drop_same_value = T,
+  drop_na = F
+)
+row.names(testit) <- NULL
+stopifnot(class(testit) == "data.frame")
+stopifnot(dim(testit) == c(4,dim(test)[2]))
+stopifnot(
+  all.equal(
+    testit, data.frame(
+      fam_id=c(3,3,4,4),
+      test_var = c(14,NA,NA,NA)
+    )
+  )
 )
 
-pins <- check_twins_values(
-  df=test, group_var="fam_id", var="age_phase2_child_21_1",
-  drop_na = T, drop_same_value=T
+testit <- drop_identical_values(
+  df=test,
+  var="test_var",
+  drop_same_value = F,
+  drop_na = T
 )
 
-stopifnot(is.null(pins) == T)
-
-
-pins <- check_twins_values(
-  df=test, group_var="fam_id", var="age_phase2_child_21_1",
-  drop_na = T, drop_same_value=F
-)
-stopifnot(pins[1,2] == pins[2,2])
-
-
-pins <- check_twins_values(
-  df=test, group_var="fam_id", var="age_phase2_child_21_1",
-  drop_na = F, drop_same_value=T
+stopifnot(dim(testit) == c(4,dim(test)[2]))
+stopifnot(
+  testit == data.frame(
+    fam_id=c(1,1,2,2),
+    test_var = c(12,12,13,13)
+  )
 )
 
-stopifnot(is.na(pins[3,2]) == T)
-stopifnot(is.na(pins[4,2]) == T)
-
-pins <- check_twins_values(
-  df=test, group_var="fam_id", var="age_phase2_child_21_1",
-  drop_na = F, drop_same_value=F
-  
+testit <- drop_identical_values(
+  df=test,
+  var="test_var",
+  drop_same_value = T,
+  drop_na = T
 )
 
-stopifnot(dim(pins)== c(15144,2))
+stopifnot(is.null(testit)==T)
+
+test <- data.frame(
+  fam_id = c(1,1,2,2,3,3,4,4,5,5),
+  test_var = c(12,12,13,13,14,NA,NA,NA,12,13)
+)
+
+testit <- drop_identical_values(
+  df=test,
+  var="test_var",
+  drop_same_value = T,
+  drop_na = T
+)
+
+stopifnot(
+  all.equal(
+    testit,
+    data.frame(
+      fam_id = c(5,5),
+      test_var = c(12,13)
+    )
+  )
+)
+
+rm(list=c("test", "testit"))
 
 test <- df_1 %>%
   select(all_of(c("fam_id", "age_phase2_child_21_1")))
@@ -589,7 +639,7 @@ stopifnot(
 )
 
 # Remove test objects
-rm(list=c("test", "s", "t1", "t2", "comp", "test1", "extracted","pins"))
+rm(list=c("test", "s", "t1", "t2", "comp", "test1", "extracted"))
 
 
 subtract_twins_values <- function(
