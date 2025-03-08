@@ -588,10 +588,134 @@ stopifnot(
   round(pins[19,"age_phase2_child_21_1"],1) == round(pins[20,"age_phase2_child_21_1"],1)
 )
 
-
-
 # Remove test objects
 rm(list=c("test", "s", "t1", "t2", "comp", "test1", "extracted","pins"))
 
+
+subtract_twins_values <- function(
+    df,
+    group_var="fam_id",
+    var
+){
+  
+  if ("tbl_df" %in% class(df)){
+    df <- as.data.frame(df)
+  }
+  dflist <- split(df, f = list(df[,c(group_var)]), drop = TRUE)
+  to_return <- lapply(
+    X=dflist, FUN=function(df_){
+      diff <- df_[1,var] - df_[2,var]
+      return(c(df_[1,"fam_id"], diff))
+    }
+  )
+  # https://stackoverflow.com/a/35951683
+  to_return <- unname(to_return)
+  to_return <- do.call(rbind, to_return)
+  to_return1 <- tibble::tibble(fam_id = to_return[,1])
+  to_return2 <- tibble::tibble("{var}" := to_return[,2])
+  to_return <- as.data.frame(cbind(to_return1,to_return2))
+  return(to_return)
+}
+
+test <- data.frame(
+  fam_id = c(1,1,2,2,3,3),
+  test_var = c(1:6)
+)
+test_diff <-  subtract_twins_values(df=test, var="test_var")
+stopifnot(class(test_diff) == "data.frame")
+stopifnot(dim(test_diff) == c(3,2))
+stopifnot(test_diff$variable == c(-1,-1,-1))
+stopifnot(test_diff$fam_id == c(1:3))
+rm(list=c("test", "test_diff"))
+
+left_join_df_diff_twin_values <- function(left_df,right_df, join_by_var="fam_id"){
+  df <- left_join(
+    x=left_df,
+    y=right_df,
+    join_by({{join_by_var}}=={{join_by_var}})
+  )
+  return(df)
+}
+
+test <- data.frame(
+  fam_id = c(1,1,2,2,3,3),
+  test_var = c(1:6)
+)
+test_diff <-  subtract_twins_values(df=test, var="test_var")
+test <- data.frame(
+  fam_id = c(1,1,2,2,3,3),
+  test_var2 = c(6:1)
+)
+test_diff2 <-  subtract_twins_values(df=test, var="test_var2")
+
+test <- left_join_df_diff_twin_values(
+  left_df = test_diff,
+  right_df = test_diff2,
+  join_by_var = "fam_id"
+)
+stopifnot(class(test) == "data.frame")
+stopifnot(dim(test) == c(3,3))
+stopifnot(test$test_var == c(-1,-1,-1))
+stopifnot(test$test_var2 == c(1,1,1))
+stopifnot(test$fam_id == c(1:3))
+
+
+left_join_multiple_df_diff_twin_values <- function(
+    left_df, right_dfs, join_by_var="fam_id"
+){
+  
+  stopifnot(class(right_dfs) == "list")
+  if (class(right_dfs[[1]]) != "data.frame"){
+    message(paste0("object:",right_dfs[[1]], "\n"))
+    stop(
+      glue::glue(
+        "{class(right_dfs[[1]])} is not a data.frame! 
+        `right_dfs` need to be a list(), not c()!"
+      )
+    )
+  }
+  
+  for (df in right_dfs){
+    left_df <- left_join_df_diff_twin_values(
+      left_df = left_df,
+      right_df = df,
+      join_by_var = "fam_id"
+    )
+  }
+  return(left_df)
+}
+
+
+test <- data.frame(
+  fam_id = c(1,1,2,2,3,3),
+  test_var = c(1:6)
+)
+test_diff <-  subtract_twins_values(df=test, var="test_var")
+test <- data.frame(
+  fam_id = c(1,1,2,2,3,3),
+  test_var2 = c(6:1)
+)
+test_diff2 <-  subtract_twins_values(df=test, var="test_var2")
+
+test <- data.frame(
+  fam_id = c(1,1,2,2,3,3),
+  test_var3 = c(1:6)
+)
+test_diff3 <-  subtract_twins_values(df=test, var="test_var3")
+
+test <- left_join_multiple_df_diff_twin_values(
+  left_df = test_diff,
+  right_dfs = list(test_diff2, test_diff3),
+  join_by_var = "fam_id"
+)
+
+stopifnot(class(test) == "data.frame")
+stopifnot(dim(test) == c(3,4))
+stopifnot(test$test_var == c(-1,-1,-1))
+stopifnot(test$test_var2 == c(1,1,1))
+stopifnot(test$test_var3 == c(-1,-1,-1))
+stopifnot(test$fam_id == c(1:3))
+
+rm(list=c("test", "test_diff", "test_diff2", "test_diff3"))
 
 
