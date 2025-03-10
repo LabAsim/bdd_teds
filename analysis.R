@@ -213,3 +213,44 @@ fit2 <- sem(
 
 summary(fit2)
 
+df_diff_scaled <- scale_mpvs(df=df_1, scale_size = 32)
+mpvs12 <- subtract_twins_values(df=df_diff_scaled, var="mpvs_total_12_1_scaled_32")
+mpvs14 <- subtract_twins_values(df=df_diff_scaled, var="mpvs_total_14_1_scaled_32")
+mpvs16 <- subtract_twins_values(df=df_diff_scaled, var="mpvs_total_16_1_scaled_32")
+mpvs21_phase2 <- subtract_twins_values(df=df_diff_scaled, var="mpvs_total_21_phase_2_1_scaled_32")
+dcq26 <- subtract_twins_values(df=df_diff_scaled, var="dcq_26_1")
+
+df_diff_scaled <- left_join_multiple_df_diff_twin_values(
+  left_df = mpvs12,
+  right_dfs = list(mpvs14, mpvs16, mpvs21_phase2,dcq26)
+)
+df_diff_scaled[complete.cases(df_diff_scaled),] %>% View()
+
+rm(list=c("mpvs12", "mpvs14", "mpvs16", "mpvs21_phase2", "dcq26"))
+
+twin_diff_model_scaled <- '
+    dcq_26_1 ~ mpvs_total_12_1_scaled_32
+    dcq_26_1 ~ mpvs_total_14_1_scaled_32
+    dcq_26_1 ~ mpvs_total_16_1_scaled_32
+    dcq_26_1 ~ mpvs_total_21_phase_2_1_scaled_32
+    mpvs_total_14_1_scaled_32 ~ mpvs_total_12_1_scaled_32
+    mpvs_total_16_1_scaled_32 ~ mpvs_total_14_1_scaled_32
+    mpvs_total_21_phase_2_1_scaled_32 ~ mpvs_total_16_1_scaled_32
+'
+
+fit1_scaled <- sem(
+  model = twin_diff_model_scaled, 
+  data = df_diff_scaled,
+  fixed.x = F,
+  estimator="ML"
+)
+summary(fit1_scaled)
+
+fit2_scaled <- sem(
+  model = twin_diff_model_scaled, 
+  data = df_diff_scaled,
+  missing = 'fiml',
+  fixed.x = F
+)
+
+summary(fit2_scaled)
