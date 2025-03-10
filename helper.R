@@ -424,11 +424,16 @@ stopifnot(all.equal(testit$age_cov2_child_21_1, c(20,20.5,20.5,20.5,23,22,23.5))
 stopifnot(all.equal(testit$age_cov3_child_21_1, c(21,21,21,21,23,23,24)))
 stopifnot(all.equal(testit$age_cov4_child_21_1, c(22,NA,22,NA,24,24,25)))
 
+rm(list=c("testit","create_test_df"))
 ##############################################################################
 
+
+
+#####################################################################
 # Some twin pairs have the same values, 
 # so there is no variance in these families.
 # We could drop these rows, they don't contribute to the MSEM model
+######################################################################
 
 test <- data.frame(
   fam_id = c(1,1,2,2,3,3,4,4),
@@ -562,28 +567,54 @@ stopifnot(
 
 rm(list=c("test", "testit"))
 
-test <- df_1 %>%
-  select(all_of(c("fam_id", "age_phase2_child_21_1")))
+############################################################################
+# Few variables contain twins that have different values within each family.
+# For example, ~1000 twins have different age values, which is not possible
+# In this function, we just simply replace the second twin value with the
+# first one.
+#############################################################################
+
+test <- data.frame(
+  fam_id = c(1,1,2,2,3,3,4,4),
+  age_var = c(12,12.1,13,13,14,NA,NA,NA)
+)
+
 
 fix_different_twins_values <- function(
     df,
     group_var="fam_id",
-    var
+    var,
+    replace_na = T
 ){
-  # Few variables contain twins that have different values within each family.
-  # For example, ~1000 twins have different age values, which is not possible
-  # In this function, we just simply replace the second twin value with the
-  # first one.
-  
   if ("tbl_df" %in% class(df)){
     df <- as.data.frame(df)
   }
   dflist <- split(df, f = list(df[,c(group_var)]), drop = TRUE)
   to_return <- lapply(
     X=dflist, FUN=function(df){
+      # Check for NAs
       if (is.na(df[1,var]) ==T | is.na(df[2,var])==T){
-        return(df)
+        if (replace_na == F){
+          # Just return the df
+          return(df)
+        }else if (replace_na == T){
+          # If just one of the twin has a NA, 
+          # replace it with their co-twin value
+          # If both have NA, return df
+          if (is.na(df[1,var]) ==T){
+            # Two possibilities; twin1 has NA and twin2 has NA or numeric
+            # In both cases, we are ok
+            df[1,var] <- df[2,var]
+            return(df)
+          } else if (is.na(df[2,var]) == T){
+            # 1 possibility; twin1 has a value and twin2 has NA
+            df[2,var] <- df[1,var]
+            return(df)
+          }
+        }
+      # Twins' values are numeric  
       }else if(round(df[2,var],1) != round(df[1,var],1)){
+        # The values are not equal, replace twin2's value with their co-twin's
         df[2,var] <- df[1,var]
         return(df)
       }else{
@@ -597,14 +628,33 @@ fix_different_twins_values <- function(
   return(to_return)
 }
 
-pins <- fix_different_twins_values(df=test, var="age_phase2_child_21_1")
-stopifnot(dim(pins) == c(16112,2))
+
+testit <- fix_different_twins_values(df=test, var="age_var", replace_na=F)
 stopifnot(
-  round(pins[19,"age_phase2_child_21_1"],1) == round(pins[20,"age_phase2_child_21_1"],1)
+  all.equal(
+    testit,
+    data.frame(
+      fam_id = c(1,1,2,2,3,3,4,4),
+      age_var = c(12,12,13,13,14,NA,NA,NA)
+    )
+  )
 )
+stopifnot(dim(testit) == c(8,2))
+testit <- fix_different_twins_values(df=test, var="age_var", replace_na=T)
+stopifnot(
+  all.equal(
+    testit,
+    data.frame(
+      fam_id = c(1,1,2,2,3,3,4,4),
+      age_var = c(12,12,13,13,14,14,NA,NA)
+    )
+  )
+)
+stopifnot(dim(testit) == c(8,2))
 
 # Remove test objects
 rm(list=c("test", "s", "t1", "t2", "comp", "test1", "extracted"))
+rm(testit)
 
 
 subtract_twins_values <- function(
