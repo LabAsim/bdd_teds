@@ -76,7 +76,10 @@ summary(fit1)
 
 df_1_modified <-  df_1 %>%
   fix_different_twins_values(var="age_phase2_child_21_1") %>%
-  fix_different_twins_values(var="age_16_1")
+  fix_different_twins_values(var="age_12_1") %>%
+  fix_different_twins_values(var="age_14_1") %>%
+  fix_different_twins_values(var="age_16_1") 
+  
 
 df_1_modified <- df_1_modified %>%
   drop_identical_values(
@@ -101,7 +104,16 @@ df_1_modified %>% select(
   age_phase2_child_21_1
 ) %>% View()
 
-within_fam_model <- '
+df_1_modified %>% 
+  select(
+    dcq_26_1, mpvs_total_12_1, mpvs_total_14_child_1,
+    mpvs_total_16_1, mpvs_total_21_phase_2_1, age_12_1,age_14_1, age_16_1,
+    age_phase2_child_21_1
+  ) %>% 
+  mice::md.pattern(rotate.names = T, plot = F) %>% 
+  View()
+
+two_level_model <- '
   level: 1
     dcq_26_1 ~ mpvs_total_12_1
     dcq_26_1 ~ mpvs_total_14_child_1
@@ -123,14 +135,24 @@ within_fam_model <- '
     mpvs_total_16_1 ~ age_16_1
     mpvs_total_21_phase_2_1 ~ age_phase2_child_21_1
 '
-fit1 <- sem(
-  model = within_fam_model, 
+
+fit_msem_complete_cases <- sem(
+  model = two_level_model, 
   data = df_1_modified, 
   cluster = "fam_id"
 )
 
-summary(fit1)
+summary(fit_msem_complete_cases)
 
+fit_msem_fiml <- sem(
+  model = two_level_model, 
+  data = df_1_modified, 
+  cluster = "fam_id",
+  missing = 'fiml',
+  fixed.x = T
+)
+
+summary(fit_msem_fiml)
 
 ################
 # Hypothesis 2 #
@@ -163,7 +185,31 @@ twin_diff_model <- '
 
 fit1 <- sem(
   model = twin_diff_model, 
-  data = df_diff
+  data = df_diff,
+  fixed.x = F,
+  estimator="ML"
 )
 
 summary(fit1)
+
+# Inspect missing pattern in our df
+df_diff %>% 
+  select(
+    all_of(
+      c(
+        "dcq_26_1","mpvs_total_12_1","mpvs_total_14_1",
+        "mpvs_total_16_1", "mpvs_total_21_phase_2_1"
+      )
+    )
+  ) %>%
+  mice::md.pattern(rotate.names =T)
+
+fit2 <- sem(
+  model = twin_diff_model, 
+  data = df_diff,
+  missing = 'fiml',
+  fixed.x = F
+)
+
+summary(fit2)
+
