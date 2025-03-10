@@ -261,11 +261,9 @@ df <- df %>%
 
 df <- df %>% dplyr::select(-all_of("to_remove"))
 
-
 # Drop the cotwin variables
 df_12 <- df
 df_1 <- df %>% select(!matches("_2$"))
-
 
 source("helper.R")
 rm(df)
@@ -274,7 +272,7 @@ df_1 <- df_1 %>% fill_multiple_vars_twin_from_cotwin(
   vars=c(
     colnames(
       df_1
-    )[grepl(pattern="age", x=colnames(df))] %>% purrr::discard(is.na)
+    )[grepl(pattern="age", x=colnames(df_1))] %>% purrr::discard(is.na)
   ) 
 )
 
@@ -349,3 +347,5 @@ df_1 <- df_1 %>% fill_multiple_vars_twin_from_cotwin(
     )[grepl(pattern="age_phase", x=colnames(df_1))] %>% purrr::discard(is.na)
   ) 
 )
+
+df_1 <- scale_mpvs(df=df_1)
