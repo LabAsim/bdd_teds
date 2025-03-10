@@ -206,75 +206,15 @@ test <- fill_multiple_vars_twin_from_cotwin(
 colSums(is.na(test[,c(colnames(test)[grepl(pattern="age", x=colnames(test))])]))
 
 
-# See ?sample
-resample <- function(x, ...) x[sample.int(length(x), ...)]
-
-fill_age_cov2 <- function(df,order="ascending"){
-  set.seed(123)
-  # Cov2 and Cov1 phases were done from 1 to 2 months apart
-  # See the table: https://datadictionary.teds.ac.uk/studies/21yr.htm
-  
-  if (order=="ascending"){
-    #############################
-    # Fill NA of cov2 with cov1 #
-    #############################
-    df$diffcov21 <- df$age_cov2_child_21_1 - df$age_cov1_child_21_1
-    
-    # Calculate the relative frequency
-    # We will use it to add it to cov2 
-    sum1 <- sum(df[round(df$diffcov21,1)==0.1, "diffcov21"], na.rm = T)
-    sum2 <- sum(df[round(df$diffcov21,1)==0.2, "diffcov21"], na.rm = T)
-    sum3 <- sum(df[round(df$diffcov21,1)==0.3, "diffcov21"], na.rm = T)
-    total <- sum1+sum2+sum3
-    prob1 <- sum1/total
-    prob2 <- sum2/total
-    prob3 <- sum3/total
-    probs <- c(prob1,prob2,prob3)
-    sorted_nums <- sort(unique(round(df$diffcov21,1)))
-    df[is.na(df[,c("age_cov2_child_21_1")]), "age_cov2_child_21_1"] <- df[is.na(df[,c("age_cov2_child_21_1")]), "age_cov1_child_21_1"] + resample(x=sorted_nums, prob=probs, replace = T, size=dim(df[is.na(df[,c("age_cov2_child_21_1")]),])[1])
-    return(df)
-  }
-  #######################
-  # Fill cov1 from cov2 #
-  #######################
-  
-  df$diffcov12 <- df$age_cov1_child_21_1 - df$age_cov2_child_21_1
-  
-  # Calculate the relative frequency
-  # We will use it to add it to cov1 
-  sum1 <- sum(df[round(df$diffcov12,1)==-0.1, "diffcov12"], na.rm = T)
-  sum2 <- sum(df[round(df$diffcov12,1)==-0.2, "diffcov12"], na.rm = T)
-  sum3 <- sum(df[round(df$diffcov12,1)==-0.3, "diffcov12"], na.rm = T)
-  total <- sum1+sum2+sum3
-  prob1 <- sum1/total
-  prob2 <- sum2/total
-  prob3 <- sum3/total
-  probs <- c(prob1,prob2,prob3)
-  sorted_nums <- sort(unique(round(df$diffcov12,1)))
-  df[is.na(df[,c("age_cov1_child_21_1")]), "age_cov1_child_21_1"] <- df[is.na(df[,c("age_cov1_child_21_1")]), "age_cov2_child_21_1"] + resample(x=sorted_nums, prob=probs, replace = T, size=dim(df[is.na(df[,c("age_cov1_child_21_1")]),])[1])
-  return(df)
-}
-
-# Test
-test <- fill_age_cov2(df=test)
-t1 <- colSums(
-  is.na(
-    test[,c(colnames(test)[grepl(pattern="age_cov", x=colnames(test))])]
-  )
-)
-colSums(
-  is.na(
-    test[,c(colnames(test)[grepl(pattern="age", x=colnames(test))])]
-  )
-)
-stopifnot(t1["age_cov1_child_21_1"] == 9078)
-stopifnot(t1["age_cov2_child_21_1"] == 8404)
-stopifnot(t1["age_cov3_child_21_1"] == 10816)
-stopifnot(t1["age_cov4_child_21_1"] ==10394)
-
-
 extract_unique_nums_probs <- function(df,var){
-  uniq <- deframe(unique(round(df[,c(var)],1))[,1])
+  unique_values <- unique(round(df[,c(var)],1))
+  if (is.null(dim(unique_values))){
+    # It's already a vector
+    uniq <- unique_values
+  }else{
+    # Convert df to vector
+    uniq <- deframe(unique_values[,1])
+  }
   sorted_nums <- sort(uniq)
   sums <- c()
   for (i in sorted_nums){
@@ -293,13 +233,46 @@ extract_unique_nums_probs <- function(df,var){
   return(to_return)
 }
 
-# Test
-test$diffcov32 <- test$age_cov3_child_21_1 - test$age_cov2_child_21_1
-extracted <- extract_unique_nums_probs(df=test,var="diffcov32")
-stopifnot(deframe(round(extracted["sorted_nums"],1)) == round(seq(from=0.1,to=0.5,by=0.1),1))
-stopifnot(round(extracted["probs"],2) == c(0,0.03,0.75,0.22, 0))
-test <- test %>% select(-diffcov32)
+###############
+# COVID waves #
+###############
 
+# See ?sample
+resample <- function(x, ...) x[sample.int(length(x), ...)]
+
+fill_age_cov2 <- function(df,order="ascending"){
+  set.seed(123)
+  # Cov2 and Cov1 phases were done from 1 to 2 months apart
+  # See the table: https://datadictionary.teds.ac.uk/studies/21yr.htm
+  
+  if (order=="ascending"){
+    #############################
+    # Fill NA of cov2 with cov1 #
+    #############################
+    df$diffcov21 <- df$age_cov2_child_21_1 - df$age_cov1_child_21_1
+    
+    # Calculate the relative frequency
+    # We will use it to add it to cov2 
+    extracted <- extract_unique_nums_probs(df=df, var="diffcov21")
+    probs <- extracted$probs
+    sorted_nums <- extracted$sorted_nums
+    df[is.na(df[,c("age_cov2_child_21_1")]), "age_cov2_child_21_1"] <- df[is.na(df[,c("age_cov2_child_21_1")]), "age_cov1_child_21_1"] + resample(x=sorted_nums, prob=probs, replace = T, size=dim(df[is.na(df[,c("age_cov2_child_21_1")]),])[1])
+    return(df)
+  }
+  #######################
+  # Fill cov1 from cov2 #
+  #######################
+  
+  df$diffcov12 <- df$age_cov1_child_21_1 - df$age_cov2_child_21_1
+  
+  # Calculate the relative frequency
+  # We will use it to add it to cov1 
+  extracted <- extract_unique_nums_probs(df=df, var="diffcov12")
+  probs <- extracted$probs
+  sorted_nums <- extracted$sorted_nums
+  df[is.na(df[,c("age_cov1_child_21_1")]), "age_cov1_child_21_1"] <- df[is.na(df[,c("age_cov1_child_21_1")]), "age_cov2_child_21_1"] + resample(x=sorted_nums, prob=probs, replace = T, size=dim(df[is.na(df[,c("age_cov1_child_21_1")]),])[1])
+  return(df)
+}
 
 fill_age_cov3 <- function(df,order="ascending"){
   set.seed(123)
@@ -328,37 +301,12 @@ fill_age_cov3 <- function(df,order="ascending"){
   
   # Calculate the relative frequency
   # We will use it to add it to cov2 
-  
-  # sum1 <- sum(df[round(df$diffcov23,1)==-0.1, "diffcov23"], na.rm = T)
-  # sum2 <- sum(df[round(df$diffcov23,1)==-0.2, "diffcov23"], na.rm = T)
-  # sum3 <- sum(df[round(df$diffcov23,1)==-0.3, "diffcov23"], na.rm = T)
-  # sum4 <- sum(df[round(df$diffcov23,1)==-0.4, "diffcov23"], na.rm = T)
-  # sum5 <- sum(df[round(df$diffcov23,1)==-0.5, "diffcov23"], na.rm = T)
-  # total <- sum1+sum2+sum3+sum4+sum5
-  # 
-  # prob1 <- sum1/total
-  # prob2 <- sum2/total
-  # prob3 <- sum3/total
-  # prob4 <- sum4/total
-  # prob5 <- sum5/total
-  # probs <- c(prob1,prob2,prob3,prob4,prob5)
-  # sorted_nums <- sort(unique(round(df$diffcov23,1)))
-  
   extracted <- extract_unique_nums_probs(df=df, var="diffcov23")
   probs <- extracted$probs
   sorted_nums <- extracted$sorted_nums
   df[is.na(df[,c("age_cov2_child_21_1")]), "age_cov2_child_21_1"] <- df[is.na(df[,c("age_cov2_child_21_1")]), "age_cov3_child_21_1"] + resample(x=sorted_nums, prob=probs, replace = T, size=dim(df[is.na(df[,c("age_cov2_child_21_1")]),])[1])
   return(df)
 }
-
-# Test
-test <- fill_age_cov3(df=test)
-t1 <- colSums(is.na(test[,c(colnames(test)[grepl(pattern="age_cov", x=colnames(test))])]))
-stopifnot(t1["age_cov1_child_21_1"] == 9078)
-stopifnot(t1["age_cov2_child_21_1"] == 8404)
-stopifnot(t1["age_cov3_child_21_1"] == 8166)
-stopifnot(t1["age_cov4_child_21_1"] ==10394)
-
 
 fill_age_cov4 <- function(df,order="ascending"){
   set.seed(123)
@@ -373,22 +321,6 @@ fill_age_cov4 <- function(df,order="ascending"){
     
     # Calculate the relative frequency
     # We will use it to add it to cov4 
-    # sum2 <- sum(df[round(df$diffcov43,1)==0.2, "diffcov43"], na.rm = T)
-    # sum3 <- sum(df[round(df$diffcov43,1)==0.3, "diffcov43"], na.rm = T)
-    # sum4 <- sum(df[round(df$diffcov43,1)==0.4, "diffcov43"], na.rm = T)
-    # sum5 <- sum(df[round(df$diffcov43,1)==0.5, "diffcov43"], na.rm = T)
-    # sum6 <- sum(df[round(df$diffcov43,1)==0.6, "diffcov43"], na.rm = T)
-    # total <- sum1+sum2+sum3+sum4+sum5+sum6
-    # prob1 <- sum1/total
-    # prob2 <- sum2/total
-    # prob3 <- sum3/total
-    # prob4 <- sum4/total
-    # prob5 <- sum5/total
-    # prob6 <- sum6/total
-    # 
-    # probs <- c(prob1,prob2,prob3,prob4,prob5,prob6)
-    # sorted_nums <- sort(unique(round(df$diffcov43,1)))
-    
     extracted <- extract_unique_nums_probs(df=df, var="diffcov43")
     probs <- extracted$probs
     sorted_nums <- extracted$sorted_nums
@@ -403,23 +335,6 @@ fill_age_cov4 <- function(df,order="ascending"){
   
   # Calculate the relative frequency
   # We will use it to add it to cov3 
-  # sum21 <- sum(df[round(df$diffcov34,1)==0.21, "diffcov34"], na.rm = T)
-  # sum2 <- sum(df[round(df$diffcov34,1)==0.2, "diffcov34"], na.rm = T)
-  # sum3 <- sum(df[round(df$diffcov34,1)==0.3, "diffcov34"], na.rm = T)
-  # sum4 <- sum(df[round(df$diffcov34,1)==0.4, "diffcov34"], na.rm = T)
-  # sum5 <- sum(df[round(df$diffcov34,1)==0.5, "diffcov34"], na.rm = T)
-  # sum6 <- sum(df[round(df$diffcov34,1)==0.6, "diffcov34"], na.rm = T)
-  # total <- sum1+sum2+sum3+sum4+sum5+sum6
-  # prob1 <- sum1/total
-  # prob2 <- sum2/total
-  # prob3 <- sum3/total
-  # prob4 <- sum4/total
-  # prob5 <- sum5/total
-  # prob6 <- sum6/total
-  # 
-  # probs <- c(prob1,prob2,prob3,prob4,prob5,prob6)
-  # sorted_nums <- sort(unique(round(df$diffcov34,1)))
-  
   extracted <- extract_unique_nums_probs(df=df, var="diffcov34")
   probs <- extracted$probs
   sorted_nums <- extracted$sorted_nums
@@ -427,14 +342,58 @@ fill_age_cov4 <- function(df,order="ascending"){
   return(df)
 }
 
-# Test
-test <- fill_age_cov4(df=test)
+create_test_df <- function(){
+  testit <- data.frame(
+    age_cov1_child_21_1 = c(NA,18.5,19,NA,NA,NA,NA),
+    age_cov2_child_21_1 = c(20,20.5,NA,20.5,23,NA,NA),
+    age_cov3_child_21_1 = c(21,21,NA,21,NA,23,NA),
+    age_cov4_child_21_1 = c(22,NA,22,NA,24,24,25)
+  )
+  return(testit)
+} 
 
-t1 <- colSums(is.na(test[,c(colnames(test)[grepl(pattern="age_cov", x=colnames(test))])]))
-stopifnot(t1["age_cov1_child_21_1"] == 9078)
-stopifnot(t1["age_cov2_child_21_1"] == 8404)
-stopifnot(t1["age_cov3_child_21_1"] == 8166)
-stopifnot(t1["age_cov4_child_21_1"] ==7996)
+testit <- create_test_df()
+testit <- fill_age_cov2(df=testit)
+stopifnot(all.equal(testit$age_cov1_child_21_1, c(NA,18.5,19.0,NA,NA,NA,NA)))
+stopifnot(all.equal(testit$age_cov2_child_21_1, c(20,20.5,21,20.5,23,NA,NA)))
+stopifnot(all.equal(testit$age_cov3_child_21_1, c(21,21,NA,21,NA,23,NA)))
+stopifnot(all.equal(testit$age_cov4_child_21_1, c(22,NA,22,NA,24,24,25)))
+
+
+testit <- create_test_df()
+testit <- fill_age_cov2(df=testit, order = "desc")
+stopifnot(all.equal(testit$age_cov1_child_21_1, c(18,18.5,19.0,18.5,21,NA,NA)))
+stopifnot(all.equal(testit$age_cov2_child_21_1, c(20,20.5,NA,20.5,23,NA,NA)))
+stopifnot(all.equal(testit$age_cov3_child_21_1, c(21,21,NA,21,NA,23,NA)))
+stopifnot(all.equal(testit$age_cov4_child_21_1, c(22,NA,22,NA,24,24,25)))
+
+testit <- create_test_df()
+testit <- fill_age_cov3(df=testit)
+stopifnot(all.equal(testit$age_cov1_child_21_1, c(NA,18.5,19,NA,NA,NA,NA)))
+stopifnot(all.equal(testit$age_cov2_child_21_1, c(20,20.5,NA,20.5,23,NA,NA)))
+stopifnot(all.equal(testit$age_cov3_child_21_1, c(21,21,NA,21,23.5,23,NA)))
+stopifnot(all.equal(testit$age_cov4_child_21_1, c(22,NA,22,NA,24,24,25)))
+
+testit <- create_test_df()
+testit <- fill_age_cov3(df=testit, order="desc")
+stopifnot(all.equal(testit$age_cov1_child_21_1, c(NA,18.5,19,NA,NA,NA,NA)))
+stopifnot(all.equal(testit$age_cov2_child_21_1, c(20,20.5,NA,20.5,23,22,NA)))
+stopifnot(all.equal(testit$age_cov3_child_21_1, c(21,21,NA,21,NA,23,NA)))
+stopifnot(all.equal(testit$age_cov4_child_21_1, c(22,NA,22,NA,24,24,25)))
+
+testit <- create_test_df()
+testit <- fill_age_cov4(df=testit)
+stopifnot(all.equal(testit$age_cov1_child_21_1, c(NA,18.5,19,NA,NA,NA,NA)))
+stopifnot(all.equal(testit$age_cov2_child_21_1, c(20,20.5,NA,20.5,23,NA,NA)))
+stopifnot(all.equal(testit$age_cov3_child_21_1, c(21,21,NA,21,NA,23,NA)))
+stopifnot(all.equal(testit$age_cov4_child_21_1, c(22,22,22,22,24,24,25)))
+
+testit <- create_test_df()
+testit <- fill_age_cov4(df=testit,order="desc")
+stopifnot(all.equal(testit$age_cov1_child_21_1, c(NA,18.5,19,NA,NA,NA,NA)))
+stopifnot(all.equal(testit$age_cov2_child_21_1, c(20,20.5,NA,20.5,23,NA,NA)))
+stopifnot(all.equal(testit$age_cov3_child_21_1, c(21,21,21,21,23,23,24)))
+stopifnot(all.equal(testit$age_cov4_child_21_1, c(22,NA,22,NA,24,24,25)))
 
 
 fill_age_covid_21 <- function(df,order="ascending"){
@@ -451,15 +410,21 @@ fill_age_covid_21 <- function(df,order="ascending"){
   return(df)
 }
 
-# Test
-test <- fill_age_covid_21(df=test, order="descending")
+testit <- create_test_df()
+testit <- fill_age_covid_21(df=testit)
+stopifnot(all.equal(testit$age_cov1_child_21_1, c(NA,18.5,19.0,NA,NA,NA,NA)))
+stopifnot(all.equal(testit$age_cov2_child_21_1, c(20,20.5,21.0,20.5,23,NA,NA)))
+stopifnot(all.equal(testit$age_cov3_child_21_1, c(21,21,22,21,23.5,23,NA)))
+stopifnot(all.equal(testit$age_cov4_child_21_1, c(22,22,22,22,24,24,25)))
 
-t1 <- colSums(is.na(test[,c(colnames(test)[grepl(pattern="age_cov", x=colnames(test))])]))
-stopifnot(t1["age_cov1_child_21_1"] == 7996)
-stopifnot(t1["age_cov2_child_21_1"] == 7996)
-stopifnot(t1["age_cov3_child_21_1"] == 7996)
-stopifnot(t1["age_cov4_child_21_1"] ==7996)
+testit <- create_test_df()
+testit <- fill_age_covid_21(df=testit, order="descending")
+stopifnot(all.equal(testit$age_cov1_child_21_1, c(18,18.5,19.0,19,21,20.5,22.0)))
+stopifnot(all.equal(testit$age_cov2_child_21_1, c(20,20.5,20.5,20.5,23,22,23.5)))
+stopifnot(all.equal(testit$age_cov3_child_21_1, c(21,21,21,21,23,23,24)))
+stopifnot(all.equal(testit$age_cov4_child_21_1, c(22,NA,22,NA,24,24,25)))
 
+##############################################################################
 
 # Some twin pairs have the same values, 
 # so there is no variance in these families.
