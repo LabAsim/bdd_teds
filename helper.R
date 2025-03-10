@@ -784,3 +784,87 @@ stopifnot(test$fam_id == c(1:3))
 rm(list=c("test", "test_diff", "test_diff2", "test_diff3"))
 
 
+
+
+scale_mpvs <- function(df, scale_size=32){
+  # Age 12
+  # 16 items
+  df$mpvs_total_12_1_scaled <- df$mpvs_total_12_1/32
+  df[,paste0("mpvs_total_12_1_scaled","_",scale_size)] <- df$mpvs_total_12_1_scaled * scale_size
+  # Age 14
+  # 12 items
+  df$mpvs_total_14_1_scaled <- df$mpvs_total_14_1/24
+  df[,paste0("mpvs_total_14_1_scaled","_",scale_size)] <- df$mpvs_total_14_1_scaled * scale_size
+  
+  # Age 16
+  # 6 items
+  df$mpvs_total_16_1_scaled <- df$mpvs_total_16_1/12
+  df[,paste0("mpvs_total_16_1_scaled","_",scale_size)] <- df$mpvs_total_16_1_scaled * scale_size
+  
+  ##########
+  # Age 21 #
+  ##########
+  # 16 items
+  df$mpvs_total_21_phase_2_1_scaled <- df$mpvs_total_21_phase_2_1/32
+  df[,paste0("mpvs_total_21_phase_2_1_scaled","_",scale_size)] <- df$mpvs_total_21_phase_2_1_scaled * scale_size
+  # 12 items
+  df$mpvs_total_21_cov1_1_scaled <- df$mpvs_total_21_cov1_1/24
+  df[,paste0("mpvs_total_21_cov1_1_scaled","_",scale_size)] <- df$mpvs_total_21_cov1_1_scaled * scale_size
+  df$mpvs_total_21_cov2_1_scaled <- df$mpvs_total_21_cov2_1/24
+  df[,paste0("mpvs_total_21_cov2_1_scaled","_",scale_size)] <- df$mpvs_total_21_cov2_1_scaled * scale_size
+  
+  df$mpvs_total_21_cov3_1_scaled <- df$mpvs_total_21_cov3_1/24
+  df[,paste0("mpvs_total_21_cov3_1_scaled","_",scale_size)] <- df$mpvs_total_21_cov3_1_scaled * scale_size
+  
+  df$mpvs_total_21_cov4_1_scaled <- df$mpvs_total_21_cov4_1/24
+  df[,paste0("mpvs_total_21_cov4_1_scaled","_",scale_size)] <- df$mpvs_total_21_cov4_1_scaled * scale_size
+  
+  return(df)
+}
+test <- data.frame(
+  mpvs_total_12_1 = 32,
+  mpvs_total_14_1 = 12,
+  mpvs_total_16_1 = 6,
+  mpvs_total_21_phase_2_1 = 16,
+  mpvs_total_21_cov1_1 = 12,
+  mpvs_total_21_cov2_1 = 12,
+  mpvs_total_21_cov3_1 = 12,
+  mpvs_total_21_cov4_1 = 12
+)
+
+testit <- scale_mpvs(df=test, scale_size = 32)
+stopifnot(testit$mpvs_total_12_1_scaled == test$mpvs_total_12_1/32)
+stopifnot(testit$mpvs_total_14_1_scaled == test$mpvs_total_14_1/24)
+stopifnot(testit$mpvs_total_16_1_scaled == test$mpvs_total_16_1/12)
+stopifnot(testit$mpvs_total_21_phase_2_1_scaled == test$mpvs_total_21_phase_2_1/32)
+stopifnot(testit$mpvs_total_21_cov1_1_scaled == test$mpvs_total_21_cov1_1/24)
+stopifnot(testit$mpvs_total_21_cov2_1_scaled == test$mpvs_total_21_cov2_1/24)
+stopifnot(testit$mpvs_total_21_cov3_1_scaled == test$mpvs_total_21_cov3_1/24)
+stopifnot(testit$mpvs_total_21_cov4_1_scaled == test$mpvs_total_21_cov4_1/24)
+
+scale_size <- 32
+stopifnot(testit$mpvs_total_12_1_scaled_32 == test$mpvs_total_12_1_scaled*scale_size)
+stopifnot(testit$mpvs_total_14_1_scaled_32 == test$mpvs_total_14_1_scaled*scale_size)
+stopifnot(testit$mpvs_total_16_1_scaled_32 == test$mpvs_total_16_1_scaled*scale_size)
+stopifnot(testit$mpvs_total_21_phase_2_1_scaled_32 == test$mpvs_total_21_phase_2_1_scaled*scale_size)
+stopifnot(testit$mpvs_total_21_cov1_1_scaled_32 == test$mpvs_total_21_cov1_1_scaled*scale_size)
+stopifnot(testit$mpvs_total_21_cov2_1_scaled_32 == test$mpvs_total_21_cov2_1_scaled*scale_size)
+stopifnot(testit$mpvs_total_21_cov3_1_scaled_32 == test$mpvs_total_21_cov3_1_scaled*scale_size)
+stopifnot(testit$mpvs_total_21_cov4_1_scaled_32 == test$mpvs_total_21_cov4_1_scaled*scale_size)
+stopifnot(dim(testit) == c(1,24))
+stopifnot(
+  c(
+    "mpvs_total_12_1_scaled","mpvs_total_14_1_scaled",
+    "mpvs_total_16_1_scaled", "mpvs_total_21_phase_2_1_scaled",
+    "mpvs_total_21_cov1_1_scaled", "mpvs_total_21_cov2_1_scaled",
+    "mpvs_total_21_cov3_1_scaled", "mpvs_total_21_cov4_1_scaled",
+    "mpvs_total_12_1_scaled_32","mpvs_total_14_1_scaled_32",
+    "mpvs_total_16_1_scaled_32", "mpvs_total_21_phase_2_1_scaled_32",
+    "mpvs_total_21_cov1_1_scaled_32", "mpvs_total_21_cov2_1_scaled_32",
+    "mpvs_total_21_cov3_1_scaled_32", "mpvs_total_21_cov4_1_scaled_32"
+  ) %in% colnames(testit)
+)
+
+rm(list=c("test", "testit", "scale_size"))
+
+
