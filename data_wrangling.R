@@ -265,10 +265,10 @@ df <- df %>% dplyr::select(-all_of("to_remove"))
 # Drop the cotwin variables
 df_12 <- df
 df_1 <- df %>% select(!matches("_2$"))
-rm(df)
+
 
 source("helper.R")
-
+rm(df)
 
 df_1 <- df_1 %>% fill_multiple_vars_twin_from_cotwin(
   vars=c(
