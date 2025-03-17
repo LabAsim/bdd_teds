@@ -139,22 +139,6 @@ stopifnot(
 )
 
 
-test <- df_1
-
-test1 <- df_1
-test1$age_12_1 <- NA
-test1$age_12_1 <- ifelse(
-  test = is.na(test1$age_parent_12), 
-  yes = ifelse(
-    test=is.na(test1$age_child_12_1),
-    yes = test1$age_teach_12_1,
-    no = test1$age_child_12_1
-  ),
-  no=test1$age_parent_12
-)
-
-colSums(is.na(test1[,c(colnames(test1)[grepl(pattern="age", x=colnames(test1))])]))
-
 fill_var <- function(df, primary, secondary, tertiary, new_column){
   df[,c(new_column)] <- rep(NA, times=dim(df)[1])
   print(rlang::as_name(new_column))
@@ -178,20 +162,38 @@ fill_var <- function(df, primary, secondary, tertiary, new_column){
         .default = .data[[!!new_column]]
       )
     )
-  return(df)
+  return(as.data.frame(df))
 }
 
-test <- fill_var(
-  df=df_1, 
-  primary = "age_parent_12",
-  secondary = "age_child_12_1",
-  tertiary = "age_teach_12_1",
-  new_column = "age_12_1"
+test <- data.frame(
+  fam_id = c(1,1,2,2,3,3),
+  twin_id = c(11,12,21,22,31,32),
+  test_var = c(1,NA,NA,2,NA,NA),
+  test_var2 = c(3,NA,3,3,3,3),
+  test_var3 = c(4,4,4,4,4,4)
 )
-t1 <- colSums(is.na(test1[,c(colnames(test1)[grepl(pattern="age", x=colnames(test1))])]))
-t2 <- colSums(is.na(test[,c(colnames(test)[grepl(pattern="age", x=colnames(test))])]))
-stopifnot(t1 == t2)
-stopifnot(t1["age_12_1"] == 3269)
+
+s <- fill_var(
+  df=test, 
+  primary = "test_var",
+  secondary = "test_var2",
+  tertiary = "test_var3",
+  new_column = "new_var"
+)
+
+stopifnot(
+  all.equal(
+    s,
+    data.frame(
+      fam_id = c(1,1,2,2,3,3),
+      twin_id = c(11,12,21,22,31,32),
+      test_var = c(1,NA,NA,2,NA,NA),
+      test_var2 = c(3,NA,3,3,3,3),
+      test_var3 = c(4,4,4,4,4,4),
+      new_var = c(1,4,3,2,3,3)
+    )
+  )
+)
 
 
 test <- df_1 %>% 
@@ -206,18 +208,6 @@ test <- df_1 %>%
     age_phase2_child_21_1, age_cov1_child_21_1 , age_cov2_child_21_1,
     age_cov3_child_21_1 ,age_cov4_child_21_1
   ) 
-
-colSums(is.na(test[,c(colnames(test)[grepl(pattern="age", x=colnames(test))])]))
-
-test <- fill_multiple_vars_twin_from_cotwin(
-  df=test, 
-  vars = c(
-    "age_phase2_child_21_1", "age_cov1_child_21_1" , "age_cov2_child_21_1",
-    "age_cov3_child_21_1" ,"age_cov4_child_21_1"
-  )
-)
-colSums(is.na(test[,c(colnames(test)[grepl(pattern="age", x=colnames(test))])]))
-
 
 extract_unique_nums_probs <- function(df,var){
   unique_values <- unique(round(df[,c(var)],1))
@@ -666,7 +656,7 @@ stopifnot(
 stopifnot(dim(testit) == c(8,2))
 
 # Remove test objects
-rm(list=c("test", "s", "t1", "t2", "comp", "test1", "extracted"))
+rm(list=c("test", "s"))
 rm(testit)
 
 
