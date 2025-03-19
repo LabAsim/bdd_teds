@@ -13,7 +13,6 @@ library(lavaan)
 
 
 # Complete cases analysis # 
-
 df_1_modified_complete_cases <-  df_1 %>%
   fix_different_twins_values(var="age_phase2_child_21_1") %>%
   fix_different_twins_values(var="age_16_1")
@@ -23,7 +22,7 @@ df_1_modified_complete_cases <- df_1_modified_complete_cases %>%
       var="mpvs_total_12_1", drop_same_value=T, drop_na = T
     ) %>%
   drop_identical_values(
-    var="mpvs_total_21_phase_2_1", drop_same_value=T, drop_na = T
+    var="mpvs_total_21_scaled_32", drop_same_value=T, drop_na = T
   ) %>%
   drop_identical_values(
     var="mpvs_total_16_1", drop_same_value=T, drop_na = T
@@ -46,22 +45,22 @@ within_fam_model <- '
     dcq_26_1 ~ mpvs_total_12_1
     dcq_26_1 ~ mpvs_total_14_child_1
     dcq_26_1 ~ mpvs_total_16_1
-    dcq_26_1 ~ mpvs_total_21_phase_2_1
+    dcq_26_1 ~ mpvs_total_21_scaled_32
     mpvs_total_14_child_1 ~ mpvs_total_12_1
     mpvs_total_16_1 ~ mpvs_total_14_child_1
-    mpvs_total_21_phase_2_1 ~ mpvs_total_16_1
+    mpvs_total_21_scaled_32 ~ mpvs_total_16_1
   level: 2
     dcq_26_1 ~ mpvs_total_12_1
     dcq_26_1 ~ mpvs_total_14_child_1
     dcq_26_1 ~ mpvs_total_16_1
-    dcq_26_1 ~ mpvs_total_21_phase_2_1
+    dcq_26_1 ~ mpvs_total_21_scaled_32
     mpvs_total_14_child_1 ~ mpvs_total_12_1
     mpvs_total_16_1 ~ mpvs_total_14_child_1
-    mpvs_total_21_phase_2_1 ~ mpvs_total_16_1
+    mpvs_total_21_scaled_32 ~ mpvs_total_16_1
     mpvs_total_12_1 ~ age_12_1
     mpvs_total_14_child_1 ~ age_14_1
     mpvs_total_16_1 ~ age_16_1
-    mpvs_total_21_phase_2_1 ~ age_phase2_child_21_1
+    mpvs_total_21_scaled_32 ~ age_phase2_child_21_1
 '
 fit1 <- sem(
   model = within_fam_model, 
@@ -79,14 +78,14 @@ df_1_modified <-  df_1 %>%
   fix_different_twins_values(var="age_12_1") %>%
   fix_different_twins_values(var="age_14_1") %>%
   fix_different_twins_values(var="age_16_1") 
-  
+beepr::beep("mario")
 
 df_1_modified <- df_1_modified %>%
   drop_identical_values(
     var="mpvs_total_12_1", drop_same_value=T, drop_na = F
   ) %>%
   drop_identical_values(
-    var="mpvs_total_21_phase_2_1", drop_same_value=T, drop_na = F
+    var="mpvs_total_21_scaled_32", drop_same_value=T, drop_na = F
   ) %>%
   drop_identical_values(
     var="mpvs_total_16_1", drop_same_value=T, drop_na = F
@@ -97,17 +96,18 @@ df_1_modified <- df_1_modified %>%
   drop_identical_values(
     var="dcq_26_1", drop_same_value=T, drop_na = F
   )
+beepr::beep("mario")
 
 df_1_modified %>% select(
   twin_id, fam_id, dcq_26_1, mpvs_total_12_1, mpvs_total_14_child_1,
-  mpvs_total_16_1, mpvs_total_21_phase_2_1, age_12_1,age_14_1, age_16_1,
+  mpvs_total_16_1, mpvs_total_21_scaled_32, age_12_1,age_14_1, age_16_1,
   age_phase2_child_21_1
 ) %>% View()
 
 df_1_modified %>% 
   select(
     dcq_26_1, mpvs_total_12_1, mpvs_total_14_child_1,
-    mpvs_total_16_1, mpvs_total_21_phase_2_1, age_12_1,age_14_1, age_16_1,
+    mpvs_total_16_1, mpvs_total_21_scaled_32, age_12_1,age_14_1, age_16_1,
     age_phase2_child_21_1
   ) %>% 
   mice::md.pattern(rotate.names = T, plot = F) %>% 
@@ -118,22 +118,22 @@ two_level_model <- '
     dcq_26_1 ~ mpvs_total_12_1
     dcq_26_1 ~ mpvs_total_14_child_1
     dcq_26_1 ~ mpvs_total_16_1
-    dcq_26_1 ~ mpvs_total_21_phase_2_1
+    dcq_26_1 ~ mpvs_total_21_scaled_32
     mpvs_total_14_child_1 ~ mpvs_total_12_1
     mpvs_total_16_1 ~ mpvs_total_14_child_1
-    mpvs_total_21_phase_2_1 ~ mpvs_total_16_1
+    mpvs_total_21_scaled_32 ~ mpvs_total_16_1
   level: 2
     dcq_26_1 ~ mpvs_total_12_1
     dcq_26_1 ~ mpvs_total_14_child_1
     dcq_26_1 ~ mpvs_total_16_1
-    dcq_26_1 ~ mpvs_total_21_phase_2_1
+    dcq_26_1 ~ mpvs_total_21_scaled_32
     mpvs_total_14_child_1 ~ mpvs_total_12_1
     mpvs_total_16_1 ~ mpvs_total_14_child_1
-    mpvs_total_21_phase_2_1 ~ mpvs_total_16_1
+    mpvs_total_21_scaled_32 ~ mpvs_total_16_1
     mpvs_total_12_1 ~ age_12_1
     mpvs_total_14_child_1 ~ age_14_1
     mpvs_total_16_1 ~ age_16_1
-    mpvs_total_21_phase_2_1 ~ age_phase2_child_21_1
+    mpvs_total_21_scaled_32 ~ age_phase2_child_21_1
 '
 
 fit_msem_complete_cases <- sem(
@@ -154,6 +154,17 @@ fit_msem_fiml <- sem(
 
 summary(fit_msem_fiml)
 
+
+fit_msem_fiml2 <- sem(
+  model = two_level_model, 
+  data = df_1_modified, 
+  cluster = "fam_id",
+  missing = 'fiml',
+  fixed.x = F
+)
+
+summary(fit_msem_fiml2)
+
 ################
 # Hypothesis 2 #
 ################
@@ -163,24 +174,30 @@ mpvs12 <- subtract_twins_values(df=df_diff, var="mpvs_total_12_1")
 mpvs14 <- subtract_twins_values(df=df_diff, var="mpvs_total_14_1")
 mpvs16 <- subtract_twins_values(df=df_diff, var="mpvs_total_16_1")
 mpvs21_phase2 <- subtract_twins_values(df=df_diff, var="mpvs_total_21_phase_2_1")
+mpvs_total_21_scaled_32 <- subtract_twins_values(df=df_diff, var="mpvs_total_21_scaled_32")
 dcq26 <- subtract_twins_values(df=df_diff, var="dcq_26_1")
 
 df_diff <- left_join_multiple_df_diff_twin_values(
   left_df = mpvs12,
-  right_dfs = list(mpvs14, mpvs16, mpvs21_phase2,dcq26)
+  right_dfs = list(mpvs14, mpvs16, mpvs_total_21_scaled_32,dcq26)
 )
 df_diff[complete.cases(df_diff),] %>% View()
 
-rm(list=c("mpvs12", "mpvs14", "mpvs16", "mpvs21_phase2", "dcq26"))
+rm(
+  list=c(
+    "mpvs12", "mpvs14", "mpvs16", "mpvs21_phase2",
+    "mpvs_total_21_scaled_32", "dcq26"
+  )
+)
 
 twin_diff_model <- '
     dcq_26_1 ~ mpvs_total_12_1
     dcq_26_1 ~ mpvs_total_14_1
     dcq_26_1 ~ mpvs_total_16_1
-    dcq_26_1 ~ mpvs_total_21_phase_2_1
+    dcq_26_1 ~ mpvs_total_21_scaled_32
     mpvs_total_14_1 ~ mpvs_total_12_1
     mpvs_total_16_1 ~ mpvs_total_14_1
-    mpvs_total_21_phase_2_1 ~ mpvs_total_16_1
+    mpvs_total_21_scaled_32 ~ mpvs_total_16_1
 '
 
 fit1 <- sem(
@@ -198,7 +215,7 @@ df_diff %>%
     all_of(
       c(
         "dcq_26_1","mpvs_total_12_1","mpvs_total_14_1",
-        "mpvs_total_16_1", "mpvs_total_21_phase_2_1"
+        "mpvs_total_16_1", "mpvs_total_21_scaled_32"
       )
     )
   ) %>%
@@ -218,24 +235,25 @@ mpvs12 <- subtract_twins_values(df=df_diff_scaled, var="mpvs_total_12_1_scaled_3
 mpvs14 <- subtract_twins_values(df=df_diff_scaled, var="mpvs_total_14_1_scaled_32")
 mpvs16 <- subtract_twins_values(df=df_diff_scaled, var="mpvs_total_16_1_scaled_32")
 mpvs21_phase2 <- subtract_twins_values(df=df_diff_scaled, var="mpvs_total_21_phase_2_1_scaled_32")
+mpvs_total_21 <- subtract_twins_values(df=df_diff_scaled, var="mpvs_total_21_scaled_32")
 dcq26 <- subtract_twins_values(df=df_diff_scaled, var="dcq_26_1")
 
 df_diff_scaled <- left_join_multiple_df_diff_twin_values(
   left_df = mpvs12,
-  right_dfs = list(mpvs14, mpvs16, mpvs21_phase2,dcq26)
+  right_dfs = list(mpvs14, mpvs16, mpvs21_phase2,mpvs_total_21,dcq26)
 )
 df_diff_scaled[complete.cases(df_diff_scaled),] %>% View()
 
-rm(list=c("mpvs12", "mpvs14", "mpvs16", "mpvs21_phase2", "dcq26"))
+rm(list=c("mpvs12", "mpvs14", "mpvs16", "mpvs21_phase2","mpvs_total_21", "dcq26"))
 
 twin_diff_model_scaled <- '
     dcq_26_1 ~ mpvs_total_12_1_scaled_32
     dcq_26_1 ~ mpvs_total_14_1_scaled_32
     dcq_26_1 ~ mpvs_total_16_1_scaled_32
-    dcq_26_1 ~ mpvs_total_21_phase_2_1_scaled_32
+    dcq_26_1 ~ mpvs_total_21_scaled_32
     mpvs_total_14_1_scaled_32 ~ mpvs_total_12_1_scaled_32
     mpvs_total_16_1_scaled_32 ~ mpvs_total_14_1_scaled_32
-    mpvs_total_21_phase_2_1_scaled_32 ~ mpvs_total_16_1_scaled_32
+    mpvs_total_21_scaled_32 ~ mpvs_total_16_1_scaled_32
 '
 
 fit1_scaled <- sem(
