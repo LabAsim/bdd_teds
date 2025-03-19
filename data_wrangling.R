@@ -349,3 +349,20 @@ df_1 <- df_1 %>% fill_multiple_vars_twin_from_cotwin(
 )
 
 df_1 <- scale_mpvs(df=df_1)
+
+# Create a variable representing mean MPVS across the waves 
+# at age 21
+df_1 <- df_1 %>% 
+  mutate(
+    mpvs_total_21_scaled_32 = rowMeans(
+      select(
+        df_1,
+        mpvs_total_21_phase_2_1_scaled_32,
+        mpvs_total_21_cov1_1_scaled_32, 
+        mpvs_total_21_cov2_1_scaled_32, 
+        mpvs_total_21_cov3_1_scaled_32,
+        mpvs_total_21_cov4_1_scaled_32
+      ),
+      na.rm = T
+    )
+  )
