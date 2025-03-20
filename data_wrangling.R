@@ -352,6 +352,22 @@ df_1 <- scale_mpvs(df=df_1)
 
 # Create a variable representing mean MPVS across the waves 
 # at age 21
+
+df_1 <- df_1 %>% 
+  mutate(
+    mpvs_total_21_1 = rowMeans(
+      select(
+        df_1,
+        mpvs_total_21_phase_2_1,
+        mpvs_total_21_cov1_1, 
+        mpvs_total_21_cov2_1, 
+        mpvs_total_21_cov3_1,
+        mpvs_total_21_cov4_1
+      ),
+      na.rm = T
+    )
+  )
+
 df_1 <- df_1 %>% 
   mutate(
     mpvs_total_21_scaled_32 = rowMeans(
@@ -362,6 +378,21 @@ df_1 <- df_1 %>%
         mpvs_total_21_cov2_1_scaled_32, 
         mpvs_total_21_cov3_1_scaled_32,
         mpvs_total_21_cov4_1_scaled_32
+      ),
+      na.rm = T
+    )
+  )
+
+df_1 <- df_1 %>% 
+  mutate(
+    age_21_1 = rowMeans(
+      select(
+        .,
+        age_cov1_child_21_1,
+        age_cov2_child_21_1, 
+        age_cov3_child_21_1, 
+        age_cov4_child_21_1,
+        age_phase2_child_21_1
       ),
       na.rm = T
     )
