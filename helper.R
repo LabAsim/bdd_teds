@@ -616,7 +616,7 @@ fix_different_twins_values <- function(
           }
         }
       # Twins' values are numeric  
-      }else if(round(df[2,var],1) != round(df[1,var],1)){
+      }else if(round(df[2,var],4) != round(df[1,var],4)){
         # The values are not equal, replace twin2's value with their co-twin's
         df[2,var] <- df[1,var]
         return(df)
