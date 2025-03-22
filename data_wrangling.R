@@ -51,6 +51,23 @@ df$mpvs_social_12_2 <- df_raw$lcvicso2
 df$mpvs_property_12_1 <- df_raw$lcvicpr1 
 df$mpvs_property_12_2 <- df_raw$lcvicpr2
 
+df$mpvs_item_1_12_1 <- df_raw$lcvic011
+df$mpvs_item_2_12_1 <- df_raw$lcvic021
+df$mpvs_item_3_12_1 <- df_raw$lcvic031
+df$mpvs_item_4_12_1 <- df_raw$lcvic041
+df$mpvs_item_5_12_1 <- df_raw$lcvic051
+df$mpvs_item_6_12_1 <- df_raw$lcvic061
+df$mpvs_item_7_12_1 <- df_raw$lcvic071
+df$mpvs_item_8_12_1 <- df_raw$lcvic081
+df$mpvs_item_9_12_1 <- df_raw$lcvic091
+df$mpvs_item_10_12_1 <- df_raw$lcvic101
+df$mpvs_item_11_12_1 <- df_raw$lcvic111
+df$mpvs_item_12_12_1 <- df_raw$lcvic121
+df$mpvs_item_13_12_1 <- df_raw$lcvic131
+df$mpvs_item_14_12_1 <- df_raw$lcvic141
+df$mpvs_item_15_12_1 <- df_raw$lcvic151
+df$mpvs_item_16_12_1 <- df_raw$lcvic161
+
 table(df$mpvs_physical_12_1, df$mpvs_verbal_12_1, useNA = "always")
 
 df$mpvs_total_12_1 <- rowSums(
@@ -86,6 +103,24 @@ df$mpvs_social_14_parent_2 <- df_raw$npvicso2
 df$mpvs_property_14_parent_1 <- df_raw$npvicpr1 
 df$mpvs_property_14_parent_2 <- df_raw$npvicpr2
 
+df$mpvs_item_1_14_parent_1 <- df_raw$npvic011
+df$mpvs_item_2_14_parent_1 <- df_raw$npvic021
+df$mpvs_item_3_14_parent_1 <- df_raw$npvic031
+df$mpvs_item_4_14_parent_1 <- df_raw$npvic041
+df$mpvs_item_5_14_parent_1 <- df_raw$npvic051
+df$mpvs_item_6_14_parent_1 <- df_raw$npvic061
+df$mpvs_item_7_14_parent_1 <- df_raw$npvic071
+df$mpvs_item_8_14_parent_1 <- df_raw$npvic081
+df$mpvs_item_9_14_parent_1 <- df_raw$npvic091
+df$mpvs_item_10_14_parent_1 <- df_raw$npvic101
+df$mpvs_item_11_14_parent_1 <- df_raw$npvic111
+df$mpvs_item_12_14_parent_1 <- df_raw$npvic121
+df$mpvs_item_13_14_parent_1 <- df_raw$npvic131
+df$mpvs_item_14_14_parent_1 <- df_raw$npvic141
+df$mpvs_item_15_14_parent_1 <- df_raw$npvic151
+df$mpvs_item_16_14_parent_1 <- df_raw$npvic161
+
+
 df$mpvs_total_14_parent_1 <- rowSums(
   x=df[,c(
     "mpvs_physical_14_parent_1",
@@ -103,6 +138,23 @@ df$mpvs_social_14_child_1 <- df_raw$ncvicso1
 df$mpvs_social_14_child_2 <- df_raw$ncvicso2
 df$mpvs_property_14_child_1 <- df_raw$ncvicpr1 
 df$mpvs_property_14_child_2 <- df_raw$ncvicpr2
+
+df$mpvs_item_1_14_child_1 <- df_raw$ncvic011
+df$mpvs_item_2_14_child_1 <- df_raw$ncvic021
+df$mpvs_item_3_14_child_1 <- df_raw$ncvic031
+df$mpvs_item_4_14_child_1 <- df_raw$ncvic041
+df$mpvs_item_5_14_child_1 <- df_raw$ncvic051
+df$mpvs_item_6_14_child_1 <- df_raw$ncvic061
+df$mpvs_item_7_14_child_1 <- df_raw$ncvic071
+df$mpvs_item_8_14_child_1 <- df_raw$ncvic081
+df$mpvs_item_9_14_child_1 <- df_raw$ncvic091
+df$mpvs_item_10_14_child_1 <- df_raw$ncvic101
+df$mpvs_item_11_14_child_1 <- df_raw$ncvic111
+df$mpvs_item_12_14_child_1 <- df_raw$ncvic121
+df$mpvs_item_13_14_child_1 <- df_raw$ncvic131
+df$mpvs_item_14_14_child_1 <- df_raw$ncvic141
+df$mpvs_item_15_14_child_1 <- df_raw$ncvic151
+df$mpvs_item_16_14_child_1 <- df_raw$ncvic161
 
 df$mpvs_total_14_child_1 <- rowSums(
   x=df[,c(
@@ -122,6 +174,23 @@ df$mpvs_social_14_teacher_2 <- df_raw$ntvicso2
 df$mpvs_property_14_teacher_1 <- df_raw$ntvicpr1 
 df$mpvs_property_14_teacher_2 <- df_raw$ntvicpr2
 
+df$mpvs_item_1_14_teacher_1 <- df_raw$ntvic011
+df$mpvs_item_2_14_teacher_1 <- df_raw$ntvic021
+df$mpvs_item_3_14_teacher_1 <- df_raw$ntvic031
+df$mpvs_item_4_14_teacher_1 <- df_raw$ntvic041
+df$mpvs_item_5_14_teacher_1 <- df_raw$ntvic051
+df$mpvs_item_6_14_teacher_1 <- df_raw$ntvic061
+df$mpvs_item_7_14_teacher_1 <- df_raw$ntvic071
+df$mpvs_item_8_14_teacher_1 <- df_raw$ntvic081
+df$mpvs_item_9_14_teacher_1 <- df_raw$ntvic091
+df$mpvs_item_10_14_teacher_1 <- df_raw$ntvic101
+df$mpvs_item_11_14_teacher_1 <- df_raw$ntvic111
+df$mpvs_item_12_14_teacher_1 <- df_raw$ntvic121
+df$mpvs_item_13_14_teacher_1 <- df_raw$ntvic131
+df$mpvs_item_14_14_teacher_1 <- df_raw$ntvic141
+df$mpvs_item_15_14_teacher_1 <- df_raw$ntvic151
+df$mpvs_item_16_14_teacher_1 <- df_raw$ntvic161
+
 df$mpvs_total_14_teacher_1 <- rowSums(
   x=df[,c(
     "mpvs_physical_14_teacher_1",
@@ -131,17 +200,12 @@ df$mpvs_total_14_teacher_1 <- rowSums(
   )]
 )
 
-
-
 # Age
-
 df$age_parent_14 <- df_raw$npqage
 df$age_teach_14_1 <- df_raw$ntqage1
 df$age_teach_14_2 <- df_raw$ntqage2
 df$age_child_14_1 <- df_raw$ncqage1
 df$age_child_14_2 <- df_raw$ncqage2
-
-
 
 ##########
 # AGE 16 #
@@ -151,6 +215,12 @@ df$age_child_14_2 <- df_raw$ncqage2
 # See: https://datadictionary.teds.ac.uk/studies/derived_variables/16yr_derived_variables.htm#pcpevit
 df$mpvs_total_16_1 <- df_raw$pcpevit1
 df$mpvs_total_16_2 <- df_raw$pcpevit2
+df$mpvs_item_1_16_1 <-df_raw$pcqbpevi11
+df$mpvs_item_2_16_1 <-df_raw$pcqbpevi21
+df$mpvs_item_3_16_1 <-df_raw$pcqbpevi31
+df$mpvs_item_4_16_1 <-df_raw$pcqbpevi41
+df$mpvs_item_5_16_1 <-df_raw$pcqbpevi51
+df$mpvs_item_6_16_1 <-df_raw$pcqbpevi61
 
 # Eating Disorders Diagnostic Scale
 df$eat_dis_scale_16_1 <- df_raw$pcbheddsm1
@@ -174,6 +244,24 @@ df$cyber_bullying_phase1_1 <- df_raw$u1cobult1
 df$cyber_bullying_phase1_2 <- df_raw$u1cobult2
 df$mpvs_total_21_phase_2_1 <- df_raw$u2cvictt1
 df$mpvs_total_21_phase_2_2 <- df_raw$u2cvictt2
+
+df$mpvs_item_1_21_phase_2_1 <-df_raw$u2cvict011
+df$mpvs_item_2_21_phase_2_1 <-df_raw$u2cvict021
+df$mpvs_item_3_21_phase_2_1 <-df_raw$u2cvict031
+df$mpvs_item_4_21_phase_2_1 <-df_raw$u2cvict041
+df$mpvs_item_5_21_phase_2_1 <-df_raw$u2cvict051
+df$mpvs_item_6_21_phase_2_1 <-df_raw$u2cvict061
+df$mpvs_item_7_21_phase_2_1 <-df_raw$u2cvict071
+df$mpvs_item_8_21_phase_2_1 <-df_raw$u2cvict081
+df$mpvs_item_9_21_phase_2_1 <-df_raw$u2cvict091
+df$mpvs_item_10_21_phase_2_1 <-df_raw$u2cvict101
+df$mpvs_item_11_21_phase_2_1 <-df_raw$u2cvict111
+df$mpvs_item_12_21_phase_2_1 <-df_raw$u2cvict121
+df$mpvs_item_13_21_phase_2_1 <-df_raw$u2cvict131
+df$mpvs_item_14_21_phase_2_1 <-df_raw$u2cvict141
+df$mpvs_item_15_21_phase_2_1 <-df_raw$u2cvict151
+df$mpvs_item_16_21_phase_2_1 <-df_raw$u2cvict161
+
 df$mpvs_total_21_cov1_1<- df_raw$ucv1victt1
 df$mpvs_total_21_cov1_2<- df_raw$ucv1victt2
 df$mpvs_total_21_cov2_1<- df_raw$ucv2victt1
@@ -183,6 +271,54 @@ df$mpvs_total_21_cov3_2<- df_raw$ucv3victt2
 df$mpvs_total_21_cov4_1<- df_raw$ucv4victt1
 df$mpvs_total_21_cov4_2<- df_raw$ucv4victt2
 
+df$mpvs_item_1_21_cov1_2_1 <-df_raw$ucv1vict011
+df$mpvs_item_2_21_cov1_2_1 <-df_raw$ucv1vict021
+df$mpvs_item_3_21_cov1_2_1 <-df_raw$ucv1vict031
+df$mpvs_item_4_21_cov1_2_1 <-df_raw$ucv1vict041
+df$mpvs_item_5_21_cov1_2_1 <-df_raw$ucv1vict051
+df$mpvs_item_6_21_cov1_2_1 <-df_raw$ucv1vict061
+df$mpvs_item_7_21_cov1_2_1 <-df_raw$ucv1vict071
+df$mpvs_item_8_21_cov1_2_1 <-df_raw$ucv1vict081
+df$mpvs_item_9_21_cov1_2_1 <-df_raw$ucv1vict091
+df$mpvs_item_10_21_cov1_2_1 <-df_raw$ucv1vict101
+df$mpvs_item_11_21_cov1_2_1 <-df_raw$ucv1vict111
+df$mpvs_item_12_21_cov1_2_1 <-df_raw$ucv1vict121
+df$mpvs_item_1_21_cov2_2_1 <-df_raw$ucv2vict011
+df$mpvs_item_2_21_cov2_2_1 <-df_raw$ucv2vict021
+df$mpvs_item_3_21_cov2_2_1 <-df_raw$ucv2vict031
+df$mpvs_item_4_21_cov2_2_1 <-df_raw$ucv2vict041
+df$mpvs_item_5_21_cov2_2_1 <-df_raw$ucv2vict051
+df$mpvs_item_6_21_cov2_2_1 <-df_raw$ucv2vict061
+df$mpvs_item_7_21_cov2_2_1 <-df_raw$ucv2vict071
+df$mpvs_item_8_21_cov2_2_1 <-df_raw$ucv2vict081
+df$mpvs_item_9_21_cov2_2_1 <-df_raw$ucv2vict091
+df$mpvs_item_10_21_cov2_2_1 <-df_raw$ucv2vict101
+df$mpvs_item_11_21_cov2_2_1 <-df_raw$ucv2vict111
+df$mpvs_item_12_21_cov2_2_1 <-df_raw$ucv2vict121
+df$mpvs_item_1_21_cov3_2_1 <-df_raw$ucv3vict011
+df$mpvs_item_2_21_cov3_2_1 <-df_raw$ucv3vict021
+df$mpvs_item_3_21_cov3_2_1 <-df_raw$ucv3vict031
+df$mpvs_item_4_21_cov3_2_1 <-df_raw$ucv3vict041
+df$mpvs_item_5_21_cov3_2_1 <-df_raw$ucv3vict051
+df$mpvs_item_6_21_cov3_2_1 <-df_raw$ucv3vict061
+df$mpvs_item_7_21_cov3_2_1 <-df_raw$ucv3vict071
+df$mpvs_item_8_21_cov3_2_1 <-df_raw$ucv3vict081
+df$mpvs_item_9_21_cov3_2_1 <-df_raw$ucv3vict091
+df$mpvs_item_10_21_cov3_2_1 <-df_raw$ucv3vict101
+df$mpvs_item_11_21_cov3_2_1 <-df_raw$ucv3vict111
+df$mpvs_item_12_21_cov3_2_1 <-df_raw$ucv3vict121
+df$mpvs_item_1_21_cov4_2_1 <-df_raw$ucv4vict011
+df$mpvs_item_2_21_cov4_2_1 <-df_raw$ucv4vict021
+df$mpvs_item_3_21_cov4_2_1 <-df_raw$ucv4vict031
+df$mpvs_item_4_21_cov4_2_1 <-df_raw$ucv4vict041
+df$mpvs_item_5_21_cov4_2_1 <-df_raw$ucv4vict051
+df$mpvs_item_6_21_cov4_2_1 <-df_raw$ucv4vict061
+df$mpvs_item_7_21_cov4_2_1 <-df_raw$ucv4vict071
+df$mpvs_item_8_21_cov4_2_1 <-df_raw$ucv4vict081
+df$mpvs_item_9_21_cov4_2_1 <-df_raw$ucv4vict091
+df$mpvs_item_10_21_cov4_2_1 <-df_raw$ucv4vict101
+df$mpvs_item_11_21_cov4_2_1 <-df_raw$ucv4vict111
+df$mpvs_item_12_21_cov4_2_1 <-df_raw$ucv4vict121
 
 # Anorexia nervosa diagnosis
 df$anorexia_diag_21_phase1_1 <- df_raw$u1ceatd11
@@ -233,6 +369,14 @@ df$age_cov4_child_21_2 <- df_raw$ucv4age2
 df$dcq_26_1 <- df_raw$zmhbddt1
 df$dcq_26_2 <- df_raw$zmhbddt2
 
+df$dcq_item_1_26_1 <- df_raw$zmhbdd11
+df$dcq_item_2_26_1 <- df_raw$zmhbdd21
+df$dcq_item_3_26_1 <- df_raw$zmhbdd31
+df$dcq_item_4_26_1 <- df_raw$zmhbdd41
+df$dcq_item_5_26_1 <- df_raw$zmhbdd51
+df$dcq_item_6_26_1 <- df_raw$zmhbdd61
+df$dcq_item_7_26_1 <- df_raw$zmhbdd71
+
 df$bdd_diagnosis_26_1 <- df_raw$zmhmhddx1m1
 df$bdd_diagnosis_26_2 <- df_raw$zmhmhddx1m2
 table(df$bdd_diagnosis_26_1, df$bdd_diagnosis_26_2)
@@ -240,8 +384,6 @@ table(df$bdd_diagnosis_26_1, df$bdd_diagnosis_26_2)
 # Age
 df$age_26_1 <- df_raw$zmhage1
 df$age_26_2 <- df_raw$zmhage2
-
-
 
 
 # Last but not least, drop only the rows that contain NA in MPVS columns!
