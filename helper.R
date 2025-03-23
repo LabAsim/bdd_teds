@@ -796,7 +796,7 @@ scale_mpvs <- function(df, scale_size=32){
   df[,paste0("mpvs_total_12_1_scaled","_",scale_size)] <- df$mpvs_total_12_1_scaled * scale_size
   # Age 14
   # 12 items
-  df$mpvs_total_14_1_scaled <- df$mpvs_total_14_1/24
+  df$mpvs_total_14_1_scaled <- df$mpvs_total_14_1/32
   df[,paste0("mpvs_total_14_1_scaled","_",scale_size)] <- df$mpvs_total_14_1_scaled * scale_size
   
   # Age 16
@@ -837,7 +837,7 @@ test <- data.frame(
 
 testit <- scale_mpvs(df=test, scale_size = 32)
 stopifnot(testit$mpvs_total_12_1_scaled == test$mpvs_total_12_1/32)
-stopifnot(testit$mpvs_total_14_1_scaled == test$mpvs_total_14_1/24)
+stopifnot(testit$mpvs_total_14_1_scaled == test$mpvs_total_14_1/32)
 stopifnot(testit$mpvs_total_16_1_scaled == test$mpvs_total_16_1/12)
 stopifnot(testit$mpvs_total_21_phase_2_1_scaled == test$mpvs_total_21_phase_2_1/32)
 stopifnot(testit$mpvs_total_21_cov1_1_scaled == test$mpvs_total_21_cov1_1/24)
