@@ -34,6 +34,10 @@ df$sex_2 <- df_raw$sex2
 df$zygosity_binary <- df_raw$zygos
 df$zygosity_ternary <- df_raw$x3zygos
 df$zygosity_quinary <- df_raw$sexzyg
+df$ses_1st_contact <- df_raw$ases
+df$ethnic <- df_raw$aethnic
+df$exclude1 <- df_raw$exclude1 
+df$exclude2 <- df_raw$exclude2
 
 ##########
 # AGE 12 #
@@ -386,10 +390,19 @@ df$age_26_1 <- df_raw$zmhage1
 df$age_26_2 <- df_raw$zmhage2
 
 
+
+#######################
+# Drop excluded twins #
+#######################
+df <- df[df$exclude1 == 0,]
+df <- df[df$exclude2 == 0,]
+
+############################################################################
 # Last but not least, drop only the rows that contain NA in MPVS columns!
 # We can impute the remaining NA!
 # See: https://stackoverflow.com/a/70325350
 # https://www.geeksforgeeks.org/how-to-check-if-characters-are-present-in-a-string-in-r/
+############################################################################
 
 df <- df %>%
   #filter(!if_all(colnames(df), is.na))
