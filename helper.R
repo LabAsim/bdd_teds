@@ -787,6 +787,41 @@ stopifnot(test$fam_id == c(1:3))
 rm(list=c("test", "test_diff", "test_diff2", "test_diff3"))
 
 
+create_df_subtract_twins_values_multiple_vars <- function(
+    df,
+    group_var="fam_id",
+    vars
+){
+  temp_list <- list(subtract_twins_values(df=df, var=vars[1]))
+  for (var in vars[2:length(vars)]){
+    loop_df <- subtract_twins_values(df=df, var=var)
+    temp_list <- c(temp_list, list(loop_df))
+  }
+  
+  temp_df <- left_join_multiple_df_diff_twin_values(
+    left_df = temp_list[[1]],
+    right_dfs = temp_list[-1],
+    join_by_var = "fam_id"
+  )
+  return(temp_df)
+}
+
+test <- data.frame(
+  fam_id = c(1,1,2,2,3,3),
+  test_var = c(1:6),
+  test_var2 = seq(from=10, to=20, by=2)
+)
+test <- create_df_subtract_twins_values_multiple_vars(
+  df=test, vars=c("test_var","test_var2")
+)
+
+stopifnot(class(test) == "data.frame")
+stopifnot(dim(test) == c(3,3))
+stopifnot(test$test_var == c(-1,-1,-1))
+stopifnot(test$test_var2 == c(-2,-2,-2))
+stopifnot(test$fam_id == c(1:3))
+
+rm(list=c("test"))
 
 
 scale_mpvs <- function(df, scale_size=32){
