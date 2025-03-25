@@ -843,9 +843,9 @@ create_df_subtract_twins_values_multiple_vars <- function(
     group_var="fam_id",
     vars
 ){
-  temp_list <- list(subtract_twins_values(df=df, var=vars[1]))
+  temp_list <- list(subtract_mz_twins_values(df=df, var=vars[1]))
   for (var in vars[2:length(vars)]){
-    loop_df <- subtract_twins_values(df=df, var=var)
+    loop_df <- subtract_mz_twins_values(df=df, var=var)
     temp_list <- c(temp_list, list(loop_df))
   }
   
@@ -859,6 +859,7 @@ create_df_subtract_twins_values_multiple_vars <- function(
 
 test <- data.frame(
   fam_id = c(1,1,2,2,3,3),
+  sex_1 = c(1,1,1,1,0,0),
   test_var = c(1:6),
   test_var2 = seq(from=10, to=20, by=2)
 )
