@@ -696,6 +696,57 @@ stopifnot(test_diff$variable == c(-1,-1,-1))
 stopifnot(test_diff$fam_id == c(1:3))
 rm(list=c("test", "test_diff"))
 
+
+subtract_mz_twins_values <- function(
+    df,
+    group_var="fam_id",
+    var,
+    sex_var = "sex_1"
+){
+  if ((sex_var %in% colnames(df)) == F){
+    # message(paste0("object:",right_dfs[[1]], "\n"))
+    stop(
+      glue::glue(
+        "`{sex_var}` is not a column name of the df"
+      )
+    )
+  }
+  if ("tbl_df" %in% class(df)){
+    df <- as.data.frame(df)
+  }
+  dflist <- split(df, f = list(df[,c(group_var)]), drop = TRUE)
+  to_return <- lapply(
+    X=dflist, FUN=function(df_){
+      if (df_[1,sex_var] == df_[2, sex_var]){
+        diff <- df_[1,var] - df_[2,var]
+        return(c(df_[1,"fam_id"], diff))
+      }else{
+        return(NULL)
+      }
+    }
+  )
+  # https://stackoverflow.com/a/35951683
+  to_return <- unname(to_return)
+  to_return <- do.call(rbind, to_return)
+  to_return1 <- tibble::tibble(fam_id = to_return[,1])
+  to_return2 <- tibble::tibble("{var}" := to_return[,2])
+  to_return <- as.data.frame(cbind(to_return1,to_return2))
+  return(to_return)
+}
+
+test <- data.frame(
+  fam_id = c(1,1,2,2,3,3),
+  sex = c(0,0,1,1,0,1),
+  test_var = c(1:6)
+)
+test_diff <-  subtract_mz_twins_values(df=test, var="test_var", sex_var = "sex")
+stopifnot(class(test_diff) == "data.frame")
+stopifnot(dim(test_diff) == c(2,2))
+stopifnot(test_diff$variable == c(-1,-1))
+stopifnot(test_diff$fam_id == c(1:2))
+rm(list=c("test", "test_diff"))
+
+
 left_join_df_diff_twin_values <- function(left_df,right_df, join_by_var="fam_id"){
   df <- left_join(
     x=left_df,
