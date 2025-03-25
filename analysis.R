@@ -266,6 +266,7 @@ fit1_scaled <- sem(
 )
 summary(fit1_scaled)
 
+
 fit2_scaled <- sem(
   model = twin_diff_model_scaled, 
   data = df_diff_scaled,
@@ -274,3 +275,112 @@ fit2_scaled <- sem(
 )
 
 summary(fit2_scaled)
+
+
+######################
+# Using imputed data #
+######################
+
+source("imputation_derived.R")
+
+################
+# Hypothesis 1 #
+################
+
+df_1_modified_complete_cases <-  drop_identical_fix_different_valeus(
+  df=data,
+  fix_vec = colnames(data)[grepl(pattern="age", x=colnames(data))],
+  drop_identical_vec = colnames(data)[grepl(pattern="scaled", x=colnames(data))]
+) %>% drop_identical_fix_different_valeus(
+  fix_vec = c(),
+  drop_identical_vec = c("dcq_26_1")
+)
+
+within_fam_model <- '
+  level: 1
+    dcq_26_1 ~ mpvs_total_12_1_scaled_32
+    dcq_26_1 ~ mpvs_total_14_1_scaled_32
+    dcq_26_1 ~ mpvs_total_16_1_scaled_32
+    dcq_26_1 ~ mpvs_total_21_scaled_32
+    dcq_26_1 ~ sex_1
+    mpvs_total_14_1_scaled_32 ~ mpvs_total_12_1_scaled_32
+    mpvs_total_16_1_scaled_32 ~ mpvs_total_14_1_scaled_32
+    mpvs_total_21_scaled_32 ~ mpvs_total_16_1_scaled_32
+    mpvs_total_12_1_scaled_32 ~ sex_1
+    mpvs_total_14_1_scaled_32 ~ sex_1
+    mpvs_total_16_1_scaled_32 ~ sex_1
+    mpvs_total_21_scaled_32 ~ sex_1
+  level: 2
+    dcq_26_1 ~ mpvs_total_12_1_scaled_32
+    dcq_26_1 ~ mpvs_total_14_1_scaled_32
+    dcq_26_1 ~ mpvs_total_16_1_scaled_32
+    dcq_26_1 ~ mpvs_total_21_scaled_32
+    dcq_26_1 ~ age_26_1 
+    dcq_26_1 ~ sex_1
+    mpvs_total_14_1_scaled_32 ~ mpvs_total_12_1_scaled_32
+    mpvs_total_16_1_scaled_32 ~ mpvs_total_14_1_scaled_32
+    mpvs_total_21_scaled_32 ~ mpvs_total_16_1_scaled_32
+    mpvs_total_12_1_scaled_32 ~ age_12_1
+    mpvs_total_14_1_scaled_32 ~ age_14_1
+    mpvs_total_16_1_scaled_32 ~ age_16_1
+    mpvs_total_21_scaled_32 ~ age_21_1
+    mpvs_total_12_1_scaled_32 ~ sex_1
+    mpvs_total_14_1_scaled_32 ~ sex_1
+    mpvs_total_16_1_scaled_32 ~ sex_1
+    mpvs_total_21_scaled_32 ~ sex_1
+'
+fit1 <- sem(
+  model = within_fam_model, 
+  data = df_1_modified_complete_cases, 
+  cluster = "fam_id"
+)
+
+summary(fit1)
+
+###############
+#Hypothesis 2 #
+###############
+
+
+
+df_diff_scaled <- data %>%
+  create_df_subtract_twins_values_multiple_vars(
+    group_var="fam_id",
+    vars = c(
+      "mpvs_total_12_1_scaled_32",
+      "mpvs_total_14_1_scaled_32",
+      "mpvs_total_16_1_scaled_32",
+      "mpvs_total_21_scaled_32",
+      "dcq_26_1"
+    )
+  )
+# mpvs12 <- subtract_twins_values(df=df_diff_scaled, var="mpvs_total_12_1_scaled_32")
+# mpvs14 <- subtract_twins_values(df=df_diff_scaled, var="mpvs_total_14_1_scaled_32")
+# mpvs16 <- subtract_twins_values(df=df_diff_scaled, var="mpvs_total_16_1_scaled_32")
+# mpvs21_phase2 <- subtract_twins_values(df=df_diff_scaled, var="mpvs_total_21_phase_2_1_scaled_32")
+# mpvs_total_21 <- subtract_twins_values(df=df_diff_scaled, var="mpvs_total_21_scaled_32")
+# dcq26 <- subtract_twins_values(df=df_diff_scaled, var="dcq_26_1")
+# 
+# df_diff_scaled <- left_join_multiple_df_diff_twin_values(
+#   left_df = mpvs12,
+#   right_dfs = list(mpvs14, mpvs16, mpvs21_phase2,mpvs_total_21,dcq26)
+# )
+
+twin_diff_model_scaled <- '
+    dcq_26_1 ~ mpvs_total_12_1_scaled_32
+    dcq_26_1 ~ mpvs_total_14_1_scaled_32
+    dcq_26_1 ~ mpvs_total_16_1_scaled_32
+    dcq_26_1 ~ mpvs_total_21_scaled_32
+    mpvs_total_14_1_scaled_32 ~ mpvs_total_12_1_scaled_32
+    mpvs_total_16_1_scaled_32 ~ mpvs_total_14_1_scaled_32
+    mpvs_total_21_scaled_32 ~ mpvs_total_16_1_scaled_32
+'
+
+fit3_scaled <- sem(
+  model = twin_diff_model_scaled, 
+  data = data,
+  missing = "ml"
+)
+
+summary(fit3_scaled)
+
