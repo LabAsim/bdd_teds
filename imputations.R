@@ -214,3 +214,18 @@ calculate_totals <- function(df){
 }
 
 
+
+# Recalculate all total items
+data_imp_calc <- data_imp %>%
+  calculate_items(target_phrase = "_12_1", output_var = "mpvs_total_12_1") %>%
+  calculate_items(target_phrase = "14_parent_1", output_var = "mpvs_total_14_parent_1") %>%
+  calculate_items(target_phrase = "14_child_1", output_var = "mpvs_total_14_child_1") %>%
+  calculate_items(target_phrase = "14_teacher_1", output_var = "mpvs_total_14_teacher_1") %>%
+  calculate_items(target_phrase = "16_1", output_var = "mpvs_total_16_1")  %>%
+  calculate_items(target_phrase = "_21_phase_2_1", output_var = "mpvs_total_21_phase_2_1")%>%
+  calculate_items(target_phrase = "_21_cov1_2_1", output_var = "mpvs_total_21_cov1_1")%>%
+  calculate_items(target_phrase = "_21_cov2_2_1", output_var = "mpvs_total_21_cov2_1")%>%
+  calculate_items(target_phrase = "_21_cov3_2_1", output_var = "mpvs_total_21_cov3_1") %>%
+  calculate_items(target_phrase = "_21_cov4_2_1", output_var = "mpvs_total_21_cov4_1")%>%
+  calculate_items(target_phrase = "_26_1", output_var = "dcq_26_1")
+

@@ -975,3 +975,51 @@ drop_identical_fix_different_values <- function(df,fix_vec, drop_identical_vec){
 }
 
 
+test <- data.frame(
+  fam_id = c(1,1,2,2,3,3),
+  twin_id = c(11,12,21,22,31,32),
+  test_item_var = c(1,1,1,2,2,2),
+  test_item_2var = c(1,1,2,2,3,3),
+  test_var = c(1,1,2,2,3,3)
+)
+
+calculate_items <- function(
+    df, target_phrase,target_phrase2="item", output_var
+){
+  x <- df[,colnames(df)[grepl(
+    pattern=(paste0(target_phrase,"$")),x=colnames(df)
+  )]]
+  x <- x[,colnames(x)[grepl(pattern=(target_phrase2),x=colnames(x))]]
+  print(glue::glue("Found {dim(x)[2]} columns;"))
+  print(colnames(x))
+  df <- df %>% 
+    mutate(
+      "{output_var}" := rowSums(
+        x=x
+      )
+    )
+  return(df)
+}
+
+test <- calculate_items(
+  df=test, 
+  target_phrase = "var",
+  target_phrase2 = "item",
+  output_var = "testit"
+)
+
+stopifnot(
+  all.equal(
+    test,
+    data.frame(
+      fam_id = c(1,1,2,2,3,3),
+      twin_id = c(11,12,21,22,31,32),
+      test_item_var = c(1,1,1,2,2,2),
+      test_item_2var = c(1,1,2,2,3,3),
+      test_var = c(1,1,2,2,3,3),
+      testit = c(2,2,3,4,5,5)
+    )
+  )
+)
+
+rm(test)
