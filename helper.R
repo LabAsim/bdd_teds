@@ -879,53 +879,58 @@ stopifnot(test$fam_id == c(1:3))
 rm(list=c("test"))
 
 
-scale_mpvs <- function(df, scale_size=32){
-  # Age 12
-  # 16 items
-  df$mpvs_total_12_1_scaled <- df$mpvs_total_12_1/32
-  df[,paste0("mpvs_total_12_1_scaled","_",scale_size)] <- df$mpvs_total_12_1_scaled * scale_size
-  # Age 14
-  # 12 items
-  df$mpvs_total_14_1_scaled <- df$mpvs_total_14_1/32
-  df[,paste0("mpvs_total_14_1_scaled","_",scale_size)] <- df$mpvs_total_14_1_scaled * scale_size
-  
-  # Age 16
-  # 6 items
-  df$mpvs_total_16_1_scaled <- df$mpvs_total_16_1/12
-  df[,paste0("mpvs_total_16_1_scaled","_",scale_size)] <- df$mpvs_total_16_1_scaled * scale_size
-  
-  ##########
-  # Age 21 #
-  ##########
-  # 16 items
-  df$mpvs_total_21_phase_2_1_scaled <- df$mpvs_total_21_phase_2_1/32
-  df[,paste0("mpvs_total_21_phase_2_1_scaled","_",scale_size)] <- df$mpvs_total_21_phase_2_1_scaled * scale_size
-  # 12 items
-  df$mpvs_total_21_cov1_1_scaled <- df$mpvs_total_21_cov1_1/24
-  df[,paste0("mpvs_total_21_cov1_1_scaled","_",scale_size)] <- df$mpvs_total_21_cov1_1_scaled * scale_size
-  df$mpvs_total_21_cov2_1_scaled <- df$mpvs_total_21_cov2_1/24
-  df[,paste0("mpvs_total_21_cov2_1_scaled","_",scale_size)] <- df$mpvs_total_21_cov2_1_scaled * scale_size
-  
-  df$mpvs_total_21_cov3_1_scaled <- df$mpvs_total_21_cov3_1/24
-  df[,paste0("mpvs_total_21_cov3_1_scaled","_",scale_size)] <- df$mpvs_total_21_cov3_1_scaled * scale_size
-  
-  df$mpvs_total_21_cov4_1_scaled <- df$mpvs_total_21_cov4_1/24
-  df[,paste0("mpvs_total_21_cov4_1_scaled","_",scale_size)] <- df$mpvs_total_21_cov4_1_scaled * scale_size
-  
+
+create_scaled_var <- function(df,from_var,to_var, scale_size=32){
+  if (grepl(pattern="16", x=from_var)){
+    df[,to_var] <- df[,from_var]/12
+  } else if (grepl(pattern="cov", x=from_var)){
+    df[,to_var] <- df[,from_var]/24
+  } else{
+    df[,to_var] <- df[,from_var]/32
+  }
+  df[,paste0(to_var,"_",scale_size)] <- df[,to_var] * scale_size
   return(df)
 }
+
+scale_mpvs <- function(df,from_vars,to_vars, scale_size=32){
+  if (length(from_vars) != length(to_vars)){
+    stop("The length of from_vars and to_vars must the same!")
+  }
+  for (num in 1:length(from_vars)){
+    df <- create_scaled_var(
+      df=df, from_var = from_vars[num],
+      to_var = to_vars[num], scale_size=scale_size
+    )
+  }
+  return(df)
+}
+
 test <- data.frame(
+  # Max values for these vars
   mpvs_total_12_1 = 32,
-  mpvs_total_14_1 = 12,
-  mpvs_total_16_1 = 6,
-  mpvs_total_21_phase_2_1 = 16,
-  mpvs_total_21_cov1_1 = 12,
-  mpvs_total_21_cov2_1 = 12,
-  mpvs_total_21_cov3_1 = 12,
-  mpvs_total_21_cov4_1 = 12
+  mpvs_total_14_1 = 32,
+  mpvs_total_16_1 = 12,
+  mpvs_total_21_phase_2_1 = 32,
+  mpvs_total_21_cov1_1 = 24,
+  mpvs_total_21_cov2_1 = 24,
+  mpvs_total_21_cov3_1 = 24,
+  mpvs_total_21_cov4_1 = 24
 )
 
-testit <- scale_mpvs(df=test, scale_size = 32)
+testit <- scale_mpvs(
+  df=test, scale_size = 32,
+  from_vars = c(
+    "mpvs_total_12_1","mpvs_total_14_1","mpvs_total_16_1",
+    "mpvs_total_21_phase_2_1", "mpvs_total_21_cov1_1",
+    "mpvs_total_21_cov2_1", "mpvs_total_21_cov3_1","mpvs_total_21_cov4_1"
+  ),
+  to_vars = c(
+    "mpvs_total_12_1_scaled", "mpvs_total_14_1_scaled","mpvs_total_16_1_scaled",
+    "mpvs_total_21_phase_2_1_scaled","mpvs_total_21_cov1_1_scaled",
+    "mpvs_total_21_cov2_1_scaled", "mpvs_total_21_cov3_1_scaled",
+    "mpvs_total_21_cov4_1_scaled"
+  )
+)
 stopifnot(testit$mpvs_total_12_1_scaled == test$mpvs_total_12_1/32)
 stopifnot(testit$mpvs_total_14_1_scaled == test$mpvs_total_14_1/32)
 stopifnot(testit$mpvs_total_16_1_scaled == test$mpvs_total_16_1/12)
@@ -959,7 +964,6 @@ stopifnot(
 )
 
 rm(list=c("test", "testit", "scale_size"))
-
 
 
 drop_identical_fix_different_values <- function(df,fix_vec, drop_identical_vec){
