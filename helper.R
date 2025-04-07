@@ -457,6 +457,9 @@ drop_identical_values <- function(
   if ("tbl_df" %in% class(df)){
     df <- as.data.frame(df)
   }
+  if (!(var %in% colnames(df))){
+    stop(paste("`",var,"`", "does not exist in column names!"))
+  }
   dflist <- split(df, f = list(df[,c(group_var)]), drop = TRUE)
   to_return <- lapply(
     X=dflist, FUN=function(df){
@@ -956,5 +959,19 @@ stopifnot(
 )
 
 rm(list=c("test", "testit", "scale_size"))
+
+
+
+drop_identical_fix_different_values <- function(df,fix_vec, drop_identical_vec){
+  for (var in fix_vec){
+    df <- df %>%
+      fix_different_twins_values(var=var)
+  }
+  for (var in drop_identical_vec){
+    df <- df %>%
+      drop_identical_values(var=var, drop_same_value=T, drop_na = T)
+  }
+  return(df)
+}
 
 
