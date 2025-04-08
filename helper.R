@@ -846,6 +846,12 @@ create_df_subtract_twins_values_multiple_vars <- function(
     group_var="fam_id",
     vars
 ){
+  for (var in vars){
+    # https://www.r-bloggers.com/2024/05/how-to-check-if-a-column-exists-in-a-data-frame-in-r/
+    if (!(var %in% colnames(df))){
+      stop(paste0(var,"does not exist in column names!"))
+    }
+  }
   temp_list <- list(subtract_mz_twins_values(df=df, var=vars[1]))
   for (var in vars[2:length(vars)]){
     loop_df <- subtract_mz_twins_values(df=df, var=var)
@@ -892,10 +898,8 @@ create_scaled_var <- function(df,from_var,to_var, scale_size=32){
   return(df)
 }
 
-scale_mpvs <- function(df,from_vars,to_vars, scale_size=32){
-  if (length(from_vars) != length(to_vars)){
-    stop("The length of from_vars and to_vars must the same!")
-  }
+scale_mpvs <- function(df,from_vars, scale_size=32){
+  to_vars <- paste0(from_vars,"_scaled")
   for (num in 1:length(from_vars)){
     df <- create_scaled_var(
       df=df, from_var = from_vars[num],
@@ -923,12 +927,6 @@ testit <- scale_mpvs(
     "mpvs_total_12_1","mpvs_total_14_1","mpvs_total_16_1",
     "mpvs_total_21_phase_2_1", "mpvs_total_21_cov1_1",
     "mpvs_total_21_cov2_1", "mpvs_total_21_cov3_1","mpvs_total_21_cov4_1"
-  ),
-  to_vars = c(
-    "mpvs_total_12_1_scaled", "mpvs_total_14_1_scaled","mpvs_total_16_1_scaled",
-    "mpvs_total_21_phase_2_1_scaled","mpvs_total_21_cov1_1_scaled",
-    "mpvs_total_21_cov2_1_scaled", "mpvs_total_21_cov3_1_scaled",
-    "mpvs_total_21_cov4_1_scaled"
   )
 )
 stopifnot(testit$mpvs_total_12_1_scaled == test$mpvs_total_12_1/32)
