@@ -6,7 +6,12 @@ library(beepr)
 SEED <- 123
 set.seed(seed = SEED)
 
-impute_items <- function(df,parallel=T, maxit=1, m=1,n.core=1){
+impute_items <- function(
+    df,parallel=T, maxit=1, m=1,n.core=1,
+    keep.collinear = T,
+    lower_threshold=0.1,
+    upper_threshold=0.99
+){
   ######################
   # Impute scale items #
   ######################
@@ -42,6 +47,24 @@ impute_items <- function(df,parallel=T, maxit=1, m=1,n.core=1){
   df_imp$fam_id <- as.integer(df_imp$fam_id)
   predMatrix <- make.predictorMatrix(data = df_imp)
   impMethod <- make.method(data = df_imp)
+  
+  ###############################################
+  # Removing manually high/low correlated pairs #
+  ###############################################
+  predMatrix <- suppressWarnings(
+    apply_exclude_collinear_vars(
+      pred_matrix = predMatrix, 
+      corr_mat=as.data.frame(
+        cor(
+          df_imp %>% select(
+            -all_of(c("twin_id", "fam_id", "sex_1"))
+          ), 
+          use="pairwise.complete.obs")
+      ),
+      lower_threshold=lower_threshold,
+      upper_threshold=upper_threshold
+    )
+  )
   ####################################
   # method for lower-level variables #
   ####################################
@@ -67,9 +90,9 @@ impute_items <- function(df,parallel=T, maxit=1, m=1,n.core=1){
   for (
     var in colnames(df_imp)[grepl(pattern="age",x=colnames(df_imp))]
   ){
-    print(var)
+    print(glue::glue("Two level variable; {var}"))
     if (is.na(var)==F){
-      impMethod[var] <- "2lonly.norm"
+      impMethod[var] <- "2lonly.pmm"
       # specify cluster indicator (2lonly.norm)
       predMatrix[var, "fam_id"] <- -2
     }
@@ -121,18 +144,26 @@ impute_items <- function(df,parallel=T, maxit=1, m=1,n.core=1){
   #########################
   # Remove collinear vars #
   #########################
-  predMatrix["age_parent_12",c("age_teach_14_1", "age_child_14_1","age_parent_14","age_web_16_1")] <- 0
-  predMatrix["age_child_12_1",c("age_teach_14_1", "age_child_14_1","age_parent_14","age_web_16_1")] <- 0
+  # predMatrix["age_parent_12",c("age_teach_14_1", "age_child_14_1","age_parent_14","age_web_16_1")] <- 0
+  # 
+  # predMatrix["age_child_12_1",c(
+  #   "age_teach_14_1", "age_child_14_1","age_parent_14","age_web_16_1",
+  #   colnames(df_imp)[grepl(pattern="12",x=colnames(df_imp))]
+  # )] <- 0
+  # 
+  # for (var in 1:16){
+  #   predMatrix[paste0("mpvs_item_",var,"_14_teacher_1"),colnames(df_imp)[grepl(pattern="21",x=colnames(df_imp))]] <- 0
+  # }
+  # predMatrix["age_teach_14_1",] <- 0
+  # predMatrix["age_teach_14_1","fam_id"] <- -2
+  # predMatrix["age_teach_14_1", c("sex_1", colnames(df_imp)[grepl(pattern="age",x=colnames(df_imp))])] <- 1
+  # predMatrix["age_teach_14_1","age_teach_14_1"] <- 0
+  # predMatrix["age_parent_16", c(colnames(df_imp)[grepl(pattern="16", x=colnames(df_imp))])] <- 0
+  # predMatrix["age_parent_16", "age_child_12_1"] <- 0
+  # predMatrix["age_child_12_1", "age_parent_16"] <- 0
   
-  for (var in 1:16){
-    predMatrix[paste0("mpvs_item_",var,"_14_teacher_1"),colnames(df_imp)[grepl(pattern="21",x=colnames(df_imp))]] <- 0
-  }
-  predMatrix["age_teach_14_1",] <- 0
-  predMatrix["age_teach_14_1","fam_id"] <- -2
-  predMatrix["age_teach_14_1", c("sex_1", colnames(df_imp)[grepl(pattern="age",x=colnames(df_imp))])] <- 1
-  predMatrix["age_teach_14_1","age_teach_14_1"] <- 0
-  predMatrix["age_parent_16", c(colnames(df_imp)[grepl(pattern="16", x=colnames(df_imp))])] <- 0
-  View(predMatrix)
+  # View(predMatrix)
+  
   #############
   # Call mice #
   #############
@@ -142,7 +173,8 @@ impute_items <- function(df,parallel=T, maxit=1, m=1,n.core=1){
     imp <- mice(
       df_imp, method = impMethod, predictorMatrix = predMatrix, maxit = maxit,
       m = m, levels_id = cluster, variables_levels = level, seed=SEED,
-      post=post
+      post=post, remove.collinear = !keep.collinear,
+      donors = 1
     )
   }else if(parallel == T){
     # Run in parallel
@@ -151,7 +183,7 @@ impute_items <- function(df,parallel=T, maxit=1, m=1,n.core=1){
       df_imp, method = impMethod, predictorMatrix = predMatrix, maxit = maxit,
       m = m, levels_id = cluster, variables_levels = level, parallelseed=SEED,
       post=post, n.core = n.core,
-      print=T
+      print=T, remove.collinear=!keep.collinear
     )
     beep("mario")
     Sys.sleep(0.5)
@@ -161,11 +193,24 @@ impute_items <- function(df,parallel=T, maxit=1, m=1,n.core=1){
 }
 
 
-# imp <- impute_items(df=df_1, parallel=T, maxit=5, m=14, n.core=14)
+imp <- impute_items(
+  df=df_1, parallel=T, maxit=1, m=8, n.core=8,
+  keep.collinear = T,
+  lower_threshold=0.1,
+  upper_threshold=0.99
+)
+print(imp$loggedEvents)
 
-imp <- impute_items(df=df_1,parallel=F, maxit=1, m=1)
+imp <- impute_items(
+  df=df_1,parallel=F, maxit=1, m=1, keep.collinear=T,
+  lower_threshold=0.1,
+  upper_threshold=0.99
+)
+print(imp$loggedEvents)
+
 data_imp <- complete(imp)
 summary(data_imp)
+View(imp$loggedEvents)
 
 summary(data_imp$mpvs_item_2_12_1)
 data_imp[data_imp$mpvs_item_2_12_1>2,"mpvs_item_2_12_1"]

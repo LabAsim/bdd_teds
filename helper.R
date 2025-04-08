@@ -1025,3 +1025,119 @@ stopifnot(
 )
 
 rm(test)
+
+
+
+
+# Exclude collinear vars
+
+exclude_collinear_vars <- function(
+    pred_matrix,
+    corr_mat, 
+    lower_threshold=0.1,
+    upper_threshold=0.99
+){
+  # That's the function of mice for removing collinear vars
+  # https://github.com/amices/mice/blob/7df3487a56cd49dffc9192a8ebe9697bfa7258ca/R/internal.R#L84-L91
+  # Inclusion of low correlated varvs is not useful
+  # See: Auxiliary_variables_in_multiple_imputation_in_regr
+  # See also a practical guide
+  # https://pmc.ncbi.nlm.nih.gov/articles/PMC8017730/
+  # It suggests keeping auxiliary vars with cors >=0.5 
+  for (colvar in colnames(corr_mat)){
+    for (rowvar in rownames(corr_mat)){
+      if (!is.na(corr_mat[rowvar, colvar])){
+        if ((abs(corr_mat[rowvar, colvar]) > upper_threshold) | abs(corr_mat[rowvar, colvar]) < lower_threshold){
+          print(
+            glue::glue("Removing; `{rowvar} - {colvar}` with corr={corr_mat[rowvar, colvar]}")
+          )
+          pred_matrix[rowvar, colvar] <- 0
+          pred_matrix[colvar, rowvar] <- 0
+        }
+      }
+    }
+  }
+  return(pred_matrix)
+}
+
+apply_exclude_collinear_vars <- function(
+    pred_matrix,
+    corr_mat, 
+    lower_threshold=0.1,
+    upper_threshold=0.99
+){
+  # That's the function of mice for removing collinear vars
+  # https://github.com/amices/mice/blob/7df3487a56cd49dffc9192a8ebe9697bfa7258ca/R/internal.R#L84-L91
+  # Inclusion of low correlated varvs is not useful
+  # See: Auxiliary_variables_in_multiple_imputation_in_regr
+  # See also a practical guide
+  # https://pmc.ncbi.nlm.nih.gov/articles/PMC8017730/
+  # It suggests keeping auxiliary vars with cors >=0.5 
+  s <- lapply(
+    X=split.data.frame(corr_mat, as.factor(rownames(corr_mat))),
+    FUN = function(x_df){
+      for (colvar in colnames(x_df)){
+        
+        if (!is.na(corr_mat[rownames(x_df), colvar])){
+          if ((abs(corr_mat[rownames(x_df), colvar]) > upper_threshold) | abs(corr_mat[rownames(x_df), colvar]) < lower_threshold){
+            print(
+              glue::glue("Removing; `{rownames(x_df)} - {colvar}` with corr={corr_mat[rownames(x_df), colvar]}")
+            )
+            pred_matrix[rownames(x_df), colvar] <- 0
+            pred_matrix[colvar, rownames(x_df)] <- 0
+          }
+        }
+      }
+    }
+  )
+  return(pred_matrix)
+}
+
+
+df_imp <- df_1 %>% 
+  dplyr::select(
+    #fam_id,
+    age_child_12_1,
+    # age_14_1,
+    age_parent_14,
+    age_teach_14_1,
+    age_child_14_1,
+    # age_16_1,
+    # age_web_16_1,
+    age_child_16_1,
+    age_parent_16,
+  )
+predMatrix <- make.predictorMatrix(data = df_imp)
+
+corr_mat <- cor(df_imp, method="spearman", use="pairwise.complete.obs")
+# ΝΑ are produced because one var does not vary when their pair does, so
+# their SD ==0 and the correlation is NA
+
+corr_mat <- as.data.frame(corr_mat)
+s <- exclude_collinear_vars(
+  pred_matrix = predMatrix, 
+  corr_mat=cor(df_imp, use = "pairwise.complete.obs")
+)
+
+
+test_s <- data.frame(
+  age_child_12_1 = c(0,1,1,1,1,1),
+  age_parent_14  = c(1,0,1,1,1,1),
+  age_teach_14_1 = c(1,1,0,1,1,1),
+  age_child_14_1 = c(1,1,1,0,1,1),
+  age_child_16_1 = c(1,1,1,1,0,0),
+  age_parent_16 = c(1,1,1,1,0,0)
+  
+)
+names(test_s) <- rownames(predMatrix)
+rownames(test_s) <- rownames(predMatrix)
+test_s <- as.matrix(test_s)
+stopifnot(
+  all.equal(
+    s,
+    test_s
+  )
+)
+rm(list=c("test_s","s","corr_mat", "predMatrix", "df_imp"))
+
+
