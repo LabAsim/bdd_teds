@@ -122,7 +122,7 @@ df$mpvs_item_12_parent_14_1 <- df_raw$npvic121
 df$mpvs_item_13_parent_14_1 <- df_raw$npvic131
 df$mpvs_item_14_parent_14_1 <- df_raw$npvic141
 df$mpvs_item_15_parent_14_1 <- df_raw$npvic151
-df$mpvs_item_16_parent__141 <- df_raw$npvic161
+df$mpvs_item_16_parent_14_1 <- df_raw$npvic161
 
 
 df$mpvs_total_parent_14_1 <- rowSums(
