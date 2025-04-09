@@ -1145,7 +1145,6 @@ modify_pred_matrix <- function(
   x <- df[,colnames(df)[grepl(
     pattern=(paste0(target_phrase,"$")),x=colnames(df)
   )]]
-  # print(x)
   total_score <- colnames(x)[grepl(pattern=(target_phrase_total),x=colnames(x))]
   print(
     glue::glue("Found {length(total_score)} `{target_phrase_total}` columns;")
@@ -1160,9 +1159,7 @@ modify_pred_matrix <- function(
   # but they should not predict others
   # Also, sum scores should NOT predict individual items
   df[,colnames(x)] <- 0
-  # print(df[colnames(x), total_score])
   df[colnames(x), total_score] <- 0
-  # print(df[colnames(x), total_score])
   df[total_score,] <- 0
   return(df)
 }  
