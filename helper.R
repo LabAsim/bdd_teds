@@ -1129,3 +1129,63 @@ stopifnot(
 rm(list=c("test_s","s","corr_mat", "predMatrix", "df_imp"))
 
 
+
+test <- data.frame(
+  mpvs_total_16_1 = c(19,19,19,10),
+  mpvs_item_1_16_1=c(0,1,2,3),
+  mpvs_item_2_16_1=c(-1,2,-4,0),
+  age = c(1,2,3,4),
+  sex = c(1,0,1,1)
+)
+predMatrix <- make.predictorMatrix(test)
+modify_pred_matrix <- function(
+    df, target_phrase,target_phrase2="item",
+    target_phrase_total
+){
+  x <- df[,colnames(df)[grepl(
+    pattern=(paste0(target_phrase,"$")),x=colnames(df)
+  )]]
+  # print(x)
+  total_score <- colnames(x)[grepl(pattern=(target_phrase_total),x=colnames(x))]
+  print(
+    glue::glue("Found {length(total_score)} `{target_phrase_total}` columns;")
+  )
+  print(total_score)
+  x <- x[,colnames(x)[grepl(pattern=(target_phrase2),x=colnames(x))]]
+  print(glue::glue("Found {dim(x)[2]} `{target_phrase2}` columns;"))
+  print(colnames(x))
+  # Sum scores should not be predicted through other vars, 
+  # but it could predict others (not their items, though, only others' items!)
+  # The individual items should be predicted (not by other items or the sum score),
+  # but they should not predict others
+  # Also, sum scores should NOT predict individual items
+  df[,colnames(x)] <- 0
+  # print(df[colnames(x), total_score])
+  df[colnames(x), total_score] <- 0
+  # print(df[colnames(x), total_score])
+  df[total_score,] <- 0
+  return(df)
+}  
+
+to_test <- modify_pred_matrix(
+  df=predMatrix, target_phrase = "16_1",
+  target_phrase_total="total"
+)
+
+s <- data.frame(
+  mpvs_total_16_1=c(0,0,0,1,1),
+  mpvs_item_1_16_1=c(0,0,0,0,0),
+  mpvs_item_2_16_1=c(0,0,0,0,0),
+  age = c(0,1,1,0,1),
+  sex = c(0,1,1,1,0)
+)
+
+rownames(s) <- rownames(to_test)
+
+stopifnot(
+  all.equal(
+    as.matrix(s),
+    to_test
+  )
+)
+rm(list=c("s", "to_test", "test", "predMatrix"))
