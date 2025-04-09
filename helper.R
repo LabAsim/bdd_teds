@@ -196,19 +196,6 @@ stopifnot(
 )
 
 
-test <- df_1 %>% 
-  select(
-    twin_id,
-    fam_id,
-    mpvs_total_21_phase_2_1 ,
-    mpvs_total_21_cov1_1       ,
-    mpvs_total_21_cov2_1,
-    mpvs_total_21_cov3_1       ,
-    mpvs_total_21_cov4_1 ,
-    age_phase2_child_21_1, age_cov1_child_21_1 , age_cov2_child_21_1,
-    age_cov3_child_21_1 ,age_cov4_child_21_1
-  ) 
-
 extract_unique_nums_probs <- function(df,var){
   unique_values <- unique(round(df[,c(var)],1))
   if (is.null(dim(unique_values))){
@@ -1060,38 +1047,38 @@ exclude_collinear_vars <- function(
   return(pred_matrix)
 }
 
-apply_exclude_collinear_vars <- function(
-    pred_matrix,
-    corr_mat, 
-    lower_threshold=0.1,
-    upper_threshold=0.99
-){
-  # That's the function of mice for removing collinear vars
-  # https://github.com/amices/mice/blob/7df3487a56cd49dffc9192a8ebe9697bfa7258ca/R/internal.R#L84-L91
-  # Inclusion of low correlated varvs is not useful
-  # See: Auxiliary_variables_in_multiple_imputation_in_regr
-  # See also a practical guide
-  # https://pmc.ncbi.nlm.nih.gov/articles/PMC8017730/
-  # It suggests keeping auxiliary vars with cors >=0.5 
-  s <- lapply(
-    X=split.data.frame(corr_mat, as.factor(rownames(corr_mat))),
-    FUN = function(x_df){
-      for (colvar in colnames(x_df)){
-        
-        if (!is.na(corr_mat[rownames(x_df), colvar])){
-          if ((abs(corr_mat[rownames(x_df), colvar]) > upper_threshold) | abs(corr_mat[rownames(x_df), colvar]) < lower_threshold){
-            print(
-              glue::glue("Removing; `{rownames(x_df)} - {colvar}` with corr={corr_mat[rownames(x_df), colvar]}")
-            )
-            pred_matrix[rownames(x_df), colvar] <- 0
-            pred_matrix[colvar, rownames(x_df)] <- 0
-          }
-        }
-      }
-    }
-  )
-  return(pred_matrix)
-}
+# apply_exclude_collinear_vars <- function(
+#     pred_matrix,
+#     corr_mat, 
+#     lower_threshold=0.1,
+#     upper_threshold=0.99
+# ){
+#   # That's the function of mice for removing collinear vars
+#   # https://github.com/amices/mice/blob/7df3487a56cd49dffc9192a8ebe9697bfa7258ca/R/internal.R#L84-L91
+#   # Inclusion of low correlated varvs is not useful
+#   # See: Auxiliary_variables_in_multiple_imputation_in_regr
+#   # See also a practical guide
+#   # https://pmc.ncbi.nlm.nih.gov/articles/PMC8017730/
+#   # It suggests keeping auxiliary vars with cors >=0.5 
+#   s <- lapply(
+#     X=split.data.frame(corr_mat, as.factor(rownames(corr_mat))),
+#     FUN = function(x_df){
+#       for (colvar in colnames(x_df)){
+#         
+#         if (!is.na(corr_mat[rownames(x_df), colvar])){
+#           if ((abs(corr_mat[rownames(x_df), colvar]) > upper_threshold) | abs(corr_mat[rownames(x_df), colvar]) < lower_threshold){
+#             print(
+#               glue::glue("Removing; `{rownames(x_df)} - {colvar}` with corr={corr_mat[rownames(x_df), colvar]}")
+#             )
+#             pred_matrix[rownames(x_df), colvar] <- 0
+#             pred_matrix[colvar, rownames(x_df)] <- 0
+#           }
+#         }
+#       }
+#     }
+#   )
+#   return(pred_matrix)
+# }
 
 
 df_imp <- df_1 %>% 
@@ -1107,7 +1094,7 @@ df_imp <- df_1 %>%
     age_child_16_1,
     age_parent_16,
   )
-predMatrix <- make.predictorMatrix(data = df_imp)
+predMatrix <- mice::make.predictorMatrix(data = df_imp)
 
 corr_mat <- cor(df_imp, method="spearman", use="pairwise.complete.obs")
 # ΝΑ are produced because one var does not vary when their pair does, so
@@ -1125,6 +1112,7 @@ test_s <- data.frame(
   age_parent_14  = c(1,0,1,1,1,1),
   age_teach_14_1 = c(1,1,0,1,1,1),
   age_child_14_1 = c(1,1,1,0,1,1),
+  # age_child_16_1 & age_parent_16 are highly correlated
   age_child_16_1 = c(1,1,1,1,0,0),
   age_parent_16 = c(1,1,1,1,0,0)
   
