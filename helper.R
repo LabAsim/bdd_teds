@@ -1137,7 +1137,7 @@ test <- data.frame(
   age = c(1,2,3,4),
   sex = c(1,0,1,1)
 )
-predMatrix <- make.predictorMatrix(test)
+predMatrix <- mice::make.predictorMatrix(test)
 modify_pred_matrix <- function(
     df, target_phrase,target_phrase2="item",
     target_phrase_total
