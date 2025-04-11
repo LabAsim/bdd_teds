@@ -900,50 +900,50 @@ test <- data.frame(
   mpvs_total_12_1 = 32,
   mpvs_total_14_1 = 32,
   mpvs_total_16_1 = 12,
-  mpvs_total_21_phase_2_1 = 32,
-  mpvs_total_21_cov1_1 = 24,
-  mpvs_total_21_cov2_1 = 24,
-  mpvs_total_21_cov3_1 = 24,
-  mpvs_total_21_cov4_1 = 24
+  mpvs_total_phase_2_21_1 = 32,
+  mpvs_total_cov1_21_1 = 24,
+  mpvs_total_cov2_21_1 = 24,
+  mpvs_total_cov3_21_1 = 24,
+  mpvs_total_cov4_21_1 = 24
 )
 
 testit <- scale_mpvs(
   df=test, scale_size = 32,
   from_vars = c(
     "mpvs_total_12_1","mpvs_total_14_1","mpvs_total_16_1",
-    "mpvs_total_21_phase_2_1", "mpvs_total_21_cov1_1",
-    "mpvs_total_21_cov2_1", "mpvs_total_21_cov3_1","mpvs_total_21_cov4_1"
+    "mpvs_total_phase_2_21_1", "mpvs_total_cov1_21_1",
+    "mpvs_total_cov2_21_1", "mpvs_total_cov3_21_1","mpvs_total_cov4_21_1"
   )
 )
 stopifnot(testit$mpvs_total_12_1_scaled == test$mpvs_total_12_1/32)
 stopifnot(testit$mpvs_total_14_1_scaled == test$mpvs_total_14_1/32)
 stopifnot(testit$mpvs_total_16_1_scaled == test$mpvs_total_16_1/12)
-stopifnot(testit$mpvs_total_21_phase_2_1_scaled == test$mpvs_total_21_phase_2_1/32)
-stopifnot(testit$mpvs_total_21_cov1_1_scaled == test$mpvs_total_21_cov1_1/24)
-stopifnot(testit$mpvs_total_21_cov2_1_scaled == test$mpvs_total_21_cov2_1/24)
-stopifnot(testit$mpvs_total_21_cov3_1_scaled == test$mpvs_total_21_cov3_1/24)
-stopifnot(testit$mpvs_total_21_cov4_1_scaled == test$mpvs_total_21_cov4_1/24)
+stopifnot(testit$mpvs_total_phase_2_21_1_scaled == test$mpvs_total_phase_2_21_1/32)
+stopifnot(testit$mpvs_total_cov1_21_1_scaled == test$mpvs_total_cov1_21_1/24)
+stopifnot(testit$mpvs_total_cov2_21_1_scaled == test$mpvs_total_cov2_21_1/24)
+stopifnot(testit$mpvs_total_cov3_21_1_scaled == test$mpvs_total_cov3_21_1/24)
+stopifnot(testit$mpvs_total_cov4_21_1_scaled == test$mpvs_total_cov4_21_1/24)
 
 scale_size <- 32
 stopifnot(testit$mpvs_total_12_1_scaled_32 == test$mpvs_total_12_1_scaled*scale_size)
 stopifnot(testit$mpvs_total_14_1_scaled_32 == test$mpvs_total_14_1_scaled*scale_size)
 stopifnot(testit$mpvs_total_16_1_scaled_32 == test$mpvs_total_16_1_scaled*scale_size)
-stopifnot(testit$mpvs_total_21_phase_2_1_scaled_32 == test$mpvs_total_21_phase_2_1_scaled*scale_size)
-stopifnot(testit$mpvs_total_21_cov1_1_scaled_32 == test$mpvs_total_21_cov1_1_scaled*scale_size)
-stopifnot(testit$mpvs_total_21_cov2_1_scaled_32 == test$mpvs_total_21_cov2_1_scaled*scale_size)
-stopifnot(testit$mpvs_total_21_cov3_1_scaled_32 == test$mpvs_total_21_cov3_1_scaled*scale_size)
-stopifnot(testit$mpvs_total_21_cov4_1_scaled_32 == test$mpvs_total_21_cov4_1_scaled*scale_size)
+stopifnot(testit$mpvs_total_phase_2_21_1_scaled_32 == test$mpvs_total_phase_2_21_1_scaled*scale_size)
+stopifnot(testit$mpvs_total_cov1_21_1_scaled_32 == test$mpvs_total_cov1_21_1_scaled*scale_size)
+stopifnot(testit$mpvs_total_cov2_21_1_scaled_32 == test$mpvs_total_cov2_21_1_scaled*scale_size)
+stopifnot(testit$mpvs_total_cov3_21_1_scaled_32 == test$mpvs_total_cov3_21_1_scaled*scale_size)
+stopifnot(testit$mpvs_total_cov4_21_1_scaled_32 == test$mpvs_total_cov4_21_1_scaled*scale_size)
 stopifnot(dim(testit) == c(1,24))
 stopifnot(
   c(
     "mpvs_total_12_1_scaled","mpvs_total_14_1_scaled",
-    "mpvs_total_16_1_scaled", "mpvs_total_21_phase_2_1_scaled",
-    "mpvs_total_21_cov1_1_scaled", "mpvs_total_21_cov2_1_scaled",
-    "mpvs_total_21_cov3_1_scaled", "mpvs_total_21_cov4_1_scaled",
+    "mpvs_total_16_1_scaled", "mpvs_total_phase_2_21_1_scaled",
+    "mpvs_total_cov1_21_1_scaled", "mpvs_total_cov2_21_1_scaled",
+    "mpvs_total_cov3_21_1_scaled", "mpvs_total_cov4_21_1_scaled",
     "mpvs_total_12_1_scaled_32","mpvs_total_14_1_scaled_32",
-    "mpvs_total_16_1_scaled_32", "mpvs_total_21_phase_2_1_scaled_32",
-    "mpvs_total_21_cov1_1_scaled_32", "mpvs_total_21_cov2_1_scaled_32",
-    "mpvs_total_21_cov3_1_scaled_32", "mpvs_total_21_cov4_1_scaled_32"
+    "mpvs_total_16_1_scaled_32", "mpvs_total_phase_2_21_1_scaled_32",
+    "mpvs_total_cov1_21_1_scaled_32", "mpvs_total_cov2_21_1_scaled_32",
+    "mpvs_total_cov3_21_1_scaled_32", "mpvs_total_cov4_21_1_scaled_32"
   ) %in% colnames(testit)
 )
 
