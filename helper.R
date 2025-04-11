@@ -694,7 +694,6 @@ subtract_mz_twins_values <- function(
     sex_var = "sex_1"
 ){
   if ((sex_var %in% colnames(df)) == F){
-    # message(paste0("object:",right_dfs[[1]], "\n"))
     stop(
       glue::glue(
         "`{sex_var}` is not a column name of the df"
@@ -707,7 +706,7 @@ subtract_mz_twins_values <- function(
   dflist <- split(df, f = list(df[,c(group_var)]), drop = TRUE)
   to_return <- lapply(
     X=dflist, FUN=function(df_){
-      if (df_[1,sex_var] == df_[2, sex_var]){
+      if (df_[1, sex_var] == df_[2, sex_var]){
         diff <- df_[1,var] - df_[2,var]
         return(c(df_[1,"fam_id"], diff))
       }else{
@@ -1080,30 +1079,26 @@ exclude_collinear_vars <- function(
 #   return(pred_matrix)
 # }
 
+test_df <- data.frame(
+  age_child_12_1 = c(0,1,1,1,1,1),
+  age_parent_14  = c(1,0,1,1,1,1),
+  age_teach_14_1 = c(1,1,0,1,1,1),
+  age_child_14_1 = c(1,1,1,0,1,1),
+  # age_child_16_1 & age_parent_16 are highly correlated
+  age_child_16_1 = c(1,1,1,1,0,0),
+  age_parent_16 = c(1,1,1,1,0,0)
+)
 
-df_imp <- df_1 %>% 
-  dplyr::select(
-    #fam_id,
-    age_child_12_1,
-    # age_14_1,
-    age_parent_14,
-    age_teach_14_1,
-    age_child_14_1,
-    # age_16_1,
-    # age_web_16_1,
-    age_child_16_1,
-    age_parent_16,
-  )
-predMatrix <- mice::make.predictorMatrix(data = df_imp)
+predMatrix <- mice::make.predictorMatrix(data = test_df)
 
-corr_mat <- cor(df_imp, method="spearman", use="pairwise.complete.obs")
+corr_mat <- cor(test_df, method="spearman", use="pairwise.complete.obs")
 # ΝΑ are produced because one var does not vary when their pair does, so
 # their SD ==0 and the correlation is NA
 
 corr_mat <- as.data.frame(corr_mat)
 s <- exclude_collinear_vars(
   pred_matrix = predMatrix, 
-  corr_mat=cor(df_imp, use = "pairwise.complete.obs")
+  corr_mat=cor(test_df, use = "pairwise.complete.obs")
 )
 
 
@@ -1126,7 +1121,7 @@ stopifnot(
     test_s
   )
 )
-rm(list=c("test_s","s","corr_mat", "predMatrix", "df_imp"))
+rm(list=c("test_s","s","corr_mat", "predMatrix", "test_df"))
 
 
 
