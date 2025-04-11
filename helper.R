@@ -1181,3 +1181,184 @@ stopifnot(
   )
 )
 rm(list=c("s", "to_test", "test", "predMatrix"))
+
+
+
+remove_twins_without_var <- function(
+    df,
+    group_var="fam_id",
+    sex_var = "sex_1",
+    pattern = "dcq_item",
+    keep_empty_cotwin = T,
+    NA_threshold = 7
+){
+  for (var in c(sex_var, group_var)){
+    if ((var %in% colnames(df)) == F){
+      stop(
+        glue::glue(
+          "`{var}` is not a column name of the df"
+        )
+      )
+    }
+  }
+  
+  if ("tbl_df" %in% class(df)){
+    df <- as.data.frame(df)
+  }
+  dflist <- split(df, f = list(df[,c(group_var)]), drop = TRUE)
+  if(keep_empty_cotwin==F){
+    df <- df %>%
+      #filter(!if_all(colnames(df), is.na))
+      filter(
+        !if_all(
+          # Get the column names containing "mpvs"
+          c(colnames(df)[grepl(pattern=pattern, x=colnames(df))]),
+          is.na
+        )
+      )
+    return(df)
+  }
+  
+  to_return <- lapply(
+    X=dflist, FUN=function(inner_df){
+      # df_twin_1 <- inner_df[1,colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]]
+      # df_twin_2 <- inner_df[2,colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]]
+      N_NA_twin_1 <- sum(is.na(inner_df[1,colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]]))
+      N_NA_twin_2 <- sum(is.na(inner_df[2,colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]]))
+      
+      if ((N_NA_twin_1 == NA_threshold) & (N_NA_twin_2 == NA_threshold)){
+        return(NULL)
+      }
+      # if (keep_empty_cotwin == F){
+      #   if(
+      #     (N_NA_twin_1 == NA_threshold) | (N_NA_twin_2 == NA_threshold)
+      #   ){
+      #     if (N_NA_twin_1 == NA_threshold){
+      #       return(inner_df[2,])
+      #     }
+      #     if (N_NA_twin_2 == NA_threshold){
+      #       return(inner_df[1,])
+      #     }
+      #   }else{
+      #     return(inner_df)
+      #   }
+      # }
+      if(keep_empty_cotwin == T){
+        # Essentially, we keep everything
+        return(inner_df)
+      }
+    }
+  )
+  # # https://stackoverflow.com/a/35951683
+  to_return <- unname(to_return)
+  to_return <- do.call(rbind, to_return)
+  return(to_return)
+}
+
+inner <- function(inner_df,pattern,NA_threshold,keep_empty_cotwin){
+  # print(inner_df)
+  # df_twin_1 <- inner_df[1,colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]]
+  # df_twin_2 <- inner_df[2,colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]]
+  N_NA_twin_1 <- sum(is.na(inner_df[1,colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]]))
+  N_NA_twin_2 <- sum(is.na(inner_df[2,colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]]))
+  print(inner_df)
+  if ((N_NA_twin_1 == NA_threshold) & (N_NA_twin_2 == NA_threshold)){
+    return(data.frame(NULL))
+  }
+  if(keep_empty_cotwin == T){
+    # Essentially, we keep everything
+    return(inner_df)
+  }
+  return(inner_df)
+}
+
+remove_twins_without_var2 <- function(
+    df,
+    group_var="fam_id",
+    sex_var = "sex_1",
+    pattern = "dcq_item",
+    keep_empty_cotwin = T,
+    NA_threshold = 7
+){
+  for (var in c(sex_var, group_var)){
+    if ((var %in% colnames(df)) == F){
+      stop(
+        glue::glue(
+          "`{var}` is not a column name of the df"
+        )
+      )
+    }
+  }
+  
+  if ("tbl_df" %in% class(df)){
+    df <- as.data.frame(df)
+  }
+  if(keep_empty_cotwin==F){
+    df <- df %>%
+      #filter(!if_all(colnames(df), is.na))
+      filter(
+        !if_all(
+          # Get the column names containing "mpvs"
+          c(colnames(df)[grepl(pattern=pattern, x=colnames(df))]),
+          is.na
+        )
+      )
+    return(df)
+  }
+  
+  if(keep_empty_cotwin==T){
+    df <- df %>% 
+      group_by(.data[[!!group_var]]) %>% 
+      group_modify(
+        ~ inner(.x,pattern,NA_threshold,keep_empty_cotwin)
+      ) %>% ungroup()
+  }
+  
+  # # https://stackoverflow.com/a/35951683
+  # to_return <- unname(to_return)
+  # to_return <- do.call(rbind, to_return)
+  return(df %>% as.data.frame())
+}
+test <- data.frame(
+  fam_id = c(1,1,2,2,3,3,4,4),
+  sex = c(0,0,1,1,0,1,1,1),
+  test_var = c(1:5,NA,NA,NA),
+  test_var2 = c(1,1,1,NA,NA,NA,NA,NA),
+  test_var3 = c(1,NA,1,NA,1,NA,NA,NA)
+)
+testit <- remove_twins_without_var(
+  df=test, keep_empty_cotwin=T,
+  sex_var="sex",NA_threshold=3, pattern="test"
+)
+stopifnot(
+  all.equal(
+    testit,
+    data.frame(
+      fam_id = c(1,1,2,2,3,3),
+      sex = c(0,0,1,1,0,1),
+      test_var = c(1:5,NA),
+      test_var2 = c(1,1,1,NA,NA,NA),
+      test_var3 = c(1,NA,1,NA,1,NA)
+    )
+  )
+)
+
+testit <- remove_twins_without_var(
+  df=test, keep_empty_cotwin=F,
+  sex_var="sex",NA_threshold=3, pattern="test"
+)
+
+stopifnot(
+  all.equal(
+    testit,
+    data.frame(
+      fam_id = c(1,1,2,2,3),
+      sex = c(0,0,1,1,0),
+      test_var = c(1:5),
+      test_var2 = c(1,1,1,NA,NA),
+      test_var3 = c(1,NA,1,NA,1)
+    )
+  )
+)
+
+rm(list=c("test", "testit"))
