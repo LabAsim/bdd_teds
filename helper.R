@@ -1255,13 +1255,78 @@ remove_twins_without_var <- function(
   return(to_return)
 }
 
+remove_twins_without_var_parallel <- function(
+    df,
+    group_var="fam_id",
+    sex_var = "sex_1",
+    pattern = "dcq_item",
+    keep_empty_cotwin = T,
+    NA_threshold = 7,
+    cl 
+){
+  for (var in c(sex_var, group_var)){
+    if ((var %in% colnames(df)) == F){
+      stop(
+        glue::glue(
+          "`{var}` is not a column name of the df"
+        )
+      )
+    }
+  }
+  
+  if ("tbl_df" %in% class(df)){
+    df <- as.data.frame(df)
+  }
+  dflist <- split(df, f = list(df[,c(group_var)]), drop = TRUE)
+  if(keep_empty_cotwin==F){
+    df <- df %>%
+      #filter(!if_all(colnames(df), is.na))
+      filter(
+        !if_all(
+          # Get the column names containing "mpvs"
+          c(colnames(df)[grepl(pattern=pattern, x=colnames(df))]),
+          is.na
+        )
+      )
+    return(df)
+  }
+  
+  parallel::clusterExport(
+    cl=cl, 
+    varlist=list(
+      "cl"
+    )
+  )
+  
+  to_return <- parallel::parLapplyLB(
+    cl = cl, 
+    X=dflist, 
+    fun = function(inner_df, NA_threshold, pattern, keep_empty_cotwin){
+      N_NA_twin_1 <- sum(is.na(inner_df[1,colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]]))
+      N_NA_twin_2 <- sum(is.na(inner_df[2,colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]]))
+      
+      if ((N_NA_twin_1 == NA_threshold) & (N_NA_twin_2 == NA_threshold)){
+        return(NULL)
+      }
+      if(keep_empty_cotwin == T){
+        # Essentially, we keep everything
+        return(inner_df)
+      }
+    },
+    NA_threshold,
+    pattern,
+    keep_empty_cotwin
+  )
+  
+  # # https://stackoverflow.com/a/35951683
+  to_return <- unname(to_return)
+  to_return <- do.call(rbind, to_return)
+  return(to_return)
+}
+
 inner <- function(inner_df,pattern,NA_threshold,keep_empty_cotwin){
-  # print(inner_df)
-  # df_twin_1 <- inner_df[1,colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]]
-  # df_twin_2 <- inner_df[2,colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]]
   N_NA_twin_1 <- sum(is.na(inner_df[1,colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]]))
   N_NA_twin_2 <- sum(is.na(inner_df[2,colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]]))
-  print(inner_df)
   if ((N_NA_twin_1 == NA_threshold) & (N_NA_twin_2 == NA_threshold)){
     return(data.frame(NULL))
   }
@@ -1362,3 +1427,52 @@ stopifnot(
 )
 
 rm(list=c("test", "testit"))
+
+
+# Test parallel fun
+cl <- parallel::makeCluster(parallel::detectCores() - 1)
+test <- data.frame(
+  fam_id = c(1,1,2,2,3,3,4,4),
+  sex = c(0,0,1,1,0,1,1,1),
+  test_var = c(1:5,NA,NA,NA),
+  test_var2 = c(1,1,1,NA,NA,NA,NA,NA),
+  test_var3 = c(1,NA,1,NA,1,NA,NA,NA)
+)
+testit <- remove_twins_without_var_parallel(
+  df=test, keep_empty_cotwin=T,
+  sex_var="sex",NA_threshold=3, pattern="test",cl=cl
+)
+stopifnot(
+  all.equal(
+    testit,
+    data.frame(
+      fam_id = c(1,1,2,2,3,3),
+      sex = c(0,0,1,1,0,1),
+      test_var = c(1:5,NA),
+      test_var2 = c(1,1,1,NA,NA,NA),
+      test_var3 = c(1,NA,1,NA,1,NA)
+    )
+  )
+)
+
+testit <- remove_twins_without_var_parallel(
+  df=test, keep_empty_cotwin=F,
+  sex_var="sex",NA_threshold=3, pattern="test",cl=cl
+)
+testit
+
+stopifnot(
+  all.equal(
+    testit,
+    data.frame(
+      fam_id = c(1,1,2,2,3),
+      sex = c(0,0,1,1,0),
+      test_var = c(1:5),
+      test_var2 = c(1,1,1,NA,NA),
+      test_var3 = c(1,NA,1,NA,1)
+    )
+  )
+)
+
+parallel::stopCluster(cl=cl)
+rm(list=c("test", "testit", "cl"))
