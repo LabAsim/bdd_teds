@@ -407,6 +407,8 @@ df <- df[df$exclude2 == 0,]
 # https://www.geeksforgeeks.org/how-to-check-if-characters-are-present-in-a-string-in-r/
 ############################################################################
 
+df_raw_named <- df %>% dplyr::select(-all_of("to_remove"))
+
 df <- df %>%
   #filter(!if_all(colnames(df), is.na))
   filter(
@@ -417,14 +419,33 @@ df <- df %>%
     )
   )
 
+source("helper.R")
+
+
 df <- df %>% dplyr::select(-all_of("to_remove"))
 
 # Drop the cotwin variables
 df_12 <- df
 df_1 <- df %>% select(!matches("_2$"))
 
-source("helper.R")
 rm(df)
+
+
+
+start_time <- Sys.time()
+#cl <- parallel::makeCluster(parallel::detectCores()-2)
+df_1 <- remove_twins_without_var( #
+  df=df_1, #
+  group_var = "fam_id",
+  sex_var = "sex_1",
+  pattern = "dcq_item",
+  keep_empty_cotwin = T,
+  NA_threshold = 7#,
+  #cl=cl
+) 
+#parallel::stopCluster(cl)
+print(Sys.time()-start_time)
+
 
 df_1 <- df_1 %>% fill_multiple_vars_twin_from_cotwin(
   vars=c(
@@ -434,29 +455,29 @@ df_1 <- df_1 %>% fill_multiple_vars_twin_from_cotwin(
   ) 
 )
 
-df_1 <- fill_var(
-  df=df_1,
-  primary = "age_parent_12",
-  secondary = "age_child_12_1",
-  tertiary = "age_teach_12_1",
-  new_column = "age_12_1"
-)
-
-df_1 <- fill_var(
-  df=df_1,
-  primary = "age_parent_14",
-  secondary = "age_child_14_1",
-  tertiary = "age_teach_14_1",
-  new_column = "age_14_1"
-)
-
-df_1 <-fill_var(
-  df=df_1, 
-  primary = "mpvs_total_child_14_1",
-  secondary = "mpvs_total_parent_14_1",
-  tertiary = "mpvs_total_teacher_14_1",
-  new_column = "mpvs_total_14_1"
-)
+# df_1 <- fill_var(
+#   df=df_1,
+#   primary = "age_parent_12",
+#   secondary = "age_child_12_1",
+#   tertiary = "age_teach_12_1",
+#   new_column = "age_12_1"
+# )
+# 
+# df_1 <- fill_var(
+#   df=df_1,
+#   primary = "age_parent_14",
+#   secondary = "age_child_14_1",
+#   tertiary = "age_teach_14_1",
+#   new_column = "age_14_1"
+# )
+# 
+# df_1 <-fill_var(
+#   df=df_1, 
+#   primary = "mpvs_total_child_14_1",
+#   secondary = "mpvs_total_parent_14_1",
+#   tertiary = "mpvs_total_teacher_14_1",
+#   new_column = "mpvs_total_14_1"
+# )
 
 # At age 16, MPVS questionnaire  was answered only by the twins
 # (cohort 1 & 2) during the web study.
@@ -471,14 +492,13 @@ df_1 <-fill_var(
 # Thus, first, we need age_web_16_1. 
 # If NA exists, we could pull age from parent and then, from child.
 
-
-df_1 <- fill_var(
-  df=df_1,
-  primary = "age_web_16_1",
-  secondary = "age_parent_16",
-  tertiary = "age_child_16_1",
-  new_column = "age_16_1"
-)
+# df_1 <- fill_var(
+#   df=df_1,
+#   primary = "age_web_16_1",
+#   secondary = "age_parent_16",
+#   tertiary = "age_child_16_1",
+#   new_column = "age_16_1"
+# )
 
 
 # At age 21, MPVS questionnaire was answered twin phase1,
@@ -511,20 +531,20 @@ df_1 <- df_1 %>% fill_multiple_vars_twin_from_cotwin(
 # Create a variable representing mean MPVS across the waves 
 # at age 21
 
-df_1 <- df_1 %>% 
-  mutate(
-    mpvs_total_21_1 = rowMeans(
-      select(
-        df_1,
-        mpvs_total_phase_2_21_1,
-        mpvs_total_cov1_21_1, 
-        mpvs_total_cov2_21_1, 
-        mpvs_total_cov3_21_1,
-        mpvs_total_cov4_21_1
-      ),
-      na.rm = T
-    )
-  )
+# df_1 <- df_1 %>% 
+#   mutate(
+#     mpvs_total_21_1 = rowMeans(
+#       select(
+#         df_1,
+#         mpvs_total_phase_2_21_1,
+#         mpvs_total_cov1_21_1, 
+#         mpvs_total_cov2_21_1, 
+#         mpvs_total_cov3_21_1,
+#         mpvs_total_cov4_21_1
+#       ),
+#       na.rm = T
+#     )
+#   )
 
 # df_1 <- df_1 %>% 
 #   mutate(
@@ -541,17 +561,17 @@ df_1 <- df_1 %>%
 #     )
 #   )
 
-df_1 <- df_1 %>% 
-  mutate(
-    age_21_1 = rowMeans(
-      select(
-        .,
-        age_cov1_child_21_1,
-        age_cov2_child_21_1, 
-        age_cov3_child_21_1, 
-        age_cov4_child_21_1,
-        age_phase2_child_21_1
-      ),
-      na.rm = T
-    )
-  )
+# df_1 <- df_1 %>% 
+#   mutate(
+#     age_21_1 = rowMeans(
+#       select(
+#         .,
+#         age_cov1_child_21_1,
+#         age_cov2_child_21_1, 
+#         age_cov3_child_21_1, 
+#         age_cov4_child_21_1,
+#         age_phase2_child_21_1
+#       ),
+#       na.rm = T
+#     )
+#   )

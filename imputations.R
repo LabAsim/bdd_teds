@@ -8,11 +8,15 @@ SEED <- 123
 set.seed(seed = SEED)
 
 impute_items <- function(
-    df,parallel=T, maxit=1, m=1,n.core=1,
+    df,parallel=T, 
+    maxit=1, 
+    m=1,
+    n.core=1,
     keep.collinear = T,
     lower_threshold=0.1,
     upper_threshold=0.99,
-    donors=5
+    donors=5,
+    print_flag = F
 ){
   ######################
   # Impute scale items #
@@ -114,7 +118,6 @@ impute_items <- function(
       predMatrix[var, "fam_id"] <- -2
     }
   }
-  
   predMatrix[c("sex_1"),] <- 0
   
   predMatrix[, c("twin_id")] <- 0
@@ -277,7 +280,7 @@ impute_items <- function(
       df_imp, method = impMethod, predictorMatrix = predMatrix, maxit = maxit,
       m = m, levels_id = cluster, variables_levels = level, parallelseed=SEED,
       post=post, n.core = n.core, donors = donors,
-      print=T, remove.collinear=!keep.collinear
+      print=print_flag, remove.collinear=!keep.collinear
     )
     beep("mario")
     Sys.sleep(0.5)
@@ -288,7 +291,7 @@ impute_items <- function(
 
 
 imp <- impute_items(
-  df=df_1, parallel=T, maxit=5, m=14, n.core=14,
+  df=df_1, parallel=T, maxit=20, m=28, n.core=14,
   keep.collinear = T,
   lower_threshold=0.1,
   upper_threshold=0.99,
@@ -297,33 +300,33 @@ imp <- impute_items(
 print(imp$loggedEvents)
 
 imp <- impute_items(
-  df=df_1,parallel=F, maxit=2, m=2, keep.collinear=T,
+  df=df_1,parallel=F, maxit=1, m=2, keep.collinear=T,
   lower_threshold=0.1,
   upper_threshold=0.99,
   donors=3
 )
 print(imp$loggedEvents)
 
-data_imp <- complete(imp)
-summary(data_imp)
+# data_imp <- complete(imp)
+# summary(data_imp)
 View(imp$loggedEvents)
 
-summary(data_imp$mpvs_item_2_12_1)
-data_imp[data_imp$mpvs_item_2_12_1>2,"mpvs_item_2_12_1"]
+# summary(data_imp$mpvs_item_2_12_1)
+# data_imp[data_imp$mpvs_item_2_12_1>2,"mpvs_item_2_12_1"]
 
 # Recalculate all total items
-data_imp_calc <- data_imp %>%
-  calculate_items(target_phrase = "_12_1", output_var = "mpvs_total_12_1") %>%
-  calculate_items(target_phrase = "14_parent_1", output_var = "mpvs_total_14_parent_1") %>%
-  calculate_items(target_phrase = "14_child_1", output_var = "mpvs_total_14_child_1") %>%
-  calculate_items(target_phrase = "14_teacher_1", output_var = "mpvs_total_14_teacher_1") %>%
-  calculate_items(target_phrase = "16_1", output_var = "mpvs_total_16_1")  %>%
-  calculate_items(target_phrase = "_21_phase_2_1", output_var = "mpvs_total_21_phase_2_1")%>%
-  calculate_items(target_phrase = "_21_cov1_2_1", output_var = "mpvs_total_21_cov1_1")%>%
-  calculate_items(target_phrase = "_21_cov2_2_1", output_var = "mpvs_total_21_cov2_1")%>%
-  calculate_items(target_phrase = "_21_cov3_2_1", output_var = "mpvs_total_21_cov3_1") %>%
-  calculate_items(target_phrase = "_21_cov4_2_1", output_var = "mpvs_total_21_cov4_1")%>%
-  calculate_items(target_phrase = "_26_1", output_var = "dcq_26_1")
+# data_imp_calc <- data_imp %>%
+#   calculate_items(target_phrase = "_12_1", output_var = "mpvs_total_12_1") %>%
+#   calculate_items(target_phrase = "14_parent_1", output_var = "mpvs_total_14_parent_1") %>%
+#   calculate_items(target_phrase = "14_child_1", output_var = "mpvs_total_14_child_1") %>%
+#   calculate_items(target_phrase = "14_teacher_1", output_var = "mpvs_total_14_teacher_1") %>%
+#   calculate_items(target_phrase = "16_1", output_var = "mpvs_total_16_1")  %>%
+#   calculate_items(target_phrase = "_21_phase_2_1", output_var = "mpvs_total_21_phase_2_1")%>%
+#   calculate_items(target_phrase = "_21_cov1_2_1", output_var = "mpvs_total_21_cov1_1")%>%
+#   calculate_items(target_phrase = "_21_cov2_2_1", output_var = "mpvs_total_21_cov2_1")%>%
+#   calculate_items(target_phrase = "_21_cov3_2_1", output_var = "mpvs_total_21_cov3_1") %>%
+#   calculate_items(target_phrase = "_21_cov4_2_1", output_var = "mpvs_total_21_cov4_1")%>%
+#   calculate_items(target_phrase = "_26_1", output_var = "dcq_26_1")
 
 
 
