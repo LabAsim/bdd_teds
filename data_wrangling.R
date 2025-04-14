@@ -32,10 +32,20 @@ df$school_cohort <- df_raw$cohort
 df$sex_1 <- df_raw$sex1
 df$sex_2 <- df_raw$sex2
 df$zygosity_binary <- df_raw$zygos
+df$zygosity_binary_fct <- factor(
+  df_raw$zygos,
+  levels = c(1,2),
+  labels = c("MZ", "DZ")
+)
 df$zygosity_ternary <- df_raw$x3zygos
 df$zygosity_quinary <- df_raw$sexzyg
 df$ses_1st_contact <- df_raw$ases
 df$ethnic <- df_raw$aethnic
+df$ethnic_fct <- factor(
+  df_raw$aethnic,
+  levels = c(0,1),
+  labels = c("other", "white")
+)
 df$exclude1 <- df_raw$exclude1 
 df$exclude2 <- df_raw$exclude2
 
@@ -430,20 +440,15 @@ df_1 <- df %>% select(!matches("_2$"))
 
 rm(df)
 
-
-
 start_time <- Sys.time()
-#cl <- parallel::makeCluster(parallel::detectCores()-2)
 df_1 <- remove_twins_without_var( #
   df=df_1, #
   group_var = "fam_id",
   sex_var = "sex_1",
   pattern = "dcq_item",
   keep_empty_cotwin = T,
-  NA_threshold = 7#,
-  #cl=cl
+  NA_threshold = 7
 ) 
-#parallel::stopCluster(cl)
 print(Sys.time()-start_time)
 
 
