@@ -75,10 +75,21 @@ summary(fit1)
 # Retain NA values # 
 
 df_1_modified <-  df_1 %>%
-  fix_different_twins_values(var="age_21_1") %>%
-  fix_different_twins_values(var="age_12_1") %>%
-  fix_different_twins_values(var="age_14_1") %>%
-  fix_different_twins_values(var="age_16_1") 
+  fix_different_twins_values(var="age_parent_12") %>%
+  fix_different_twins_values(var="age_teach_12_1") %>%
+  fix_different_twins_values(var="age_child_12_1") %>%
+  fix_different_twins_values(var="age_parent_14") %>%
+  fix_different_twins_values(var="age_teach_14_1") %>%
+  fix_different_twins_values(var="age_parent_16") %>%
+  fix_different_twins_values(var="age_web_16_1") %>%
+  fix_different_twins_values(var="age_child_16_1") %>%
+  fix_different_twins_values(var="age_leap_study_parent_16") %>%
+  fix_different_twins_values(var="age_phase2_child_21_1") %>%
+  fix_different_twins_values(var="age_cov1_child_21_1") %>%
+  fix_different_twins_values(var="age_cov2_child_21_1") %>%
+  fix_different_twins_values(var="age_cov3_child_21_1") %>%
+  fix_different_twins_values(var="age_cov4_child_21_1") %>%
+  fix_different_twins_values(var="age_26_1") 
 beepr::beep("mario")
 
 df_1_modified <- df_1_modified %>%
@@ -86,7 +97,7 @@ df_1_modified <- df_1_modified %>%
     var="mpvs_total_12_1", drop_same_value=T, drop_na = F
   ) %>%
   drop_identical_values(
-    var="mpvs_total_21_scaled_32", drop_same_value=T, drop_na = F
+    var="mpvs_total_scaled_32", drop_same_value=T, drop_na = F
   ) %>%
   drop_identical_values(
     var="mpvs_total_16_1", drop_same_value=T, drop_na = F
