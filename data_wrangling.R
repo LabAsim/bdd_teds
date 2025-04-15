@@ -28,7 +28,8 @@ df$twin_id <- df_raw$randomtwinid
 df$fam_id <- df_raw$randomfamid
 df$twin_order <- df_raw$twin
 df$random_twin_from_pair <- df_raw$random
-df$school_cohort <- haven::as_factor(df_raw$cohort)
+df$school_cohort <- df_raw$cohort
+df$school_cohort_fct <- haven::as_factor(df_raw$cohort)
 df$sex_1 <- df_raw$sex1
 df$sex_2 <- df_raw$sex2
 df$zygosity_binary <- df_raw$zygos
