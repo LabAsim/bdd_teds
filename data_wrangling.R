@@ -244,10 +244,10 @@ df$eat_dis_scale_16_1 <- df_raw$pcbheddsm1
 df$eat_dis_scale_16_2 <- df_raw$pcbheddsm2
 
 # Age
-df$age_web_16_1 <- df_raw$pcwebage1
-df$age_web_16_2 <- df_raw$pcwebage2
-df$age_child_16_1 <- df_raw$pcbhage1
-df$age_child_16_2 <- df_raw$pcbhage2
+df$age_child_web_16_1 <- df_raw$pcwebage1
+df$age_child_web_16_2 <- df_raw$pcwebage2
+df$age_child_booklet_16_1 <- df_raw$pcbhage1
+df$age_child_booklet_16_2 <- df_raw$pcbhage2
 df$age_parent_16 <- df_raw$ppbhage
 df$age_leap_study_parent_16 <- df_raw$ppl2age
 
@@ -420,6 +420,7 @@ df <- df[df$exclude2 == 0,]
 
 df_raw_named <- df %>% dplyr::select(-all_of("to_remove"))
 
+# Drop rows that contain ONLY NA's in mpvs (items  + totals + subscales)
 df <- df %>%
   #filter(!if_all(colnames(df), is.na))
   filter(
@@ -430,8 +431,16 @@ df <- df %>%
     )
   )
 
-source("helper.R")
-
+start_time <- Sys.time()
+df <- remove_twins_without_var( 
+  df=df, 
+  group_var = "fam_id",
+  sex_var = "sex_1",
+  pattern = "dcq_item",
+  keep_empty_cotwin = T,
+  NA_threshold = 7
+) 
+print(Sys.time()-start_time)
 
 df <- df %>% dplyr::select(-all_of("to_remove"))
 
@@ -441,17 +450,7 @@ df_1 <- df %>% select(!matches("_2$"))
 
 rm(df)
 
-start_time <- Sys.time()
-df_1 <- remove_twins_without_var( #
-  df=df_1, #
-  group_var = "fam_id",
-  sex_var = "sex_1",
-  pattern = "dcq_item",
-  keep_empty_cotwin = T,
-  NA_threshold = 7
-) 
-print(Sys.time()-start_time)
-
+source("helper.R")
 
 df_1 <- df_1 %>% fill_multiple_vars_twin_from_cotwin(
   vars=c(

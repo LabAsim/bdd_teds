@@ -37,10 +37,7 @@ impute_items <- function(
       age_parent_14,
       age_teach_14_1,
       age_child_14_1,
-      age_web_16_1,
-      age_child_16_1,
-      age_parent_16,
-      age_leap_study_parent_16,
+      age_child_web_16_1,
       age_phase1_parent_21,
       age_phase1_child_21_1,
       age_phase2_child_21_1,
@@ -291,21 +288,21 @@ impute_items <- function(
 
 
 imp <- impute_items(
-  df=df_1, parallel=T, maxit=20, m=28, n.core=14,
+  df=df_1, parallel=T, maxit=40, m=100, n.core=14,
   keep.collinear = T,
   lower_threshold=0.1,
   upper_threshold=0.99,
-  donors=3
+  donors=5
 )
 print(imp$loggedEvents)
 
-imp <- impute_items(
-  df=df_1,parallel=F, maxit=1, m=2, keep.collinear=T,
-  lower_threshold=0.1,
-  upper_threshold=0.99,
-  donors=3
-)
-print(imp$loggedEvents)
+# imp <- impute_items(
+#   df=df_1,parallel=F, maxit=1, m=2, keep.collinear=T,
+#   lower_threshold=0.1,
+#   upper_threshold=0.99,
+#   donors=3
+# )
+# print(imp$loggedEvents)
 
 # data_imp <- complete(imp)
 # summary(data_imp)
@@ -330,34 +327,34 @@ View(imp$loggedEvents)
 
 
 
-df_temp <- df_1 %>% 
-  dplyr::select(
-    sex_1,
-    ses_1st_contact,
-    ethnic,
-    # age_12_1,
-    age_parent_12,
-    age_teach_12_1,
-    age_child_12_1,
-    # age_14_1,
-    age_parent_14,
-    age_teach_14_1,
-    age_child_14_1,
-    # age_16_1,
-    age_web_16_1,
-    age_child_16_1,
-    age_parent_16,
-    age_leap_study_parent_16,
-    # age_21_1,
-    age_phase1_parent_21,
-    age_phase1_child_21_1,
-    age_phase2_child_21_1,
-    age_cov1_child_21_1,
-    age_cov2_child_21_1,
-    age_cov3_child_21_1,
-    age_cov4_child_21_1,
-    age_26_1,
-    colnames(df_1)[grepl(pattern="item",x=colnames(df_1))]
-  )
-fluxplot(df_temp)
+# df_temp <- df_1 %>% 
+#   dplyr::select(
+#     sex_1,
+#     ses_1st_contact,
+#     ethnic,
+#     # age_12_1,
+#     age_parent_12,
+#     age_teach_12_1,
+#     age_child_12_1,
+#     # age_14_1,
+#     age_parent_14,
+#     age_teach_14_1,
+#     age_child_14_1,
+#     # age_16_1,
+#     age_web_16_1,
+#     age_child_16_1,
+#     age_parent_16,
+#     age_leap_study_parent_16,
+#     # age_21_1,
+#     age_phase1_parent_21,
+#     age_phase1_child_21_1,
+#     age_phase2_child_21_1,
+#     age_cov1_child_21_1,
+#     age_cov2_child_21_1,
+#     age_cov3_child_21_1,
+#     age_cov4_child_21_1,
+#     age_26_1,
+#     colnames(df_1)[grepl(pattern="item",x=colnames(df_1))]
+#   )
+# fluxplot(df_temp)
 

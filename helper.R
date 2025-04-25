@@ -1208,10 +1208,9 @@ remove_twins_without_var <- function(
   dflist <- split(df, f = list(df[,c(group_var)]), drop = TRUE)
   if(keep_empty_cotwin==F){
     df <- df %>%
-      #filter(!if_all(colnames(df), is.na))
       filter(
         !if_all(
-          # Get the column names containing "mpvs"
+          # Get the column names containing `pattern`
           c(colnames(df)[grepl(pattern=pattern, x=colnames(df))]),
           is.na
         )
