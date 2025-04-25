@@ -23,7 +23,7 @@ df <- data.frame(to_remove=rep(NA, nrow(df_raw)))
 #################
 # Miscellaneous #
 #################
-
+ 
 df$twin_id <- df_raw$randomtwinid
 df$fam_id <- df_raw$randomfamid
 df$twin_order <- df_raw$twin
@@ -581,3 +581,11 @@ df_1 <- df_1 %>% fill_multiple_vars_twin_from_cotwin(
 #       na.rm = T
 #     )
 #   )
+
+
+
+######################################## 
+# Save the image to the encrypted disk #
+# to load it faster next time          #
+########################################
+save.image(file = "G:\\data_wrangling.RData")
