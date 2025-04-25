@@ -23,6 +23,28 @@ longitudinal_means <- ggplot(
   scale_x_continuous(breaks = c(seq(12, 22, 2)), limits = c(12, 22))
 
 
+longitudinal_means_scaled <- ggplot(
+  data=summary_scaled_df, 
+  aes(
+    x=age, y=mean, color = informant,shape = informant
+  )
+) + geom_point() + geom_line() +
+  labs(
+    y = "Mean",
+    x = "Age",
+    title = "MPVS (scaled at maximum of 32-points)"
+  ) +
+  theme_minimal() +
+  theme(
+    # axis.text.x = element_blank(),
+    # axis.ticks.x = element_text(hjust = 0.5),
+    axis.title.x = element_text(hjust = 0.5),
+    plot.title = element_text(hjust = 0.5)
+  ) +
+  scale_y_continuous(breaks = c(seq(0, 10, 1)), limits = c(0, 10))+
+  scale_x_continuous(breaks = c(seq(12, 22, 2)), limits = c(12, 22))
+
+
 plot_mpvs <- function(df, var_to_plot, title, x_axis_title){
   inner_plot <- ggplot(
     data=df, 
@@ -53,6 +75,21 @@ plots <- purrr::map(
 
 training_comb <- cowplot::plot_grid(
   plotlist=plots,
+  ncol = 2
+)
+
+
+var_vec <- colnames(df_essential_vars)[grepl(pattern="mpvs_total",x=colnames(df_essential_vars))]
+
+
+plots2 <- purrr::map(
+  var_vec[grepl(pattern="scaled_32",x=var_vec)], 
+  ~plot_mpvs(df=df_essential_vars,var_to_plot = .x, x_axis_title="", title=.x)
+)
+
+
+training_comb2 <- cowplot::plot_grid(
+  plotlist=plots2,
   ncol = 2
 )
 
