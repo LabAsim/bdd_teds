@@ -83,8 +83,6 @@ df$mpvs_item_14_12_1 <- df_raw$lcvic141
 df$mpvs_item_15_12_1 <- df_raw$lcvic151
 df$mpvs_item_16_12_1 <- df_raw$lcvic161
 
-table(df$mpvs_physical_12_1, df$mpvs_verbal_12_1, useNA = "always")
-
 df$mpvs_total_12_1 <- rowSums(
   x=df[,c(
     "mpvs_physical_12_1",
@@ -397,7 +395,6 @@ df$dcq_item_7_26_1 <- df_raw$zmhbdd71
 
 df$bdd_diagnosis_26_1 <- df_raw$zmhmhddx1m1
 df$bdd_diagnosis_26_2 <- df_raw$zmhmhddx1m2
-table(df$bdd_diagnosis_26_1, df$bdd_diagnosis_26_2)
 
 # Age
 df$age_26_1 <- df_raw$zmhage1
