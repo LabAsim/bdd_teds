@@ -1,5 +1,6 @@
 library(haven)
 library(tidyverse)
+options(lifecycle_verbosity = "warning")
 
 # The data is saved in an encrypted file
 if(exists("df_raw")==F){
