@@ -25,7 +25,6 @@ model_scaled_32_without_covid <- '
     mpvs_total_child_14_1_scaled_32 ~ mpvs_total_12_1_scaled_32
     mpvs_total_16_1_scaled_32 ~ mpvs_total_child_14_1_scaled_32
     mpvs_total_phase_2_21_1_scaled_32 ~ mpvs_total_16_1_scaled_32
-    mpvs_total_cov1_21_1_scaled_32 ~ mpvs_total_phase_2_21_1_scaled_32
     
     # Age
     dcq_total_26_1 ~ age_26_1 
@@ -42,7 +41,7 @@ model_scaled_32_without_covid <- '
     mpvs_total_phase_2_21_1_scaled_32 ~ sex_1
 '
 fit_fiml_scaled_32_without_covid <- sem(
-  model = model_scaled_32_with_covid, 
+  model = model_scaled_32_without_covid, 
   data = df_essential_vars, 
   cluster = "fam_id",
   missing="fiml"
@@ -92,11 +91,11 @@ model_scaled_32_with_covid <- '
     mpvs_total_cov3_21_1_scaled_32 ~ sex_1
     mpvs_total_cov4_21_1_scaled_32 ~ sex_1
 '
-fit_fiml_scaled_32_covid <- sem(
+fit_fiml_scaled_32_with_covid <- sem(
   model = model_scaled_32_with_covid, 
   data = df_essential_vars, 
   cluster = "fam_id",
   missing="fiml"
 )
-summary(fit_fiml_scaled_32_covid)
+summary(fit_fiml_scaled_32_with_covid)
 beepr::beep("mario")
