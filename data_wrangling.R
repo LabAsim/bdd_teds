@@ -415,6 +415,8 @@ df <- df[df$exclude2 == 0,]
 # https://www.geeksforgeeks.org/how-to-check-if-characters-are-present-in-a-string-in-r/
 ############################################################################
 
+source("helper.R")
+
 df_raw_named <- df %>% dplyr::select(-all_of("to_remove"))
 
 # Drop rows that contain ONLY NA's in mpvs (items  + totals + subscales)
@@ -447,7 +449,6 @@ df_1 <- df %>% select(!matches("_2$"))
 
 rm(df)
 
-source("helper.R")
 
 df_1 <- df_1 %>% fill_multiple_vars_twin_from_cotwin(
   vars=c(

@@ -83,9 +83,9 @@ stopifnot(
 )
 
 fill_single_var_twin_from_cotwin <- function(df, var){
-  df <- df %>%
-    dplyr::group_by(fam_id) %>%
-    fill({{var}}, .direction = "downup") %>%
+  df <- df |>
+    dplyr::group_by(fam_id) |>
+    fill({{var}}, .direction = "downup")|>
     dplyr::ungroup()
   return(as.data.frame(df))
 }
@@ -113,7 +113,6 @@ stopifnot(
 # but not for the rest vars, in which they may differ naturally
 
 fill_multiple_vars_twin_from_cotwin <- function(df,vars){
-  
   for (var in vars){
     df <- fill_single_var_twin_from_cotwin(df=df, var=var)
   }
