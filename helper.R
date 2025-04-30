@@ -1,5 +1,17 @@
 library(tidyverse)
 
+
+time_and_beep <- function(f) {
+  start_time <- Sys.time()
+  function(...) {
+    f(...)
+    on.exit(beepr::beep("mario"))
+    end_time <- Sys.time()
+    print(Sys.time()-start_time)
+  }
+  
+}
+
 test <- data.frame(
   fam_id = c(1,1,2,2,3,3),
   twin_id = c(11,12,21,22,31,32),
@@ -869,6 +881,11 @@ stopifnot(test$fam_id == c(1:3))
 
 rm(list=c("test"))
 
+
+# Prints execution time and beeps
+create_df_subtract_twins_values_multiple_vars_decorated <- time_and_beep(
+  create_df_subtract_twins_values_multiple_vars
+)
 
 
 create_scaled_var <- function(df,from_var,to_var, scale_size=32){
