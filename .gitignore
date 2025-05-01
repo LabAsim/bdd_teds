@@ -3,3 +3,5 @@
 .Rhistory
 *.encr
 *example*
+.rdata
+.rds
