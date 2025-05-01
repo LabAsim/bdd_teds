@@ -99,3 +99,20 @@ fit_fiml_scaled_32_with_covid <- sem(
 )
 summary(fit_fiml_scaled_32_with_covid)
 beepr::beep("mario")
+
+############
+# Using MI #
+############
+
+if (sys.nframe() == 0){
+  if (exists("imp") == F){
+    source("imputation_derived.R")
+  }
+  
+  # Do not use semTools, it's deprecated
+  library(lavaan.mi) 
+  
+  fit_mi <- sem.mi(model=model_scaled_32_with_covid, data=imp_data_derived)
+  summary(fit_mi)
+  parameterEstimates.mi(fit_mi) 
+}
