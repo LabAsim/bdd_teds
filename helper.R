@@ -4,12 +4,13 @@ library(tidyverse)
 time_and_beep <- function(f) {
   function(...) {
     start_time <- Sys.time()
-    f(...)
+    to_return <- f(...)
     on.exit(beepr::beep("mario"))
     end_time <- Sys.time()
     print(Sys.time()-start_time)
+    rm(start_time)
+    return(to_return)
   }
-  
 }
 
 test <- data.frame(
@@ -887,6 +888,23 @@ create_df_subtract_twins_values_multiple_vars_decorated <- time_and_beep(
   create_df_subtract_twins_values_multiple_vars
 )
 
+test <- data.frame(
+  fam_id = c(1,1,2,2,3,3),
+  sex_1 = c(1,1,1,1,0,0),
+  test_var = c(1:6),
+  test_var2 = seq(from=10, to=20, by=2)
+)
+test <- create_df_subtract_twins_values_multiple_vars_decorated(
+  df=test, vars=c("test_var","test_var2")
+)
+
+stopifnot(class(test) == "data.frame")
+stopifnot(dim(test) == c(3,3))
+stopifnot(test$test_var == c(-1,-1,-1))
+stopifnot(test$test_var2 == c(-2,-2,-2))
+stopifnot(test$fam_id == c(1:3))
+
+rm(list=c("test"))
 
 create_scaled_var <- function(df,from_var,to_var, scale_size=32){
   if (grepl(pattern="16", x=from_var)){
