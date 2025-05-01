@@ -8,7 +8,8 @@ SEED <- 123
 set.seed(seed = SEED)
 
 impute_items <- function(
-    df,parallel=T, 
+    df,
+    parallel=T, 
     maxit=1, 
     m=1,
     n.core=1,
@@ -307,6 +308,11 @@ print(imp$loggedEvents)
 # data_imp <- complete(imp)
 # summary(data_imp)
 View(imp$loggedEvents)
+
+save(imp, file="G:\\imp_items.Rdata")
+
+
+
 
 # summary(data_imp$mpvs_item_2_12_1)
 # data_imp[data_imp$mpvs_item_2_12_1>2,"mpvs_item_2_12_1"]

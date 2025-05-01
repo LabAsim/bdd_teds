@@ -5,7 +5,6 @@ library(micemd)
 SEED <- 123
 set.seed(seed = SEED)
 
-
 impute_total_scaled_df <- function(
     df,
     parallel=T, 
@@ -188,19 +187,16 @@ impute_total_scaled_df <- function(
   return(imp)
 }
 
-imp <- impute_total_scaled_df(
+imp_derived <- impute_total_scaled_df(
   df=df_essential_vars, parallel=T, maxit=20, m=56, n.core=14,
   keep.collinear = T,
   lower_threshold=0.1,
   upper_threshold=0.99,
   donors=5
 )
-print(imp$loggedEvents)
-save(imp, file="imp_derived.Rdata")
-
-
-data <- complete(imp)
-print(Sys.time() - startTime)
-summary(data)
 # Plots look good!
-plot(imp)
+plot(imp_derived)
+print(imp_derived$loggedEvents)
+imp_data_derived <- complete(imp_derived, action="all")
+save(imp_derived,imp_data_derived, file="G:\\imp_derived.Rdata")
+
