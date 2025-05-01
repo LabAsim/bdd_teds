@@ -6,7 +6,7 @@ source("data_management_hyp_1.R")
 ################
 # Hypothesis 1 #
 ################
-#To test hypothesis 1,
+# To test hypothesis 1,
 # we will use Structural Equation Modeling (SEM) 
 # in order to determine the longitudinal phenotypic association 
 # of earlier peer victimization (MPVS score) with later BDD symptoms (DCQ score). 

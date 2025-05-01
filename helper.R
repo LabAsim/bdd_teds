@@ -2,8 +2,8 @@ library(tidyverse)
 
 
 time_and_beep <- function(f) {
-  start_time <- Sys.time()
   function(...) {
+    start_time <- Sys.time()
     f(...)
     on.exit(beepr::beep("mario"))
     end_time <- Sys.time()
