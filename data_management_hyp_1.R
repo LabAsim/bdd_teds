@@ -4,6 +4,7 @@ library(tidyverse)
 ############
 if (exists("df_essential_vars") == F){
   load(file = "G:\\data_wrangling.Rdata")
+  source("helper.R")
 }
 
 vars <- c(
@@ -41,5 +42,5 @@ df_essential_vars <- df_1 %>%
 df_essential_vars <- scale_mpvs(
   df=df_essential_vars,
   scale_size = 32,
-  from_vars = colnames(df_1)[grepl(pattern="mpvs_total",x=colnames(df_1))]
+  from_vars = colnames(df_essential_vars)[grepl(pattern="mpvs_total",x=colnames(df_essential_vars))]
 )

@@ -1,5 +1,3 @@
-
-source("data_wrangling.R")
 library(umx)
 library(lavaan)
 ################
