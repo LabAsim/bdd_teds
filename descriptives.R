@@ -1,0 +1,425 @@
+library(gtsummary)
+library(tidyverse)
+library(lavaan)
+
+# It's faster than running data_wrangling.R
+if (exists("df_1") == F){
+  load(file = "G:\\data_wrangling.Rdata")
+}
+
+if (exists("df_essential_vars") == F){
+  vars <- c(
+    "school_cohort_fct",
+    "fam_id",
+    "twin_id",
+    "sex_1",
+    "zygosity_binary_fct" ,
+    # Ses & ethnicity serve as auxiliary vars, 
+    # because they have many obs and are loosely associated with
+    # Bullying and BDD
+    "ses_1st_contact",
+    "ethnic_fct" ,
+    "age_parent_12",
+    "age_teach_12_1",
+    "age_child_12_1",
+    "age_parent_14",
+    "age_teach_14_1",
+    "age_child_14_1",
+    "age_child_web_16_1",
+    "age_phase1_parent_21",
+    "age_phase2_child_21_1",
+    "age_cov1_child_21_1",
+    "age_cov2_child_21_1",
+    "age_cov3_child_21_1",
+    "age_cov4_child_21_1",
+    "age_26_1",
+    colnames(df_1)[grepl(pattern="mpvs_total",x=colnames(df_1))],
+    "dcq_total_26_1"
+  )
+  
+  df_essential_vars <- df_1 %>% 
+    dplyr::select(all_of(vars)) 
+}
+
+corr_mat <- cor(
+  df_essential_vars %>% select(
+    all_of(
+      c(
+        "dcq_total_26_1",
+        colnames(df_1)[grepl(pattern="mpvs_total",x=colnames(df_1))]
+      )
+    )
+  ), 
+  use="pairwise.complete.obs"
+)
+
+
+summary <- gtsummary::tbl_summary(
+  data = df_essential_vars %>% select(
+    colnames(df_1)[grepl(pattern="mpvs_total",x=colnames(df_1))],
+    dcq_total_26_1,zygosity_binary_fct, sex_1
+  ),
+  by=zygosity_binary_fct,
+  statistic = list(
+    all_categorical() ~ "{n}    ({p}%)",
+    all_continuous()     ~ "{mean} ({sd})"
+  ),
+  missing_text = "Missing"
+) %>% modify_header(
+    label = "**Variable**"
+  ) %>% 
+  modify_caption("Participant characteristics, by zygosity") %>%
+  bold_labels()   %>%
+  # Include an "overall" column
+  add_overall(
+    last = T,
+    # The ** make it bold
+    col_label = "**All participants**<br>N = {N}"
+  )  
+
+summary_ages <- gtsummary::tbl_summary(
+  data = df_essential_vars %>% select(
+    -c(
+      colnames(df_1)[grepl(pattern="mpvs_total",x=colnames(df_1))],
+      dcq_total_26_1, sex_1
+    )
+  ),
+  by=zygosity_binary_fct,
+  statistic = list(
+    all_categorical() ~ "{n}    ({p}%)",
+    all_continuous()     ~ "{mean} ({sd})"
+  ),
+  missing_text = "Missing",
+  missing_stat = "{N_miss} ({p_miss}%)",
+) %>% modify_header(
+  label = "**Variable**"
+) %>% 
+  modify_caption("Participant characteristics, by zygosity") %>%
+  bold_labels()   %>%
+  # Include an "overall" column
+  add_overall(
+    last = T,
+    # The ** make it bold
+    col_label = "**All participants**<br>N = {N}"
+  )  
+
+
+summary_ages_by_cohort <- gtsummary::tbl_summary(
+  data = df_essential_vars %>% select(
+    -c(
+      colnames(df_1)[grepl(pattern="mpvs_total",x=colnames(df_1))],
+      dcq_total_26_1, sex_1
+    )
+  ),
+  by=school_cohort_fct,
+  statistic = list(
+    all_categorical() ~ "{n}    ({p}%)",
+    all_continuous()     ~ "{mean} ({sd})"
+  ),
+  missing_text = "Missing",
+  missing_stat = "{N_miss} ({p_miss}%)",
+  ) %>% modify_header(
+    label = "**Variable**"
+  ) %>% 
+  modify_caption("Participant characteristics, by cohort") %>%
+  bold_labels()   %>%
+  # Include an "overall" column
+  add_overall(
+    last = T,
+    # The ** make it bold
+    col_label = "**All participants**<br>N = {N}"
+  )  
+
+
+summary_by_cohort <- gtsummary::tbl_summary(
+  data = df_essential_vars %>% select(
+    c(
+      colnames(df_1)[grepl(pattern="mpvs_total",x=colnames(df_1))],
+      dcq_total_26_1, sex_1,school_cohort_fct
+    )
+  ),
+  by=school_cohort_fct,
+  statistic = list(
+    all_categorical() ~ "{n}    ({p}%)",
+    all_continuous()     ~ "{mean} ({sd})"
+  ),
+  missing_text = "Missing",
+  missing_stat = "{N_miss} ({p_miss}%)",
+) %>% modify_header(
+  label = "**Variable**"
+) %>% 
+  modify_caption("Participant characteristics, by cohort") %>%
+  bold_labels()   %>%
+  # Include an "overall" column
+  add_overall(
+    last = T,
+    # The ** make it bold
+    col_label = "**All participants**<br>N = {N}"
+  )  
+
+
+df_essential_vars_long <- pivot_longer(
+  df_essential_vars,
+  colnames(df_1)[grepl(pattern="mpvs_total",x=colnames(df_1))],
+  names_to = "timepoint",
+  values_to = "mpvs"
+)
+
+df_essential_vars_long$timepoint <- stringr::str_remove_all(
+  pattern = "mpvs_total_",
+  string = df_essential_vars_long$timepoint
+)
+df_essential_vars_long$timepoint <- factor(
+  df_essential_vars_long$timepoint,
+  stringr::str_remove_all(
+    pattern = "mpvs_total_",
+    string = c(colnames(df_1)[grepl(pattern="mpvs_total",x=colnames(df_1))])
+  )
+)
+
+mpvs_boxplot <- df_essential_vars_long %>%
+  ggplot(aes(x=timepoint, y=mpvs)) +
+  geom_boxplot() + 
+  theme(
+    title=element_text("MPVS scale at different timepoints"),
+    axis.title.x = element_text("Score")
+  )
+
+
+var_vec <- colnames(df_1)[grepl(pattern="mpvs_total",x=colnames(df_1))]
+
+spot_age <- function(string){
+  if (str_detect(string=string, pattern = "_12$")){
+    string <- str_replace(string=string, pattern="_12", replacement = "")
+    return(12)
+  }
+  if (str_detect(string=string, pattern = "_14$")){
+    string <- str_replace(string=string, pattern="_14", replacement = "")
+    return(14)
+  }
+  if (str_detect(string=string, pattern = "_16$")){
+    string <- str_replace(string=string, pattern="_16", replacement = "")
+    return(16)
+  }
+  if (str_detect(string=string, pattern = "_21$")){
+    string <- str_replace(string=string, pattern="_21", replacement = "")
+    if (str_detect(string=string, pattern = "cov1")){
+      return(21.2)
+    }
+    if (str_detect(string=string, pattern = "cov2")){
+      return(21.4)
+    }
+    if (str_detect(string=string, pattern = "cov3")){
+      return(21.6)
+    }
+    if (str_detect(string=string, pattern = "cov4")){
+      return(21.8)
+    }
+    print(string)
+    return(21)
+  }
+  if (str_detect(string=string, pattern = "_26$")){
+    string <- str_replace(string=string, pattern="_26", replacement = "")
+    return(26)
+  }
+}
+
+spot_informant <- function(string){
+  if (str_detect(string=string, pattern = "child")){
+    return("child")
+  }
+  if (str_detect(string=string, pattern = "parent")){
+    return("parent")
+  }
+  if (str_detect(string=string, pattern = "teacher")){
+    return("teacher")
+  } else {# No specifier -> the informant is the twin 
+    return("child")
+  }
+}
+
+extract_mpvs_info <- function(string){
+  to_return <-  c()
+  print(string)
+  string <- str_replace(string=string, pattern="_scaled_32$", replacement = "")
+  string <- str_replace(string=string, pattern="_1$", replacement = "")
+  to_return <- cbind(to_return, spot_age(string=string))
+  to_return <- cbind(to_return, spot_informant(string=string))
+  print(string)
+  return(to_return)
+}
+
+create_summary_df <- function(df, var_vec){
+  inner_df <- data.frame(
+    mean = NA,
+    sd = NA,
+    median = NA,
+    age = NA,
+    informant = NA
+  )
+  for (num in 1:length(var_vec)){
+    mean_ <- mean(df[,var_vec[num]], na.rm = T)
+    median_ <- median(df[,var_vec[num]], na.rm = T)
+    sd_ <- sd(df[,var_vec[num]],na.rm=T)
+    inner_df[num,] <- c(
+      mean_,median_,sd_,extract_mpvs_info(string=var_vec[num])
+    )
+  }
+  inner_df[,c("mean", "median", "sd", "age")] <- lapply(
+    X=inner_df[,c("mean", "median", "sd", "age")], 
+    FUN=as.numeric
+  )
+  inner_df$informant <- as.factor(inner_df$informant)
+  return(inner_df)
+}
+
+summary_df <- create_summary_df(
+  df=df_1,
+  var_vec = colnames(df_1)[grepl(pattern="mpvs_total",x=colnames(df_1))]
+)
+
+
+var_vec <- colnames(df_essential_vars)[grepl(pattern="mpvs_total",x=colnames(df_essential_vars))]
+
+summary_scaled_df <- create_summary_df(
+  df=df_essential_vars,
+  var_vec = var_vec[grepl(pattern="scaled_32",x=var_vec)]
+)
+
+
+df_essential_vars_long_scaled <- pivot_longer(
+  df_essential_vars,
+  colnames(df_essential_vars)[grepl(pattern="scaled_32",x=colnames(df_essential_vars))],
+  names_to = "timepoint",
+  values_to = "mpvs"
+)
+
+df_essential_vars_long_scaled$timepoint <- stringr::str_remove_all(
+  pattern = "mpvs_total_",
+  string = df_essential_vars_long_scaled$timepoint
+)
+
+df_essential_vars_long_scaled$timepoint <- stringr::str_remove_all(
+  pattern = "_scaled_32",
+  string = df_essential_vars_long_scaled$timepoint
+)
+
+df_essential_vars_long_scaled$timepoint <- factor(
+  df_essential_vars_long_scaled$timepoint,
+  stringr::str_remove_all(
+    pattern = "mpvs_total_",
+    string = c(colnames(df_1)[grepl(pattern="mpvs_total",x=colnames(df_1))])
+  )
+)
+
+mpvs_boxplot_scaled <- df_essential_vars_long_scaled %>%
+  ggplot(aes(x=timepoint, y=mpvs)) +
+  geom_boxplot() + 
+  theme(
+    title=element_text("MPVS scale at different timepoints"),
+    axis.title.x = element_text("Score")
+  )
+
+
+df_1_compl_cases <- df_essential_vars %>% 
+  dplyr::select(all_of(vars)) 
+
+vars_to_subset <- vars[!grepl(pattern="cov", x=vars)]
+vars_to_subset <- vars_to_subset[!grepl(pattern="ses", x=vars_to_subset)]
+vars_to_subset <- vars_to_subset[!grepl(pattern="ethnic", x=vars_to_subset)]
+vars_to_subset <- vars_to_subset[!grepl(pattern="teach", x=vars_to_subset)]
+vars_to_subset <- vars_to_subset[!grepl(pattern="parent", x=vars_to_subset)]
+vars_to_subset <- vars_to_subset[!grepl(pattern="leap", x=vars_to_subset)]
+
+
+df_1_compl_cases <-  df_1_compl_cases[
+  complete.cases(df_1_compl_cases[,vars_to_subset]),
+]
+
+
+
+df_all_diffs_long <- pivot_longer(
+  data=df_all_diffs %>% select(
+    all_of(
+      c(
+        "fam_id",
+        "dcq_total_26_1",
+        "mpvs_total_12_1_scaled_32",
+        "mpvs_total_child_14_1_scaled_32",
+        "mpvs_total_16_1_scaled_32",
+        "mpvs_total_phase_2_21_1_scaled_32"
+      )
+    )
+  ),
+  cols = c(
+    "mpvs_total_12_1_scaled_32",
+    "mpvs_total_child_14_1_scaled_32",
+    "mpvs_total_16_1_scaled_32",
+    "mpvs_total_phase_2_21_1_scaled_32", 
+  ),
+  names_to = "mpvs_age",
+  values_to = "mpvs"
+)
+
+
+# Means across waves
+vars <- colnames(df_essential_vars)[grepl(pattern="scaled", x=colnames(df_essential_vars))]
+vars <- c(
+  "mpvs_total_12_1_scaled_32",
+  "mpvs_total_child_14_1_scaled_32",
+  "mpvs_total_16_1_scaled_32",
+  "mpvs_total_phase_2_21_1_scaled_32",
+  "mpvs_total_cov1_21_1_scaled_32",
+  "mpvs_total_cov2_21_1_scaled_32",
+  "mpvs_total_cov3_21_1_scaled_32",
+  "mpvs_total_cov4_21_1_scaled_32"
+)
+df_without_NA <- df_essential_vars %>%
+  #filter(!if_all(colnames(df), is.na))
+  filter(
+    !if_any(
+      vars,
+      is.na
+    )
+  )
+
+summary_df_without_NA_21 <- create_summary_df(
+  df=(
+    df_essential_vars %>%
+      #filter(!if_all(colnames(df), is.na))
+      filter(
+        !if_any(
+          c(
+            "mpvs_total_phase_2_21_1_scaled_32",
+            "mpvs_total_cov1_21_1_scaled_32",
+            "mpvs_total_cov2_21_1_scaled_32",
+            "mpvs_total_cov3_21_1_scaled_32",
+            "mpvs_total_cov4_21_1_scaled_32"
+          ),
+          is.na
+        )
+      )
+  ),
+  var_vec = c(
+    "mpvs_total_phase_2_21_1_scaled_32",
+    "mpvs_total_cov1_21_1_scaled_32",
+    "mpvs_total_cov2_21_1_scaled_32",
+    "mpvs_total_cov3_21_1_scaled_32",
+    "mpvs_total_cov4_21_1_scaled_32"
+  )
+)
+
+summary_df_without_NA <- create_summary_df(
+  df=df_without_NA,
+  var_vec = c(
+    "mpvs_total_12_1_scaled_32",
+    "mpvs_total_child_14_1_scaled_32",
+    "mpvs_total_16_1_scaled_32",
+    "mpvs_total_phase_2_21_1_scaled_32",
+    "mpvs_total_cov1_21_1_scaled_32",
+    "mpvs_total_cov2_21_1_scaled_32",
+    "mpvs_total_cov3_21_1_scaled_32",
+    "mpvs_total_cov4_21_1_scaled_32"
+  )
+)
+
