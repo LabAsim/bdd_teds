@@ -1160,6 +1160,9 @@ rm(list=c("test_s","s","corr_mat", "predMatrix", "test_df"))
 
 
 test <- data.frame(
+  mpvs_total_14_1 = c(19,19,19,10),
+  mpvs_item_1_14_1=c(0,1,2,3),
+  mpvs_item_2_14_1=c(-1,2,-4,0),
   mpvs_total_16_1 = c(19,19,19,10),
   mpvs_item_1_16_1=c(0,1,2,3),
   mpvs_item_2_16_1=c(-1,2,-4,0),
@@ -1167,10 +1170,28 @@ test <- data.frame(
   sex = c(1,0,1,1)
 )
 predMatrix <- mice::make.predictorMatrix(test)
+modify_pred_matrix_items_predict_nothing <- function(
+    df,target_phrase,target_phrase2
+){
+  
+  all_items <- df[,colnames(df)[grepl(
+    pattern=target_phrase,x=colnames(df)
+  )]]
+  all_items <- all_items[,colnames(all_items)[grepl(
+    pattern=target_phrase2,x=colnames(all_items)
+  )]]
+  # Individual items can predict ONLY items from the same wave, nothing else
+  df[colnames(all_items),colnames(all_items)] <- 0
+  # They should not predict other vars, too (their totals should)
+  df[,colnames(all_items)] <- 0
+  return(df)
+}
+
 modify_pred_matrix <- function(
     df, target_phrase,target_phrase2="item",
     target_phrase_total
 ){
+
   x <- df[,colnames(df)[grepl(
     pattern=(paste0(target_phrase,"$")),x=colnames(df)
   )]]
@@ -1182,28 +1203,51 @@ modify_pred_matrix <- function(
   x <- x[,colnames(x)[grepl(pattern=(target_phrase2),x=colnames(x))]]
   print(glue::glue("Found {dim(x)[2]} `{target_phrase2}` columns;"))
   print(colnames(x))
-  # Sum scores should not be predicted through other vars, 
-  # but it could predict others (not their items, though, only others' items!)
-  # The individual items should be predicted (not by other items or the sum score),
-  # but they should not predict others
-  # Also, sum scores should NOT predict individual items
-  df[,colnames(x)] <- 0
+  
+  # Sum scores should not be predicted by other vars, 
+  # but they can predict others, including items from other waves.
+  # Individual items can predict ONLY items from the same wave, nothing else
+  # Individual items can be predicted by other waves' total and other vars
+  
+  
+  # Items from the same wave can predict other items from the same wave
+  # But not themselves
+  df[colnames(x),colnames(x)] <- 1
+  for (item in colnames(x)){
+    df[item,item] <- 0
+  }
+  # Items should not be predicted by the total score of the same wave
   df[colnames(x), total_score] <- 0
+  # Total score should not be predicted by other vars
   df[total_score,] <- 0
+  # But total scores can predict other vars and other waves' items
+  
   return(df)
 }  
 
+to_test <- modify_pred_matrix_items_predict_nothing(
+  df=predMatrix, target_phrase = "mpvs",
+  target_phrase2="item"
+)
+
 to_test <- modify_pred_matrix(
-  df=predMatrix, target_phrase = "16_1",
+  df=to_test, target_phrase = "14_1",
+  target_phrase_total="total"
+)
+to_test <- modify_pred_matrix(
+  df=to_test, target_phrase = "16_1",
   target_phrase_total="total"
 )
 
 s <- data.frame(
-  mpvs_total_16_1=c(0,0,0,1,1),
-  mpvs_item_1_16_1=c(0,0,0,0,0),
-  mpvs_item_2_16_1=c(0,0,0,0,0),
-  age = c(0,1,1,0,1),
-  sex = c(0,1,1,1,0)
+  mpvs_total_14_1=c(0,0,0,0,1,1,1,1),
+  mpvs_item_1_14_1=c(0,0,1,0,0,0,0,0),
+  mpvs_item_2_14_1=c(0,1,0,0,0,0,0,0),
+  mpvs_total_16_1=c(0,1,1,0,0,0,1,1),
+  mpvs_item_1_16_1=c(0,0,0,0,0,1,0,0),
+  mpvs_item_2_16_1=c(0,0,0,0,1,0,0,0),
+  age = c(0,1,1,0,1,1,0,1),
+  sex = c(0,1,1,0,1,1,1,0)
 )
 
 rownames(s) <- rownames(to_test)
