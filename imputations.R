@@ -288,28 +288,41 @@ impute_items <- function(
 }
 
 
-imp <- impute_items(
+imp_items <- impute_items(
   df=df_1, parallel=T, maxit=40, m=100, n.core=14,
   keep.collinear = T,
   lower_threshold=0.1,
   upper_threshold=0.99,
   donors=5
 )
-print(imp$loggedEvents)
+print(imp_items$loggedEvents)
 
-# imp <- impute_items(
+imp_data_items <- complete(imp_items, action="all")
+
+imp_data_items <- lapply(
+  imp_data_items, 
+  function(dataset){
+    dataset <- scale_mpvs(
+      df=dataset,
+      scale_size = 32,
+      from_vars = colnames(dataset)[grepl(pattern="mpvs_total",x=colnames(dataset))]
+    )
+  }
+)
+
+save(imp_items,imp_data_items, file="G:\\imp_items.Rdata")
+
+
+# imp_items <- impute_items(
 #   df=df_1,parallel=F, maxit=1, m=2, keep.collinear=T,
 #   lower_threshold=0.1,
 #   upper_threshold=0.99,
 #   donors=3
 # )
-# print(imp$loggedEvents)
+# print(imp_items$loggedEvents)
 
-# data_imp <- complete(imp)
-# summary(data_imp)
-View(imp$loggedEvents)
-
-save(imp, file="G:\\imp_items.Rdata")
+# summary(data_imp_items)
+# print(imp_items$loggedEvents)
 
 
 
