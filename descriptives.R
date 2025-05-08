@@ -385,7 +385,6 @@ summary_df_without_NA_21 <- create_summary_df(
     "mpvs_total_cov4_21_1_scaled_32"
   )
 )
-l
 summary_df_without_NA <- create_summary_df(
   df=df_without_NA,
   var_vec = c(

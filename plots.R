@@ -259,6 +259,10 @@ df_21_cov4 <- df_1 %>%
   )
 
 df_21_cov4$wave <- "cov4"
+df_21_phase_2 <- haven::zap_labels(df_21_phase_2)
+df_21_cov1 <- haven::zap_labels(df_21_cov1)
+df_21_cov2 <- haven::zap_labels(df_21_cov2)
+df_21_cov3 <- haven::zap_labels(df_21_cov3)
 df_items <- rbind(
   df_21_phase_2,
   df_21_cov1,
@@ -424,7 +428,7 @@ longitudinal_means_pct_items_facet <- ggplot(
 longitudinal_means_pct_items_facet
 
 filt <- summary_items_change %>% filter(wave=="cov4_cov3")
-longitudinal_means_pct_items + 
+longitudinal_means_pct_items_facet + 
   ggrepel::geom_text_repel(
     data=summary_items_change %>% filter(wave=="cov2_cov1"),
     aes(label = var),
