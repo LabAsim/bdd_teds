@@ -153,41 +153,16 @@ impute_items <- function(
   # If mice throws error for the labels, uncomment the follow line
   df_imp <- labelled::remove_val_labels(df_imp)
   
-
-  # print(predMatrix)
-  # View(predMatrix)
-  # print(impMethod)
-  # print(cluster)
-  
-  #########################
-  # Remove collinear vars #
-  #########################
-  # predMatrix["age_parent_12",c("age_teach_14_1", "age_child_14_1","age_parent_14","age_web_16_1")] <- 0
-  # 
-  # predMatrix["age_child_12_1",c(
-  #   "age_teach_14_1", "age_child_14_1","age_parent_14","age_web_16_1",
-  #   colnames(df_imp)[grepl(pattern="12",x=colnames(df_imp))]
-  # )] <- 0
-  # 
-  # for (var in 1:16){
-  #   predMatrix[paste0("mpvs_item_",var,"_14_teacher_1"),colnames(df_imp)[grepl(pattern="21",x=colnames(df_imp))]] <- 0
-  # }
-  # predMatrix["age_teach_14_1",] <- 0
-  # predMatrix["age_teach_14_1","fam_id"] <- -2
-  # predMatrix["age_teach_14_1", c("sex_1", colnames(df_imp)[grepl(pattern="age",x=colnames(df_imp))])] <- 1
-  # predMatrix["age_teach_14_1","age_teach_14_1"] <- 0
-  # predMatrix["age_parent_16", c(colnames(df_imp)[grepl(pattern="16", x=colnames(df_imp))])] <- 0
-  # predMatrix["age_parent_16", "age_child_12_1"] <- 0
-  # predMatrix["age_child_12_1", "age_parent_16"] <- 0
-  # 
-  # View(predMatrix)
-  # View(predMatrix[,"mpvs_item_1_14_teacher_1"])
   ##################
   # Add sum scores #
   ##################
-  
-  # Sum scores will be added as mentioned in mice paper 
   # `mice: Multivariate Imputation by Chained Equations in R`
+  # https://www.jstatsoft.org/article/view/v045i03
+  # See `Sum scores` section
+  
+  # https://stefvanbuuren.name/fimd/sec-knowledge.html
+  # See `Sum scores` section
+  # Sum scores will be added as mentioned in url above
   impMethod["mpvs_total_12_1"] <- "~I(as.integer(mpvs_item_1_12_1)+as.integer(mpvs_item_2_12_1)+as.integer(mpvs_item_3_12_1)+as.integer(mpvs_item_4_12_1)+as.integer(mpvs_item_5_12_1)+as.integer(mpvs_item_6_12_1)+as.integer(mpvs_item_7_12_1)+as.integer(mpvs_item_8_12_1)+as.integer(mpvs_item_9_12_1)+as.integer(mpvs_item_10_12_1)+as.integer(mpvs_item_11_12_1)+as.integer(mpvs_item_12_12_1)+as.integer(mpvs_item_13_12_1)+as.integer(mpvs_item_14_12_1)+as.integer(mpvs_item_15_12_1)+as.integer(mpvs_item_16_12_1))"
   impMethod["mpvs_total_parent_14_1"] <- "~I(as.integer(mpvs_item_1_parent_14_1)+as.integer(mpvs_item_2_parent_14_1)+as.integer(mpvs_item_3_parent_14_1)+as.integer(mpvs_item_4_parent_14_1)+as.integer(mpvs_item_5_parent_14_1)+as.integer(mpvs_item_6_parent_14_1)+as.integer(mpvs_item_7_parent_14_1)+as.integer(mpvs_item_8_parent_14_1)+as.integer(mpvs_item_9_parent_14_1)+as.integer(mpvs_item_10_parent_14_1)+as.integer(mpvs_item_11_parent_14_1)+as.integer(mpvs_item_12_parent_14_1)+as.integer(mpvs_item_13_parent_14_1)+as.integer(mpvs_item_14_parent_14_1)+as.integer(mpvs_item_15_parent_14_1)+as.integer(mpvs_item_16_parent_14_1))"  
   impMethod["mpvs_total_child_14_1"] <- "~I(as.integer(mpvs_item_1_child_14_1)+as.integer(mpvs_item_2_child_14_1)+as.integer(mpvs_item_3_child_14_1)+as.integer(mpvs_item_4_child_14_1)+as.integer(mpvs_item_5_child_14_1)+as.integer(mpvs_item_6_child_14_1)+as.integer(mpvs_item_7_child_14_1)+as.integer(mpvs_item_8_child_14_1)+as.integer(mpvs_item_9_child_14_1)+as.integer(mpvs_item_10_child_14_1)+as.integer(mpvs_item_11_child_14_1)+as.integer(mpvs_item_12_child_14_1)+as.integer(mpvs_item_13_child_14_1)+as.integer(mpvs_item_14_child_14_1)+as.integer(mpvs_item_15_child_14_1)+as.integer(mpvs_item_16_child_14_1))"
@@ -201,9 +176,32 @@ impute_items <- function(
   impMethod["dcq_total_26_1"] <- "~I(as.integer(dcq_item_1_26_1)+as.integer(dcq_item_2_26_1)+as.integer(dcq_item_3_26_1)+as.integer(dcq_item_4_26_1)+as.integer(dcq_item_5_26_1)+as.integer(dcq_item_6_26_1)+as.integer(dcq_item_7_26_1))"
   
   
-  # Sum scores should not be predicted through other vars, but it could predict others
-  # But the individual items should be predicted, but they should not predict others
-  # Also, sum scores should NOT predict individual items
+  # Suppose that the data consist of an outcome variable out, 
+  # a background variable bck, a scale a with ten items a1-a10, 
+  # a scale b with twelve items b1-b12, 
+  # and that all variables contain missing values
+  # Impute out given bck, a, b, where a and b are the summed scale scores from b1-b10 and b1-b12;
+  # Impute bck given out, a and b;
+  # Impute a1 given out, bck, b and a2-a10;
+  # Impute a2 given out, bck, b and a1, a3-a10;
+  # Impute a3-a10 along the same way;
+  # Impute b1 given out, bck, a and b2-b12, where a is the updated summed scale score;
+  # Example: items at 12 should predictor one another, but not items from 
+  # a different wave! Total score at 12 should only predict items from another
+  # wave!
+  
+  # Sum scores should not be predicted by other vars, 
+  # but they can predict others, including items from other waves.
+  # Individual items can predict ONLY items from the same wave, nothing else
+  # Individual items can be predicted by other waves' total and other vars
+  predMatrix <- modify_pred_matrix_items_predict_nothing(
+    df=predMatrix, target_phrase = "mpvs",
+    target_phrase2="item"
+  )
+  predMatrix <- modify_pred_matrix_items_predict_nothing(
+    df=predMatrix, target_phrase = "dcq",
+    target_phrase2="item"
+  )
   predMatrix <- modify_pred_matrix(
     df=predMatrix, target_phrase = "12_1",
     target_phrase2 = "item",
@@ -259,6 +257,7 @@ impute_items <- function(
     target_phrase2 = "item",
     target_phrase_total = "total"
   )
+  View(predMatrix)
   #############
   # Call mice #
   #############
@@ -280,7 +279,7 @@ impute_items <- function(
       post=post, n.core = n.core, donors = donors,
       print=print_flag, remove.collinear=!keep.collinear
     )
-    beep("mario")
+    beepr::beep("mario")
     Sys.sleep(0.5)
   }
   print(Sys.time() - startTime)
@@ -324,11 +323,6 @@ save(imp_items,imp_data_items, file="G:\\imp_items.Rdata")
 # summary(data_imp_items)
 # print(imp_items$loggedEvents)
 
-
-
-
-# summary(data_imp$mpvs_item_2_12_1)
-# data_imp[data_imp$mpvs_item_2_12_1>2,"mpvs_item_2_12_1"]
 
 # Recalculate all total items
 # data_imp_calc <- data_imp %>%
