@@ -105,8 +105,12 @@ beepr::beep("mario")
 ############
 
 if (sys.nframe() == 0){
-  if (exists("imp") == F){
-    source("imputation_derived.R")
+  if (exists("imp_derived") == F){
+    if (file.exists("G:\\imp_derived.Rdata")){
+      load("G:\\imp_derived.Rdata")
+    } else{
+      source("imputation_derived.R")
+    }
   }
   
   # Do not use semTools, it's deprecated
@@ -116,3 +120,4 @@ if (sys.nframe() == 0){
   summary(fit_mi)
   parameterEstimates.mi(fit_mi) 
 }
+
