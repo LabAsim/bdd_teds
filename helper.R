@@ -1,11 +1,11 @@
 library(tidyverse)
 
 
-time_and_beep <- function(f) {
+time_and_beep <- function(f, sound=1) {
   function(...) {
     start_time <- Sys.time()
     to_return <- f(...)
-    on.exit(beepr::beep("mario"))
+    on.exit(beepr::beep(sound))
     end_time <- Sys.time()
     print(Sys.time()-start_time)
     rm(start_time)
