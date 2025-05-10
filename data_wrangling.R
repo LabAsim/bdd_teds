@@ -32,6 +32,12 @@ df$random_twin_from_pair <- df_raw$random
 df$school_cohort <- df_raw$cohort
 df$school_cohort_fct <- haven::as_factor(df_raw$cohort)
 df$sex_1 <- df_raw$sex1
+df$sex_1_fct <- factor(
+  # https://datadictionary.teds.ac.uk/studies/variable_lists/background_variables.htm
+  df_raw$sex1,
+  levels = c(0,1),
+  labels = c("Female", "Male")
+)
 df$sex_2 <- df_raw$sex2
 df$zygosity_binary <- df_raw$zygos
 df$zygosity_binary_fct <- factor(
