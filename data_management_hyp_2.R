@@ -8,7 +8,7 @@
 source("data_management_hyp_1.R")
 
 
-df_all_diffs <- create_df_subtract_twins_values_multiple_vars_decorated(
+df_all_diffs <- create_df_subtract_mz_twins_values_multiple_vars_decorated(
   df=df_essential_vars,
   group_var="fam_id",
   vars = c(
