@@ -408,6 +408,11 @@ df$age_26_1 <- df_raw$zmhage1
 df$age_26_2 <- df_raw$zmhage2
 
 
+###############
+# Save raw df #
+###############
+df_raw_named <- df %>% 
+  dplyr::select(-all_of("to_remove")) 
 
 #######################
 # Drop excluded twins #
@@ -424,34 +429,62 @@ df <- df[df$exclude2 == 0,]
 
 source("helper.R")
 
-df_raw_named <- df %>% dplyr::select(-all_of("to_remove"))
+df_raw_named_without_excluded <- df 
+df_raw_named_without_excluded_1 <- df_raw_named_without_excluded %>% 
+  select(!matches("_2$"))
 
 # Drop rows that contain ONLY NA's in mpvs (items  + totals + subscales)
-df <- df %>%
-  #filter(!if_all(colnames(df), is.na))
-  filter(
-    !if_all(
-      # Get the column names containing "mpvs"
-      colnames(df)[grepl(pattern="mpvs", x=colnames(df))],
-      is.na
-    )
-  )
+# df <- df %>%
+#   #filter(!if_all(colnames(df), is.na))
+#   filter(
+#     !if_all(
+#       # Get the column names containing "mpvs"
+#       colnames(df)[grepl(pattern="mpvs", x=colnames(df))],
+#       is.na
+#     )
+#   )
+# 
+# Drop rows that contain ONLY NA's in MPVS total scores
+# df <- df %>%
+#   filter(
+#     !if_all(
+#       colnames(df)[grepl(pattern="mpvs_total", x=colnames(df))],
+#       is.na
+#     )
+#   )
+# df <- remove_twins_without_var_decorated(
+#   df=df,
+#   group_var = "fam_id",
+#   sex_var = "sex_1",
+#   pattern = "dcq_item",
+#   keep_empty_cotwin = T,
+#   NA_threshold = 7
+# )
 
-start_time <- Sys.time()
-df <- remove_twins_without_var( 
-  df=df, 
+
+df <- remove_twins_without_var_decorated(
+  df=df_raw_named_without_excluded_1,
   group_var = "fam_id",
   sex_var = "sex_1",
-  pattern = "dcq_item",
+  pattern = "dcq_total",
   keep_empty_cotwin = T,
-  NA_threshold = 7
-) 
-print(Sys.time()-start_time)
+  NA_threshold = 1
+)
+
+df <- remove_twins_without_var_decorated(
+  df=df,
+  group_var = "fam_id",
+  sex_var = "sex_1",
+  pattern = "mpvs_total",
+  antipattern = "cov",
+  keep_empty_cotwin = T,
+  NA_threshold = 6 # Six columns of MPVS total scores (without covid vars)
+  # Ten columns of MPVS total scores
+)
 
 df <- df %>% dplyr::select(-all_of("to_remove"))
 
 # Drop the cotwin variables
-df_12 <- df
 df_1 <- df %>% select(!matches("_2$"))
 
 rm(df)
