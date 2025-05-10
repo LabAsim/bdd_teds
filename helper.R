@@ -1267,6 +1267,7 @@ remove_twins_without_var <- function(
     group_var="fam_id",
     sex_var = "sex_1",
     pattern = "dcq_item",
+    antipattern = "",
     keep_empty_cotwin = T,
     NA_threshold = 7
 ){
@@ -1283,7 +1284,11 @@ remove_twins_without_var <- function(
   if ("tbl_df" %in% class(df)){
     df <- as.data.frame(df)
   }
-  dflist <- split(df, f = list(df[,c(group_var)]), drop = TRUE)
+  print("Splitting")
+  # dflist <- split(df, f = list(df[,c(group_var)]), drop = TRUE)
+  # Data.table is significantly faster!
+  dflist <-split(data.table::as.data.table(df), by="fam_id")
+  print("Splitted")
   if(keep_empty_cotwin==F){
     df <- df %>%
       filter(
@@ -1295,42 +1300,44 @@ remove_twins_without_var <- function(
       )
     return(df)
   }
-  
   to_return <- lapply(
-    X=dflist, FUN=function(inner_df){
+    #X=dflist, FUN=function(inner_df){
+    X=seq_along(dflist), FUN=function(index){
+      inner_df <- dflist[[index]]
+      inner_df <- as.data.frame(inner_df)
+      cat('\r',"Family ID:", inner_df[1,"fam_id"])
+      flush.console() 
       # df_twin_1 <- inner_df[1,colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]]
       # df_twin_2 <- inner_df[2,colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]]
-      N_NA_twin_1 <- sum(is.na(inner_df[1,colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]]))
-      N_NA_twin_2 <- sum(is.na(inner_df[2,colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]]))
+      columns <- colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]
+      if (antipattern != ""){
+        columns <- columns[!grepl(pattern=antipattern, x=columns)]
+      }
+      N_NA_twin_1 <- sum(is.na(inner_df[1,columns]))
+      N_NA_twin_2 <- sum(is.na(inner_df[2,columns]))
       
       if ((N_NA_twin_1 == NA_threshold) & (N_NA_twin_2 == NA_threshold)){
         return(NULL)
       }
-      # if (keep_empty_cotwin == F){
-      #   if(
-      #     (N_NA_twin_1 == NA_threshold) | (N_NA_twin_2 == NA_threshold)
-      #   ){
-      #     if (N_NA_twin_1 == NA_threshold){
-      #       return(inner_df[2,])
-      #     }
-      #     if (N_NA_twin_2 == NA_threshold){
-      #       return(inner_df[1,])
-      #     }
-      #   }else{
-      #     return(inner_df)
-      #   }
-      # }
       if(keep_empty_cotwin == T){
         # Essentially, we keep everything
         return(inner_df)
       }
     }
   )
+  cat("\n")
+  print("Done filtering")
   # # https://stackoverflow.com/a/35951683
   to_return <- unname(to_return)
-  to_return <- do.call(rbind, to_return)
+  to_return <- data.table::rbindlist(to_return)
+  to_return <- as.data.frame(to_return)
+  print("Done binding")
   return(to_return)
 }
+
+remove_twins_without_var_decorated <- time_and_beep(
+  remove_twins_without_var
+)
 
 remove_twins_without_var_parallel <- function(
     df,
@@ -1485,6 +1492,7 @@ stopifnot(
   )
 )
 
+
 testit <- remove_twins_without_var(
   df=test, keep_empty_cotwin=F,
   sex_var="sex",NA_threshold=3, pattern="test"
@@ -1499,6 +1507,51 @@ stopifnot(
       test_var = c(1:5),
       test_var2 = c(1,1,1,NA,NA),
       test_var3 = c(1,NA,1,NA,1)
+    )
+  )
+)
+
+test <- data.frame(
+  fam_id = c(1,1,2,2,3,3,4,4),
+  sex = c(0,0,1,1,0,1,1,1),
+  test_var = c(1:5,NA,NA,NA)
+)
+
+testit <- remove_twins_without_var(
+  df=test, keep_empty_cotwin=T,
+  sex_var="sex",NA_threshold=1, pattern="test"
+)
+stopifnot(
+  all.equal(
+    testit,
+    data.frame(
+      fam_id = c(1,1,2,2,3,3),
+      sex = c(0,0,1,1,0,1),
+      test_var = c(1:5,NA)
+    )
+  )
+)
+
+test <- data.frame(
+  fam_id = c(1,1,2,2,3,3,4,4),
+  sex = c(0,0,1,1,0,1,1,1),
+  test_var = c(1:5,NA,NA,NA),
+  test_var2 = c(1,1,1,NA,NA,NA,NA,NA),
+  test_var3 = c(1,NA,1,NA,1,NA,NA,NA)
+)
+testit <- remove_twins_without_var(
+  df=test, keep_empty_cotwin=T,
+  sex_var="sex",NA_threshold=2, pattern="test", antipattern = "var3"
+)
+stopifnot(
+  all.equal(
+    testit,
+    data.frame(
+      fam_id = c(1,1,2,2,3,3),
+      sex = c(0,0,1,1,0,1),
+      test_var = c(1:5,NA),
+      test_var2 = c(1,1,1,NA,NA,NA),
+      test_var3 = c(1,NA,1,NA,1,NA)
     )
   )
 )
