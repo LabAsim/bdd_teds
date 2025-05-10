@@ -671,16 +671,27 @@ subtract_twins_values <- function(
   if ("tbl_df" %in% class(df)){
     df <- as.data.frame(df)
   }
-  dflist <- split(df, f = list(df[,c(group_var)]), drop = TRUE)
+  # dflist <- split(df, f = list(df[,c(group_var)]), drop = TRUE)
+  dflist <- split(data.table::as.data.table(df), by=group_var)
   to_return <- lapply(
-    X=dflist, FUN=function(df_){
-      diff <- df_[1,var] - df_[2,var]
-      return(c(df_[1,"fam_id"], diff))
+      X=seq_along(dflist), FUN=function(index){
+      inner_df <- dflist[[index]]
+      inner_df <- as.data.frame(inner_df)
+      cat('\r',"Family ID:", inner_df[1,"fam_id"])
+      diff <- inner_df[1,var] - inner_df[2,var]
+      return(
+        data.frame(
+          fam_id = c(inner_df[1,"fam_id"]), 
+          var = c(diff)
+        )
+      )
     }
   )
+  cat("\n")
   # https://stackoverflow.com/a/35951683
   to_return <- unname(to_return)
-  to_return <- do.call(rbind, to_return)
+  to_return <- data.table::rbindlist(to_return)
+  to_return <- as.data.frame(to_return)
   to_return1 <- tibble::tibble(fam_id = to_return[,1])
   to_return2 <- tibble::tibble("{var}" := to_return[,2])
   to_return <- as.data.frame(cbind(to_return1,to_return2))
@@ -715,20 +726,29 @@ subtract_mz_twins_values <- function(
   if ("tbl_df" %in% class(df)){
     df <- as.data.frame(df)
   }
-  dflist <- split(df, f = list(df[,c(group_var)]), drop = TRUE)
+  dflist <- split(data.table::as.data.table(df), by=group_var)
   to_return <- lapply(
-    X=dflist, FUN=function(df_){
-      if (df_[1, sex_var] == df_[2, sex_var]){
-        diff <- df_[1,var] - df_[2,var]
-        return(c(df_[1,"fam_id"], diff))
+    X=seq_along(dflist), FUN=function(index){
+      inner_df <- dflist[[index]]
+      inner_df <- as.data.frame(inner_df)
+      cat('\r',"Family ID:", inner_df[1,"fam_id"])
+      if (inner_df[1, sex_var] == inner_df[2, sex_var]){
+        diff <- inner_df[1,var] - inner_df[2,var]
+        return(
+          data.frame(
+            fam_id = c(inner_df[1,"fam_id"]), 
+            var = c(diff)
+          )
+        )
       }else{
         return(NULL)
       }
     }
   )
+  cat("\n")
   # https://stackoverflow.com/a/35951683
   to_return <- unname(to_return)
-  to_return <- do.call(rbind, to_return)
+  to_return <- data.table::rbindlist(to_return)
   to_return1 <- tibble::tibble(fam_id = to_return[,1])
   to_return2 <- tibble::tibble("{var}" := to_return[,2])
   to_return <- as.data.frame(cbind(to_return1,to_return2))
