@@ -709,7 +709,9 @@ stopifnot(test_diff$variable == c(-1,-1,-1))
 stopifnot(test_diff$fam_id == c(1:3))
 rm(list=c("test", "test_diff"))
 
-
+subtract_twins_values_decorated <- time_and_beep(
+  f=subtract_twins_values
+)
 subtract_mz_twins_values <- function(
     df,
     group_var="fam_id",
@@ -767,6 +769,9 @@ stopifnot(test_diff$variable == c(-1,-1))
 stopifnot(test_diff$fam_id == c(1:2))
 rm(list=c("test", "test_diff"))
 
+subtract_mz_twins_values_decorated <- time_and_beep(
+  f=subtract_mz_twins_values
+)
 
 left_join_df_diff_twin_values <- function(left_df,right_df, join_by_var="fam_id"){
   df <- left_join(
@@ -859,7 +864,7 @@ stopifnot(test$fam_id == c(1:3))
 rm(list=c("test", "test_diff", "test_diff2", "test_diff3"))
 
 
-create_df_subtract_twins_values_multiple_vars <- function(
+create_df_subtract_mz_twins_values <- function(
     df,
     group_var="fam_id",
     vars
@@ -890,7 +895,7 @@ test <- data.frame(
   test_var = c(1:6),
   test_var2 = seq(from=10, to=20, by=2)
 )
-test <- create_df_subtract_twins_values_multiple_vars(
+test <- create_df_subtract_mz_twins_values(
   df=test, vars=c("test_var","test_var2")
 )
 
@@ -904,8 +909,8 @@ rm(list=c("test"))
 
 
 # Prints execution time and beeps
-create_df_subtract_twins_values_multiple_vars_decorated <- time_and_beep(
-  create_df_subtract_twins_values_multiple_vars
+create_df_subtract_mz_twins_values_decorated <- time_and_beep(
+  create_df_subtract_mz_twins_values
 )
 
 test <- data.frame(
@@ -914,7 +919,7 @@ test <- data.frame(
   test_var = c(1:6),
   test_var2 = seq(from=10, to=20, by=2)
 )
-test <- create_df_subtract_twins_values_multiple_vars_decorated(
+test <- create_df_subtract_mz_twins_values_decorated(
   df=test, vars=c("test_var","test_var2")
 )
 
