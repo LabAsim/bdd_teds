@@ -1641,10 +1641,21 @@ parallel::stopCluster(cl=cl)
 rm(list=c("test", "testit", "cl"))
 
 
-extract_columns_name <- function(df,pattern,antipattern){
+extract_columns_name <- function(df,pattern,antipattern_list){
+  if (is.list(antipattern_list) == F & is.character(antipattern_list) == T){
+    if (antipattern_list != ""){
+      stop(
+        glue::glue(
+          "`{antipattern_list}`is not a list"
+        )
+      )
+    }
+  }
   columns <- colnames(df)[grepl(pattern=pattern, x=colnames(df))]
-  if (antipattern != ""){
-    columns <- columns[!grepl(pattern=antipattern, x=columns)]
+  if (length(antipattern_list) != 0 & is.character(antipattern_list)==F){
+    for (antipattern in unlist(antipattern_list)){
+      columns <- columns[!grepl(pattern=antipattern, x=columns)]
+    }
   }
   return(columns)
 }
@@ -1656,7 +1667,10 @@ test <- data.frame(
   test_var3 = c(1,NA,1,NA,1,NA,NA,NA)
 )
 
-testit <- extract_columns_name(df=test, pattern = "test_var", antipattern = "")
+testit <- extract_columns_name(
+  df=test, pattern = "test_var", antipattern_list = ""
+)
+
 stopifnot(
   all.equal(
     testit, 
@@ -1664,10 +1678,182 @@ stopifnot(
   )
 )
 
-testit <- extract_columns_name(df=test, pattern = "test_var", antipattern = "2")
+testit <- extract_columns_name(
+  df=test, pattern = "test_var", antipattern_list = list("2","3")
+)
 stopifnot(
   all.equal(
     testit, 
-    c("test_var", "test_var3")
+    c("test_var")
   )
 )
+
+# test <- data.frame(
+#   mpvs_total_12_1 = c(1,1,2,2,3,3,4,NA),
+#   mpvs_total_parent_14_1 = c(0,0,1,1,0,1,1,NA),
+#   mpvs_total_child_14_1 = c(1:5,NA,NA,NA),
+#   mpvs_total_teacher_14_1 = c(1,1,1,NA,NA,NA,NA,NA),
+#   mpvs_total_16_1 = c(1,NA,1,NA,1,NA,NA,NA),
+#   mpvs_total_phase_2_21_1 = c(1,NA,1,NA,1,NA,NA,NA),
+#   mpvs_item_1_12_1 = c()
+# )
+create_flag_mpvs_at_least_one_mpvs_scale <- function(
+    df, include_covid = F
+){
+  df$flag_mpvs_item_12 <- NA^rowSums(
+    is.na(
+      df %>% select(
+        colnames(df)[str_detect(
+          string=colnames(df), 
+          pattern="mpvs_item_[\\d]+_12_1"
+        )]
+      )
+    )
+  )
+  df$flag_mpvs_item_14 <- NA^rowSums(
+    is.na(
+      df %>% select(
+        colnames(df)[str_detect(
+          string=colnames(df), 
+          pattern="mpvs_item_[\\d]+_child_14_1"
+        )]
+      )
+    )
+  )
+  df$flag_mpvs_item_16 <- NA^rowSums(
+    is.na(
+      df %>% select(
+        colnames(df)[str_detect(
+          string=colnames(df), 
+          pattern="mpvs_item_[\\d]+_16_1"
+        )]
+      )
+    )
+  )
+  df$flag_mpvs_item_phase2_21 <- NA^rowSums(
+    is.na(
+      df %>% select(
+        colnames(df)[str_detect(
+          string=colnames(df), 
+          pattern="mpvs_item_[\\d]+_phase_2_21_1"
+        )]
+      )
+    )
+  )
+  if (include_covid==T){
+    df$flag_mpvs_item_cov1_21 <- NA^rowSums(
+      is.na(
+        df %>% select(
+          colnames(df)[str_detect(
+            string=colnames(df),
+            pattern="mpvs_item_[\\d]+_cov1_21_1"
+          )]
+        )
+      )
+    )
+
+    df$flag_mpvs_item_cov2_21 <- NA^rowSums(
+      is.na(
+        df %>% select(
+          colnames(df)[str_detect(
+            string=colnames(df),
+            pattern="mpvs_item_[\\d]+_cov2_21_1"
+          )]
+        )
+      )
+    )
+
+    df$flag_mpvs_item_cov3_21 <- NA^rowSums(
+      is.na(
+        df %>% select(
+          colnames(df)[str_detect(
+            string=colnames(df),
+            pattern="mpvs_item_[\\d]+_cov3_21_1"
+          )]
+        )
+      )
+    )
+
+    df$flag_mpvs_item_cov4_21 <- NA^rowSums(
+      is.na(
+        df %>% select(
+          colnames(df)[str_detect(
+            string=colnames(df),
+            pattern="mpvs_item_[\\d]+_cov4_21_1"
+          )]
+        )
+      )
+    )
+
+  }
+  
+  
+  # If a row does NOT contain ANY NA's, then the rowsum is 0, and NA^0 = 1
+  # Otherwise, NA^any_number = NA
+  # 1 means that the row contain NO NA's in the flag vars
+  df$flag_mpvs <- NA^rowSums(
+    is.na(
+      df %>% select(
+        colnames(df)[str_detect(
+          string=colnames(df), 
+          pattern="flag_mpvs_"
+        )]
+      )
+    )
+  )
+  
+  df <- df %>% 
+    mutate(
+      flag_mpvs = case_when(
+        if_all(
+          colnames(df)[str_detect(
+            string=colnames(df), 
+            pattern="flag_mpvs_"
+          )],
+          is.na
+        ) ~ NA_real_,
+        .default = 1
+        # if_any(
+        #   contains("1"),
+        #   colnames(df)[str_detect(
+        #     string=colnames(df), 
+        #     pattern="flag_mpvs_"
+        #   )]
+        # ) ~ "1"
+        
+      )
+    )
+  mpvs_cols <- extract_columns_name(
+    df=df,
+    pattern="^mpvs_total", 
+    antipattern_list = if (include_covid ==F )list("cov","parent","teacher") else list("parent","teacher")
+  )
+  df <- df %>%
+    mutate(
+      flag_NA_mpvs_total = if_all(
+        mpvs_cols,
+        ~is.na(.x)
+      )
+    )
+  print(table(df$flag_NA_mpvs_total,useNA = "always", deparse.level = 2))
+  print(table(df$flag_mpvs,useNA = "always", deparse.level = 2))
+  print(
+    table(
+      df$flag_NA_mpvs_total,
+      df$flag_mpvs,
+      useNA = "always", deparse.level = 2
+    )
+  )
+  
+  
+  df <- df %>%
+    mutate(
+      flag_mpvs_item_total_incomplete = case_when(
+        flag_NA_mpvs_total == F  & flag_mpvs ==1 ~ F,
+        flag_NA_mpvs_total == T  & is.na(flag_mpvs) == T ~ F,
+        .default = T
+      )
+    )
+  print(table(df$flag_mpvs_item_total_incomplete,useNA = "always", deparse.level = 2))
+  return(df)
+}
