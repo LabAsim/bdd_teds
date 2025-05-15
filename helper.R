@@ -729,6 +729,7 @@ subtract_mz_twins_values <- function(
     df <- as.data.frame(df)
   }
   dflist <- split(data.table::as.data.table(df), by=group_var)
+  print(glue::glue("Column: {var}"))
   to_return <- lapply(
     X=seq_along(dflist), FUN=function(index){
       inner_df <- dflist[[index]]
@@ -1330,13 +1331,20 @@ remove_twins_without_var <- function(
     X=seq_along(dflist), FUN=function(index){
       inner_df <- dflist[[index]]
       inner_df <- as.data.frame(inner_df)
-      cat('\r',"Family ID:", inner_df[1,"fam_id"])
-      flush.console() 
+      
       # df_twin_1 <- inner_df[1,colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]]
       # df_twin_2 <- inner_df[2,colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]]
       columns <- colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]
+      if (index == length(dflist)){
+        print(columns)
+      }
+      cat('\r',"Family ID:", inner_df[1,"fam_id"])
+      flush.console() 
       if (antipattern != ""){
         columns <- columns[!grepl(pattern=antipattern, x=columns)]
+      }
+      if (index == length(dflist)){
+        print(columns)
       }
       N_NA_twin_1 <- sum(is.na(inner_df[1,columns]))
       N_NA_twin_2 <- sum(is.na(inner_df[2,columns]))
