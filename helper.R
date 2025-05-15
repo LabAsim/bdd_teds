@@ -1700,6 +1700,10 @@ stopifnot(
 create_flag_mpvs_at_least_one_mpvs_scale <- function(
     df, include_covid = F
 ){
+  #####################################################################
+  # !! Parents & teacher questionnaires are not taken into account !! #
+  #####################################################################
+  
   df$flag_mpvs_item_12 <- NA^rowSums(
     is.na(
       df %>% select(
