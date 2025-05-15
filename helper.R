@@ -1639,3 +1639,35 @@ stopifnot(
 
 parallel::stopCluster(cl=cl)
 rm(list=c("test", "testit", "cl"))
+
+
+extract_columns_name <- function(df,pattern,antipattern){
+  columns <- colnames(df)[grepl(pattern=pattern, x=colnames(df))]
+  if (antipattern != ""){
+    columns <- columns[!grepl(pattern=antipattern, x=columns)]
+  }
+  return(columns)
+}
+test <- data.frame(
+  fam_id = c(1,1,2,2,3,3,4,4),
+  sex = c(0,0,1,1,0,1,1,1),
+  test_var = c(1:5,NA,NA,NA),
+  test_var2 = c(1,1,1,NA,NA,NA,NA,NA),
+  test_var3 = c(1,NA,1,NA,1,NA,NA,NA)
+)
+
+testit <- extract_columns_name(df=test, pattern = "test_var", antipattern = "")
+stopifnot(
+  all.equal(
+    testit, 
+    colnames(test)[grepl(pattern="test_var",x=colnames(test))]
+  )
+)
+
+testit <- extract_columns_name(df=test, pattern = "test_var", antipattern = "2")
+stopifnot(
+  all.equal(
+    testit, 
+    c("test_var", "test_var3")
+  )
+)
