@@ -3,8 +3,10 @@
 ############
 
 # No need to recreate dfs, just load them from Hyp1
-source("data_management_hyp_1.R")
 
+if (sys.nframe() == 0) {
+  source("data_management_hyp_1.R")
+}
 
 df_all_diffs <- create_df_subtract_mz_twins_values_decorated(
   df = df_essential_vars,
