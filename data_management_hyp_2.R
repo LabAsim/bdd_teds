@@ -1,5 +1,3 @@
-
-
 ############
 # Load dfs #
 ############
@@ -8,9 +6,9 @@
 source("data_management_hyp_1.R")
 
 
-df_all_diffs <- create_df_subtract_mz_twins_values_multiple_vars_decorated(
-  df=df_essential_vars,
-  group_var="fam_id",
+df_all_diffs <- create_df_subtract_mz_twins_values_decorated(
+  df = df_essential_vars,
+  group_var = "fam_id",
   vars = c(
     "mpvs_total_12_1",
     "mpvs_total_child_14_1",
@@ -21,6 +19,6 @@ df_all_diffs <- create_df_subtract_mz_twins_values_multiple_vars_decorated(
     "mpvs_total_cov3_21_1",
     "mpvs_total_cov4_21_1",
     "dcq_total_26_1",
-    colnames(df_essential_vars)[grepl(pattern="scaled",x=colnames(df_essential_vars))]
+    colnames(df_essential_vars)[grepl(pattern = "scaled", x = colnames(df_essential_vars))]
   )
 )
