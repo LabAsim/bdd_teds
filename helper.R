@@ -741,7 +741,7 @@ subtract_mz_twins_values <- function(
   # https://stackoverflow.com/a/35951683
   to_return <- unname(to_return)
   to_return <- data.table::rbindlist(to_return)
-  # to_return <- as.data.frame(to_return)
+  to_return <- as.data.frame(to_return)
   to_return1 <- tibble::tibble(fam_id = to_return[, 1])
   to_return2 <- tibble::tibble("{var}" := to_return[, 2])
   to_return <- as.data.frame(cbind(to_return1, to_return2))
@@ -758,7 +758,7 @@ stopifnot(class(test_diff) == "data.frame")
 stopifnot(dim(test_diff) == c(2, 2))
 stopifnot(test_diff$variable == c(-1, -1))
 stopifnot(test_diff$fam_id == c(1:2))
-# stopifnot(all.equal(c("fam_id", "test_var"), colnames(test_diff)))
+stopifnot(all.equal(c("fam_id", "test_var"), colnames(test_diff)))
 rm(list = c("test", "test_diff"))
 
 subtract_mz_twins_values_decorated <- time_and_beep(
