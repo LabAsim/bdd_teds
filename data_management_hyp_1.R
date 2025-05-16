@@ -2,10 +2,15 @@ library(tidyverse)
 ############
 # Load dfs #
 ############
-if (exists("df_essential_vars") == F){
-  load(file = "G:\\data_wrangling.Rdata")
-  source("helper.R")
-}
+source("data_wrangling.R")
+
+# if (exists("df_1") == F){
+#   source("data_wrangling.R")
+# }
+# if (exists("df_essential_vars") == F){
+#   load(file = "G:\\data_wrangling.Rdata")
+#   source("helper.R")
+# }
 
 vars <- c(
   "school_cohort_fct",
