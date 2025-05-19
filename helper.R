@@ -1837,3 +1837,72 @@ create_flag_mpvs_at_least_one_mpvs_scale <- function(
   print(table(df$flag_mpvs_item_total_incomplete, useNA = "always", deparse.level = 2))
   return(df)
 }
+
+
+
+test <- data.frame(
+  fam_id = c(1, 1, 2, 2, 3, 3, 4, 4),
+  sex = c(0, 0, 1, 1, 0, 1, 1, 1),
+  test_var = c(1:5, NA, NA, NA),
+  test_var2 = c(1, 1, 1, NA, NA, NA, NA, NA),
+  test_var3 = c(1, NA, 1, NA, 1, NA, NA, NA)
+)
+
+use_mean_imputation <- function(df, vars_to_impute) {
+  for (column in colnames(df)) {
+    if (column %in% vars_to_impute & is.numeric(df[, column])) {
+      print(glue::glue("\t{column}"))
+      print(glue::glue("Before imputation, rows with NA: {sum(is.na(df[, column]))}"))
+      df[is.na(df[, column]) == T, column] <- mean(df[, column], na.rm = T)
+      print(glue::glue("After imputation, rows with NA: {sum(is.na(df[, column]))}"))
+      cat("\n")
+    }
+  }
+  cat("\tMean substitution done")
+  cat("\n")
+  return(df)
+}
+
+testit <- use_mean_imputation(
+  df = test,
+  vars_to_impute = c("test_var", "test_var2")
+)
+
+stopifnot(
+  all.equal(
+    mean(testit$test_var), mean(test$test_var, na.rm = T)
+  )
+)
+
+stopifnot(
+  all.equal(
+    mean(testit$test_var2), mean(test$test_var2, na.rm = T)
+  )
+)
+
+stopifnot(
+  all.equal(
+    sum(is.na(testit$test_var)), 0
+  )
+)
+
+stopifnot(
+  all.equal(
+    sum(is.na(testit$test_var2)), 0
+  )
+)
+stopifnot(
+  all.equal(
+    testit[is.na(test$test_var), "test_var"],
+    c(3, 3, 3)
+  )
+)
+
+stopifnot(
+  all.equal(
+    testit[is.na(test$test_var2), "test_var2"],
+    c(1, 1, 1, 1, 1)
+  )
+)
+
+rm(list = c("test", "testit"))
