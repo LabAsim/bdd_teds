@@ -35,11 +35,11 @@ model_scaled_32_without_covid <- "
     mpvs_total_phase_2_21_1_scaled_32 ~ age_phase2_child_21_1
 
     # Sex
-    dcq_total_26_1 ~ sex_1
-    mpvs_total_12_1_scaled_32 ~ sex_1
-    mpvs_total_child_14_1_scaled_32 ~ sex_1
-    mpvs_total_16_1_scaled_32 ~ sex_1
-    mpvs_total_phase_2_21_1_scaled_32 ~ sex_1
+    dcq_total_26_1 ~ sex_1_fct
+    mpvs_total_12_1_scaled_32 ~ sex_1_fct
+    mpvs_total_child_14_1_scaled_32 ~ sex_1_fct
+    mpvs_total_16_1_scaled_32 ~ sex_1_fct
+    mpvs_total_phase_2_21_1_scaled_32 ~ sex_1_fct
 "
 fit_fiml_scaled_32_without_covid <- sem(
   model = model_scaled_32_without_covid,
@@ -48,6 +48,44 @@ fit_fiml_scaled_32_without_covid <- sem(
   missing = "fiml"
 )
 summary(fit_fiml_scaled_32_without_covid)
+
+# The rows in the analysis above are the following;
+# test <- df_essential_vars %>%
+#   select(
+#     c(
+#       "twin_id",
+#       "fam_id",
+#       "sex_1",
+#       "age_child_12_1",
+#       "age_child_14_1",
+#       "age_child_web_16_1",
+#       "age_phase2_child_21_1",
+#       "age_26_1",
+#       "mpvs_total_12_1_scaled_32",
+#       "mpvs_total_child_14_1_scaled_32",
+#       "mpvs_total_16_1_scaled_32",
+#       "mpvs_total_phase_2_21_1_scaled_32",
+#       "dcq_total_26_1"
+#     )
+#   )
+# dim(test[complete.cases(test[, c(
+#   "sex_1",
+#   "age_child_12_1",
+#   "age_child_14_1",
+#   "age_child_web_16_1",
+#   "age_phase2_child_21_1",
+#   "age_26_1"
+# )]), ])
+
+fit_ml_scaled_32_without_covid <- sem(
+  model = model_scaled_32_without_covid,
+  data = df_essential_vars,
+  cluster = "fam_id"
+)
+summary(fit_ml_scaled_32_without_covid)
+
+# The rows in the complete case analysis above are the following;
+# dim(test[complete.cases(test), ])
 
 # With covid
 model_scaled_32_with_covid <- "
