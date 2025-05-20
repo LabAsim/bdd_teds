@@ -4,12 +4,12 @@ library(lavaan)
 
 # It's faster than running data_wrangling.R
 if (sys.nframe() == 0) {
-  if (exists("df_1") == F) {
-    load(file = "G:\\data_wrangling.Rdata")
-  }
-  if (exists("df_essential_vars") == F) {
-    source("data_management_hyp_1.R")
-  }
+  # if (exists("df_1") == F) {
+  #   load(file = "G:\\data_wrangling.Rdata")
+  # }
+  # if (exists("df_essential_vars") == F) {
+  #   source("data_management_hyp_1.R")
+  # }
   if (exists("df_all_diffs") == F) {
     source("data_management_hyp_2.R")
   }
