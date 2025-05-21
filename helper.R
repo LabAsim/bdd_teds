@@ -7,7 +7,7 @@ time_and_beep <- function(f, sound = 1) {
     to_return <- f(...)
     on.exit(beepr::beep(sound))
     end_time <- Sys.time()
-    print(Sys.time() - start_time)
+    message(Sys.time() - start_time)
     rm(start_time)
     return(to_return)
   }
@@ -48,7 +48,7 @@ fill_single_var_twin_from_cotwin2 <- function(df, var) {
   } else {
     calculate <- data.frame()
   }
-  print(glue::glue(paste("Found {dim(calculate)[1]} pair(s) for '{var}'!")))
+  message(glue::glue(paste("Found {dim(calculate)[1]} pair(s) for '{var}'!")))
   return(df)
 }
 
@@ -148,7 +148,7 @@ stopifnot(
 
 fill_var <- function(df, primary, secondary, tertiary, new_column) {
   df[, c(new_column)] <- rep(NA, times = dim(df)[1])
-  print(rlang::as_name(new_column))
+  message("Column: ", rlang::as_name(new_column))
   df <- df %>%
     mutate(
       "{new_column}" := case_when(
@@ -226,7 +226,7 @@ extract_unique_nums_probs <- function(df, var) {
     sorted_nums = sorted_nums,
     probs = probs
   )
-  print(to_return)
+  message(to_return)
   return(to_return)
 }
 
@@ -667,7 +667,8 @@ subtract_twins_values <- function(
     X = seq_along(dflist), FUN = function(index) {
       inner_df <- dflist[[index]]
       inner_df <- as.data.frame(inner_df)
-      cat("\r", "Family ID:", inner_df[1, "fam_id"])
+      message("\r", "Family ID:", inner_df[1, "fam_id"], appendLF = FALSE)
+      flush.console()
       diff <- inner_df[1, var] - inner_df[2, var]
       return(
         data.frame(
@@ -677,7 +678,7 @@ subtract_twins_values <- function(
       )
     }
   )
-  cat("\n")
+  message("\n")
   # https://stackoverflow.com/a/35951683
   to_return <- unname(to_return)
   to_return <- data.table::rbindlist(to_return)
@@ -718,12 +719,12 @@ subtract_mz_twins_values <- function(
     df <- as.data.frame(df)
   }
   dflist <- split(data.table::as.data.table(df), by = group_var)
-  print(glue::glue("Column: {var}"))
+  message(glue::glue("Column: {var}"))
   to_return <- lapply(
     X = seq_along(dflist), FUN = function(index) {
       inner_df <- dflist[[index]]
       inner_df <- as.data.frame(inner_df)
-      cat("\r", "Family ID:", inner_df[1, "fam_id"])
+      message("\r", "Family ID:", inner_df[1, "fam_id"], appendLF = FALSE)
       if (inner_df[1, sex_var] == inner_df[2, sex_var]) {
         diff <- inner_df[1, var] - inner_df[2, var]
         return(
@@ -737,7 +738,7 @@ subtract_mz_twins_values <- function(
       }
     }
   )
-  cat("\n")
+  message("\n")
   # https://stackoverflow.com/a/35951683
   to_return <- unname(to_return)
   to_return <- data.table::rbindlist(to_return)
@@ -897,7 +898,7 @@ stopifnot(test$fam_id == c(1:3))
 rm(list = c("test"))
 
 
-# Prints execution time and beeps
+# messages execution time and beeps
 create_df_subtract_mz_twins_values_decorated <- time_and_beep(
   create_df_subtract_mz_twins_values
 )
@@ -1025,8 +1026,8 @@ calculate_items <- function(
     pattern = (paste0(target_phrase, "$")), x = colnames(df)
   )]]
   x <- x[, colnames(x)[grepl(pattern = (target_phrase2), x = colnames(x))]]
-  print(glue::glue("Found {dim(x)[2]} columns;"))
-  print(colnames(x))
+  message(glue::glue("Found {dim(x)[2]} columns;"))
+  message(glue::glue(colnames(x), .sep = " "))
   df <- df %>%
     mutate(
       "{output_var}" := rowSums(
@@ -1080,7 +1081,7 @@ exclude_collinear_vars <- function(
     for (rowvar in rownames(corr_mat)) {
       if (!is.na(corr_mat[rowvar, colvar])) {
         if ((abs(corr_mat[rowvar, colvar]) > upper_threshold) | abs(corr_mat[rowvar, colvar]) < lower_threshold) {
-          print(
+          message(
             glue::glue("Removing; `{rowvar} - {colvar}` with corr={corr_mat[rowvar, colvar]}")
           )
           pred_matrix[rowvar, colvar] <- 0
@@ -1112,7 +1113,7 @@ exclude_collinear_vars <- function(
 #
 #         if (!is.na(corr_mat[rownames(x_df), colvar])){
 #           if ((abs(corr_mat[rownames(x_df), colvar]) > upper_threshold) | abs(corr_mat[rownames(x_df), colvar]) < lower_threshold){
-#             print(
+#             message(
 #               glue::glue("Removing; `{rownames(x_df)} - {colvar}` with corr={corr_mat[rownames(x_df), colvar]}")
 #             )
 #             pred_matrix[rownames(x_df), colvar] <- 0
@@ -1203,13 +1204,13 @@ modify_pred_matrix <- function(
     pattern = (paste0(target_phrase, "$")), x = colnames(df)
   )]]
   total_score <- colnames(x)[grepl(pattern = (target_phrase_total), x = colnames(x))]
-  print(
+  message(
     glue::glue("Found {length(total_score)} `{target_phrase_total}` columns;")
   )
-  print(total_score)
+  # message(total_score)
   x <- x[, colnames(x)[grepl(pattern = (target_phrase2), x = colnames(x))]]
-  print(glue::glue("Found {dim(x)[2]} `{target_phrase2}` columns;"))
-  print(colnames(x))
+  message(glue::glue("Found {dim(x)[2]} `{target_phrase2}` columns;"))
+  message(glue::glue("{colnames(x)}", .sep = " "))
 
   # Sum scores should not be predicted by other vars,
   # but they can predict others, including items from other waves.
@@ -1290,11 +1291,11 @@ remove_twins_without_var <- function(
   if ("tbl_df" %in% class(df)) {
     df <- as.data.frame(df)
   }
-  print("Splitting")
+  message("Splitting")
   # dflist <- split(df, f = list(df[,c(group_var)]), drop = TRUE)
   # Data.table is significantly faster!
   dflist <- split(data.table::as.data.table(df), by = "fam_id")
-  print("Splitted")
+  message("Splitted")
   if (keep_empty_cotwin == F) {
     df <- df %>%
       filter(
@@ -1316,15 +1317,15 @@ remove_twins_without_var <- function(
       # df_twin_2 <- inner_df[2,colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]]
       columns <- colnames(inner_df)[grepl(pattern = pattern, x = colnames(inner_df))]
       if (index == length(dflist)) {
-        print(columns)
+        message(columns)
       }
-      cat("\r", "Family ID:", inner_df[1, "fam_id"])
+      message("\r", "Family ID:", inner_df[1, "fam_id"])
       flush.console()
       if (antipattern != "") {
         columns <- columns[!grepl(pattern = antipattern, x = columns)]
       }
       if (index == length(dflist)) {
-        print(columns)
+        message(columns)
       }
       N_NA_twin_1 <- sum(is.na(inner_df[1, columns]))
       N_NA_twin_2 <- sum(is.na(inner_df[2, columns]))
@@ -1338,13 +1339,13 @@ remove_twins_without_var <- function(
       }
     }
   )
-  cat("\n")
-  print("Done filtering")
+  message("\n")
+  message("Done filtering")
   # # https://stackoverflow.com/a/35951683
   to_return <- unname(to_return)
   to_return <- data.table::rbindlist(to_return)
   to_return <- as.data.frame(to_return)
-  print("Done binding")
+  message("Done binding")
   return(to_return)
 }
 
@@ -1815,9 +1816,9 @@ create_flag_mpvs_at_least_one_mpvs_scale <- function(
         ~ is.na(.x)
       )
     )
-  print(table(df$flag_NA_mpvs_total, useNA = "always", deparse.level = 2))
-  print(table(df$flag_mpvs, useNA = "always", deparse.level = 2))
-  print(
+  message(table(df$flag_NA_mpvs_total, useNA = "always", deparse.level = 2))
+  message(table(df$flag_mpvs, useNA = "always", deparse.level = 2))
+  message(
     table(
       df$flag_NA_mpvs_total,
       df$flag_mpvs,
@@ -1834,7 +1835,7 @@ create_flag_mpvs_at_least_one_mpvs_scale <- function(
         .default = T
       )
     )
-  print(table(df$flag_mpvs_item_total_incomplete, useNA = "always", deparse.level = 2))
+  message(table(df$flag_mpvs_item_total_incomplete, useNA = "always", deparse.level = 2))
   return(df)
 }
 
@@ -1851,15 +1852,15 @@ test <- data.frame(
 use_mean_imputation <- function(df, vars_to_impute) {
   for (column in colnames(df)) {
     if (column %in% vars_to_impute & is.numeric(df[, column])) {
-      print(glue::glue("\t{column}"))
-      print(glue::glue("Before imputation, rows with NA: {sum(is.na(df[, column]))}"))
+      message(glue::glue("\t{column}"))
+      message(glue::glue("Before imputation, rows with NA: {sum(is.na(df[, column]))}"))
       df[is.na(df[, column]) == T, column] <- mean(df[, column], na.rm = T)
-      print(glue::glue("After imputation, rows with NA: {sum(is.na(df[, column]))}"))
-      cat("\n")
+      message(glue::glue("After imputation, rows with NA: {sum(is.na(df[, column]))}"))
+      message("\n")
     }
   }
-  cat("\tMean substitution done")
-  cat("\n")
+  message("\tMean substitution done")
+  message("\n")
   return(df)
 }
 
