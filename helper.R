@@ -1027,7 +1027,8 @@ calculate_items <- function(
   )]]
   x <- x[, colnames(x)[grepl(pattern = (target_phrase2), x = colnames(x))]]
   message(glue::glue("Found {dim(x)[2]} columns;"))
-  message(glue::glue(colnames(x), .sep = " "))
+  df_formatted_str <- paste(capture.output(colnames(x)))
+  message(df_formatted_str)
   df <- df %>%
     mutate(
       "{output_var}" := rowSums(
@@ -1317,15 +1318,17 @@ remove_twins_without_var <- function(
       # df_twin_2 <- inner_df[2,colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]]
       columns <- colnames(inner_df)[grepl(pattern = pattern, x = colnames(inner_df))]
       if (index == length(dflist)) {
-        message(columns)
+        to_print <- paste(capture.output(columns))
+        message("\n", to_print)
       }
-      message("\r", "Family ID:", inner_df[1, "fam_id"])
+      message("\r", "Family ID:", inner_df[1, "fam_id"], appendLF = F)
       flush.console()
       if (antipattern != "") {
         columns <- columns[!grepl(pattern = antipattern, x = columns)]
       }
       if (index == length(dflist)) {
-        message(columns)
+        to_print <- paste(capture.output(columns))
+        message("\n", to_print)
       }
       N_NA_twin_1 <- sum(is.na(inner_df[1, columns]))
       N_NA_twin_2 <- sum(is.na(inner_df[2, columns]))
