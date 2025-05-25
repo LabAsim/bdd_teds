@@ -1,0 +1,64 @@
+library(lavaan)
+
+df_essential_vars_without_ED <- df_essential_vars |>
+  filter(
+    eating_diagnosis_fct_26_1 == "No"
+  )
+
+df_essential_vars_without_ED <- remove_twins_with_this_level(
+  df = df_essential_vars,
+  group_var = "fam_id",
+  sex_var = "sex_1",
+  target_var = "eating_diagnosis_26_1",
+  level = "No",
+  keep_different_cotwin = F
+)
+
+
+df_all_diffs_without_eating <- create_df_subtract_mz_twins_values_decorated(
+  df = df_essential_vars_without_ED,
+  group_var = "fam_id",
+  vars = c(
+    "mpvs_total_12_1",
+    "mpvs_total_child_14_1",
+    "mpvs_total_16_1",
+    "mpvs_total_phase_2_21_1",
+    "mpvs_total_cov1_21_1",
+    "mpvs_total_cov2_21_1",
+    "mpvs_total_cov3_21_1",
+    "mpvs_total_cov4_21_1",
+    "dcq_total_26_1",
+    colnames(df_essential_vars)[grepl(pattern = "scaled", x = colnames(df_essential_vars))]
+  )
+)
+# Excluding COVID period #
+twin_diff_model_scaled2 <- "
+    dcq_total_26_1 ~ mpvs_total_12_1_scaled_32
+    dcq_total_26_1 ~ mpvs_total_child_14_1_scaled_32
+    dcq_total_26_1 ~ mpvs_total_16_1_scaled_32
+    dcq_total_26_1 ~ mpvs_total_phase_2_21_1_scaled_32
+    mpvs_total_child_14_1_scaled_32 ~ mpvs_total_12_1_scaled_32
+    mpvs_total_16_1_scaled_32 ~ mpvs_total_child_14_1_scaled_32
+    mpvs_total_phase_2_21_1_scaled_32 ~ mpvs_total_16_1_scaled_32
+"
+
+fit_ml_without_covid <- sem(
+  model = twin_diff_model_scaled2, data = df_all_diffs_without_eating
+)
+summary(fit_ml_without_covid)
+
+
+fit_fiml_without_covid <- sem(
+  model = twin_diff_model_scaled2, data = df_all_diffs_without_eating,
+  missing = "fiml"
+)
+
+summary(fit_fiml_without_covid)
+parameterestimates(fit_fiml_without_covid)
+lavaanPlot::lavaanPlot(
+  model = fit_fiml_without_covid,
+  edge_options = list(color = "grey"),
+  coefs = TRUE, # covs = TRUE,
+  graph_options = list(rankdir = "TB"),
+  stars = c("regress", "latent", "covs")
+)
