@@ -18,6 +18,8 @@ vars <- c(
   "sex_1",
   "sex_1_fct",
   "zygosity_binary_fct",
+  "eating_diagnosis_fct_26_1",
+  "eating_diagnosis_26_1",
   # Ses & ethnicity serve as auxiliary vars,
   # because they have many obs and are loosely associated with
   # Bullying and BDD
