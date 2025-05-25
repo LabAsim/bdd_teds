@@ -724,12 +724,12 @@ subtract_mz_twins_values <- function(
     X = seq_along(dflist), FUN = function(index) {
       inner_df <- dflist[[index]]
       inner_df <- as.data.frame(inner_df)
-      message("\r", "Family ID:", inner_df[1, "fam_id"], appendLF = FALSE)
+      message("\r", "Family ID:", inner_df[1, group_var], appendLF = FALSE)
       if (inner_df[1, sex_var] == inner_df[2, sex_var]) {
         diff <- inner_df[1, var] - inner_df[2, var]
         return(
           data.frame(
-            fam_id = c(inner_df[1, "fam_id"]),
+            fam_id = c(inner_df[1, group_var]),
             var = c(diff)
           )
         )
@@ -1605,7 +1605,6 @@ testit <- remove_twins_without_var_parallel(
   df = test, keep_empty_cotwin = F,
   sex_var = "sex", NA_threshold = 3, pattern = "test", cl = cl
 )
-testit
 
 stopifnot(
   all.equal(
@@ -1906,6 +1905,234 @@ stopifnot(
   all.equal(
     testit[is.na(test$test_var2), "test_var2"],
     c(1, 1, 1, 1, 1)
+  )
+)
+
+rm(list = c("test", "testit"))
+
+
+
+fct_case_when <- function(...) {
+  # See: https://stackoverflow.com/a/69333730
+  args <- as.list(match.call())
+  levels <- sapply(args[-1], function(f) {
+    # print(f)
+    f[[3]]
+  }) # extract RHS of formula
+  levels <- levels[!is.na(levels)]
+  cases <- dplyr::case_when(..., .default = "check your levels")
+  check_cases <- grepl(pattern = "check your levels", x = cases, fixed = T)
+  if (T %in% check_cases) {
+    stop(("Check your levels, NA are produced!"))
+  }
+  return(factor(cases, levels = levels))
+}
+
+
+
+remove_twins_with_this_level <- function(
+    df,
+    target_var,
+    level,
+    group_var = "fam_id",
+    sex_var = "sex_1",
+    keep_different_cotwin = T) {
+  for (var in c(sex_var, group_var)) {
+    if ((var %in% colnames(df)) == F) {
+      stop(
+        glue::glue(
+          "`{var}` is not a column name of the df"
+        )
+      )
+    }
+  }
+
+  if ("tbl_df" %in% class(df)) {
+    df <- as.data.frame(df)
+  }
+  message("Splitting")
+  # dflist <- split(df, f = list(df[,c(group_var)]), drop = TRUE)
+  # Data.table is significantly faster!
+  dflist <- split(data.table::as.data.table(df), by = "fam_id")
+  message("Splitted")
+  to_return <- lapply(
+    X = seq_along(dflist), FUN = function(index) {
+      inner_df <- dflist[[index]]
+      inner_df <- as.data.frame(inner_df)
+      inner_df[, target_var] <- as.character(inner_df[, target_var])
+      message("\r", "Family ID:", inner_df[1, "fam_id"], appendLF = F)
+      flush.console()
+      if ((is.na(inner_df[1, target_var]) == T) & (is.na(inner_df[2, target_var]) == T)) {
+        return(NULL)
+      }
+      if (keep_different_cotwin == F) {
+        # If one of them is NA, drop both
+        if ((is.na(inner_df[1, target_var]) == T) | (is.na(inner_df[2, target_var]) == T)) {
+          return(NULL)
+        }
+      }
+      if (keep_different_cotwin == T) {
+        # If one of them is NA, keep both
+        if (is.na(inner_df[1, target_var]) == T) {
+          if ((inner_df[2, target_var] == level)) {
+            return(inner_df)
+          }
+          if ((inner_df[2, target_var] != level)) {
+            return(NULL)
+          }
+        }
+        if (is.na(inner_df[2, target_var]) == T) {
+          if ((inner_df[1, target_var] == level)) {
+            return(inner_df)
+          }
+          if ((inner_df[1, target_var] != level)) {
+            return(NULL)
+          }
+        }
+      }
+      # Both cotwins don't have the desired level
+      if ((inner_df[1, target_var] != level) & (inner_df[2, target_var] != level)) {
+        return(NULL)
+      } else {
+        return(inner_df)
+      }
+    }
+  )
+  message("\n")
+  message("Done filtering")
+  # # https://stackoverflow.com/a/35951683
+  to_return <- unname(to_return)
+  to_return <- data.table::rbindlist(to_return)
+  to_return <- as.data.frame(to_return)
+  message("Done binding")
+  return(to_return)
+}
+
+remove_twins_with_this_level_decorated <- time_and_beep(
+  remove_twins_with_this_level
+)
+
+
+test <- data.frame(
+  fam_id = c(1, 1, 2, 2, 3, 3, 4, 4),
+  sex = c(0, 0, 1, 1, 0, 1, 1, 1),
+  test_var = c(1, 1, 2, 2, 3:4, NA, NA)
+)
+testit <- remove_twins_with_this_level(
+  df = test, keep_different_cotwin = T,
+  sex_var = "sex",
+  target_var = "test_var",
+  level = 1
+)
+stopifnot(
+  all.equal(
+    testit,
+    data.frame(
+      fam_id = c(1, 1),
+      sex = c(0, 0),
+      test_var = c("1", "1")
+    )
+  )
+)
+
+testit <- remove_twins_with_this_level(
+  df = test, keep_different_cotwin = T,
+  sex_var = "sex",
+  target_var = "test_var",
+  level = 2
+)
+stopifnot(
+  all.equal(
+    testit,
+    data.frame(
+      fam_id = c(2, 2),
+      sex = c(1, 1),
+      test_var = c("2", "2")
+    )
+  )
+)
+
+test <- data.frame(
+  fam_id = c(1, 1, 2, 2, 3, 3, 4, 4),
+  sex = c(0, 0, 1, 1, 0, 1, 1, 1),
+  test_var = c(1, 1, 2, 2, 3:4, 1, NA)
+)
+testit <- remove_twins_with_this_level(
+  df = test, keep_different_cotwin = F,
+  sex_var = "sex",
+  target_var = "test_var",
+  level = 1
+)
+
+stopifnot(
+  all.equal(
+    testit,
+    data.frame(
+      fam_id = c(1, 1),
+      sex = c(0, 0),
+      test_var = c("1", "1")
+    )
+  )
+)
+
+testit <- remove_twins_with_this_level(
+  df = test, keep_different_cotwin = T,
+  sex_var = "sex",
+  target_var = "test_var",
+  level = 1
+)
+stopifnot(
+  all.equal(
+    testit,
+    data.frame(
+      fam_id = c(1, 1, 4, 4),
+      sex = c(0, 0, 1, 1),
+      test_var = c("1", "1", "1", NA)
+    )
+  )
+)
+
+test <- data.frame(
+  fam_id = c(1, 1, 2, 2, 3, 3, 4, 4, 5, 5),
+  sex = c(0, 0, 1, 1, 0, 1, 1, 1, 0, 0),
+  test_var = c(1, 1, 2, 2, 3:4, 1, NA, "yes", NA)
+)
+testit <- remove_twins_with_this_level(
+  df = test, keep_different_cotwin = F,
+  sex_var = "sex",
+  target_var = "test_var",
+  level = 1
+)
+stopifnot(
+  all.equal(
+    testit,
+    data.frame(
+      fam_id = c(1, 1),
+      sex = c(0, 0),
+      test_var = c("1", "1")
+    )
+  )
+)
+
+test <- data.frame(
+  fam_id = c(1, 1, 2, 2, 3, 3, 4, 4, 5, 5),
+  sex = c(0, 0, 1, 1, 0, 1, 1, 1, 0, 0),
+  test_var = c(1, 1, 2, 2, 3:4, 1, NA, "yes", NA)
+)
+testit <- remove_twins_with_this_level(
+  df = test, keep_different_cotwin = T,
+  sex_var = "sex",
+  target_var = "test_var",
+  level = 1
+)
+stopifnot(
+  all.equal(
+    testit,
+    data.frame(
+      fam_id = c(1, 1, 4, 4),
+      sex = c(0, 0, 1, 1),
+      test_var = c("1", "1", "1", NA)
+    )
   )
 )
 
