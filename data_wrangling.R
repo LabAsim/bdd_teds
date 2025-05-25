@@ -410,14 +410,114 @@ df$age_26_2 <- df_raw$zmhage2
 # Eating disorders
 # Derived
 df$anorexia_derived_26_1 <- df_raw$zmheatdandiag1
+df$anorexia_derived_fct_26_1 <- factor(
+  df_raw$zmheatdandiag1,
+  levels = c(0, 1, 2, 3),
+  labels = c(
+    "No diagnosis", "Without subtype", "Restricting", "Purging/binge eating"
+  )
+)
 df$binge_derived_26_1 <- df_raw$zmheatdbediag1
+df$binge_derived_fct_26_1 <- factor(
+  df_raw$zmheatdbediag1,
+  levels = c(0, 1),
+  labels = c("No", "Yes")
+)
 df$bulimia_derived_26_1 <- df_raw$zmheatdbndiag1
-# Ever diagnosed by a professional
-df$binge_lifetime_26_1 <- df_raw$zmhmhddx2d1
-df$over_eating_lifetime_26_1 <- df_raw$zmhmhddx2c1
-df$bulimia_lifetime_26_1 <- df_raw$zmhmhddx2b1
-df$eating_other_lifetime_26_1 <- df_raw$zmhmhddx2e1
+df$bulimia_derived_fct_26_1 <- factor(
+  df_raw$zmheatdbndiag1,
+  levels = c(0, 1),
+  labels = c("No", "Yes")
+)
 
+derived_items <- c("anorexia_derived_26_1", "binge_derived_26_1", "bulimia_derived_26_1")
+df <- df |>
+  mutate(
+    eating_derived_26_1 = case_when(
+      # See here: https://stackoverflow.com/a/72597660
+      # https://stackoverflow.com/questions/79590966/difference-between-if-anyany-ofvars-and-if-anyall-ofvars
+      if_all(all_of(derived_items), is.na) ~ NA_character_,
+      if_all(all_of(derived_items), ~ .x == 0) ~ "No",
+      bulimia_derived_26_1 == 1 ~ "Yes",
+      binge_derived_26_1 == 1 ~ "Yes",
+      anorexia_derived_26_1 == 1 | anorexia_derived_26_1 == 2 | anorexia_derived_26_1 == 3 ~ "Yes",
+      .default = "No"
+    )
+  )
+df$eating_derived_fct_26_1 <- as.factor(df$eating_derived_26_1)
+# View(df[, c("eating_derived_26_1", derived_items)])
+
+# Ever diagnosed by a professional
+# See the codes here:
+# https://datadictionary.teds.ac.uk/pdfs/26yr/26yr_mhq_coding.pdf
+df$anorexia_lifetime_26_1 <- df_raw$zmhmhddx2a1
+df$anorexia_lifetime_fct_26_1 <- factor(
+  df_raw$zmhmhddx2a1,
+  levels = c(0, 1),
+  labels = c("No", "Yes")
+)
+df$bulimia_lifetime_26_1 <- df_raw$zmhmhddx2b1
+df$bulimia_lifetime_fct_26_1 <- factor(
+  df_raw$zmhmhddx2b1,
+  levels = c(0, 1),
+  labels = c("No", "Yes")
+)
+df$over_eating_lifetime_26_1 <- df_raw$zmhmhddx2c1
+df$over_eating_lifetime_fct_26_1 <- factor(
+  df_raw$zmhmhddx2c1,
+  levels = c(0, 1),
+  labels = c("No", "Yes")
+)
+df$binge_lifetime_26_1 <- df_raw$zmhmhddx2d1
+df$binge_lifetime_fct_26_1 <- factor(
+  df_raw$zmhmhddx2d1,
+  levels = c(0, 1),
+  labels = c("No", "Yes")
+)
+df$eating_other_lifetime_26_1 <- df_raw$zmhmhddx2e1
+df$eating_other_lifetime_fct_26_1 <- factor(
+  df_raw$zmhmhddx2e1,
+  levels = c(0, 1),
+  labels = c("No", "Yes")
+)
+lifetime_items <- c(
+  "anorexia_lifetime_26_1",
+  "binge_lifetime_26_1",
+  "over_eating_lifetime_26_1",
+  "bulimia_lifetime_26_1",
+  "eating_other_lifetime_26_1"
+)
+df <- df |>
+  mutate(
+    eating_diagnosis_26_1 = case_when(
+      # See here: https://stackoverflow.com/a/72597660
+      # https://stackoverflow.com/questions/79590966/difference-between-if-anyany-ofvars-and-if-anyall-ofvars
+      if_any(all_of(lifetime_items), ~ .x == 1) ~ "Yes",
+      if_all(all_of(lifetime_items), is.na) ~ NA,
+      .default = "No"
+    )
+  )
+df$eating_diagnosis_fct_26_1 <- factor(
+  df$eating_diagnosis_26_1,
+  levels = c("No", "Yes"),
+  labels = c("No", "Yes")
+)
+table(
+  df$eating_diagnosis_26_1,
+  df$eating_diagnosis_fct_26_1,
+  deparse.level = 2,
+  useNA = "always"
+)
+table(df$eating_derived_fct_26_1, df$eating_diagnosis_fct_26_1,
+  deparse.level = 2, useNA = "always"
+)
+summary(
+  mutate_if(
+    df[, c("eating_diagnosis_fct_26_1", lifetime_items, "eating_derived_fct_26_1", derived_items)], function(x) {
+      return(is.numeric(x) | is.character(x))
+    }, as.factor
+  )
+)
 ###############
 # Save raw df #
 ###############
@@ -427,9 +527,31 @@ df_raw_named <- df %>%
 #######################
 # Drop excluded twins #
 #######################
+# See https://datadictionary.teds.ac.uk/exclusions.htm
+df$aperinat <- df_raw$aperinat
+df$sexzyg <- df_raw$sexzyg
+df$acontact <- df_raw$acontact
 df <- df[df$exclude1 == 0, ]
 df <- df[df$exclude2 == 0, ]
+df <- df[df$acontact == 1, ]
+df <- df[df$sexzyg != 7, ]
+df <- df[df$aperinat == 0, ]
 
+summary(
+  mutate_if(
+    df[, c("eating_diagnosis_fct_26_1", lifetime_items, "eating_derived_fct_26_1", derived_items)], function(x) {
+      return(is.numeric(x) | is.character(x))
+    }, as.factor
+  )
+)
+# df <- df[df$exclude2 == 0, ]
+# summary(
+#   mutate_if(
+#     df[, c("eating_diagnosis_fct_26_1", lifetime_items, "eating_derived_fct_26_1", derived_items)], function(x) {
+#       return(is.numeric(x) | is.character(x))
+#     }, as.factor
+#   )
+# )α
 ############################################################################
 # Last but not least, drop only the rows that contain NA in MPVS columns!
 # We can impute the remaining NA!
@@ -443,6 +565,13 @@ df_raw_named_without_excluded <- df
 df_raw_named_without_excluded_1 <- df_raw_named_without_excluded %>%
   select(!matches("_2$"))
 
+summary(
+  mutate_if(
+    df_raw_named_without_excluded[, c("eating_diagnosis_fct_26_1", lifetime_items, "eating_derived_fct_26_1", derived_items)], function(x) {
+      return(is.numeric(x) | is.character(x))
+    }, as.factor
+  )
+)
 # Drop rows that contain ONLY NA's in mpvs (items  + totals + subscales)
 # df <- df %>%
 #   #filter(!if_all(colnames(df), is.na))
