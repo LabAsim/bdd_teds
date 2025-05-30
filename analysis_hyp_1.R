@@ -47,7 +47,17 @@ fit_fiml_scaled_32_without_covid <- sem(
   cluster = "fam_id",
   missing = "fiml"
 )
-summary(fit_fiml_scaled_32_without_covid)
+summary(fit_fiml_scaled_32_without_covid, standardized = T)
+
+fit_plot <- lavaanPlot::lavaanPlot(
+  model = fit_fiml_scaled_32_without_covid,
+  edge_options = list(color = "grey"),
+  coefs = TRUE, # covs = TRUE,
+  graph_options = list(rankdir = "TB", fontsize = "15"),
+  stars = c("regress", "latent", "covs"),
+  stand = T
+)
+fit_plot
 
 # The rows in the analysis above are the following;
 # test <- df_essential_vars %>%
