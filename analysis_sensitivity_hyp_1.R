@@ -1,4 +1,19 @@
 library(lavaan)
+
+df_essential_vars_without_ED <- df_essential_vars |>
+  filter(
+    eating_diagnosis_fct_26_1 == "No"
+  )
+
+df_essential_vars_without_ED <- remove_twins_with_this_level(
+  df = df_essential_vars,
+  group_var = "fam_id",
+  sex_var = "sex_1",
+  target_var = "eating_diagnosis_26_1",
+  level = "No",
+  keep_different_cotwin = F
+)
+
 model_scaled_32_without_covid <- "
     # DCQ
     dcq_total_26_1 ~ mpvs_total_12_1_scaled_32
@@ -27,11 +42,11 @@ model_scaled_32_without_covid <- "
 "
 fit_fiml_scaled_32_without_covid <- sem(
   model = model_scaled_32_without_covid,
-  data = df_essential_vars[df_essential_vars$eating_diagnosis_fct_26_1 == "No", ],
+  data = df_essential_vars_without_ED,
   cluster = "fam_id",
   missing = "fiml"
 )
-summary(fit_fiml_scaled_32_without_covid)
+summary(fit_fiml_scaled_32_without_covid, standardized = T)
 lavaanPlot::lavaanPlot(
   model = fit_fiml_scaled_32_without_covid,
   edge_options = list(color = "grey"),
