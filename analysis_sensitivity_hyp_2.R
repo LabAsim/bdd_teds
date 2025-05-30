@@ -62,3 +62,41 @@ lavaanPlot::lavaanPlot(
   graph_options = list(rankdir = "TB"),
   stars = c("regress", "latent", "covs")
 )
+
+#######################
+# Latent growth model #
+#######################
+
+latent_growth_model <- "
+  # intercept and slope with fixed coefficients
+  intercept =~ 1*mpvs_total_12_1_scaled_32 + 1*mpvs_total_child_14_1_scaled_32 + 1*mpvs_total_16_1_scaled_32 + 1*mpvs_total_phase_2_21_1_scaled_32
+  slope =~ 0*mpvs_total_12_1_scaled_32 + 1*mpvs_total_child_14_1_scaled_32 + 2*mpvs_total_16_1_scaled_32 + 3*mpvs_total_phase_2_21_1_scaled_32
+
+  # Regressions
+  dcq_total_26_1 ~ intercept
+  dcq_total_26_1 ~ slope
+
+  intercept ~ slope
+"
+fit <- growth(
+  latent_growth_model,
+  data = df_all_diffs,
+  missing = "fiml"
+)
+summary(fit, standardized = T)
+
+
+fit_without_ED <- growth(
+  latent_growth_model,
+  data = df_all_diffs_without_eating,
+  missing = "fiml"
+)
+summary(fit_without_ED, standardized = T)
+
+lavaanPlot::lavaanPlot(
+  model = fit_without_ED,
+  edge_options = list(color = "grey"),
+  coefs = TRUE, # covs = TRUE,
+  graph_options = list(rankdir = "TB"),
+  # stars = c("regress", "latent", "covs")
+)
