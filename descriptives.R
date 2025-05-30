@@ -138,6 +138,95 @@ summary_by_cohort <- gtsummary::tbl_summary(
   )
 
 
+
+
+summary_all <- df_essential_vars %>%
+  select(
+    c(
+      "zygosity_binary_fct",
+      "school_cohort_fct",
+      "sex_1_fct",
+      "eating_diagnosis_fct_26_1",
+      "age_child_12_1",
+      "age_child_14_1",
+      "age_child_web_16_1",
+      "age_phase2_child_21_1",
+      "age_26_1",
+      "mpvs_total_12_1",
+      "mpvs_total_child_14_1",
+      "mpvs_total_16_1",
+      "mpvs_total_phase_2_21_1",
+      "dcq_total_26_1"
+    )
+  ) %>%
+  gtsummary::tbl_summary(
+    by = zygosity_binary_fct,
+    statistic = list(
+      all_categorical() ~ "{n}    ({p}%)",
+      all_continuous() ~ "{mean} ({sd})"
+    ),
+    missing_text = "Missing",
+    missing_stat = "{N_miss} ({p_miss}%)",
+    label = list(
+      school_cohort_fct ~ "School cohort",
+      sex_1_fct ~ "Sex",
+      eating_diagnosis_fct_26_1 ~ "Eating disorder diagnosis",
+      age_child_12_1 ~ "wave 12y",
+      age_child_14_1 ~ "wave 14y",
+      age_child_web_16_1 ~ "wave 16y",
+      age_phase2_child_21_1 ~ "wave 21y",
+      age_26_1 ~ "wave 26y",
+      mpvs_total_12_1 ~ "wave 12y",
+      mpvs_total_child_14_1 ~ "wave 14y)",
+      mpvs_total_16_1 ~ "wave 16y",
+      mpvs_total_phase_2_21_1 ~ "wave 21y",
+      dcq_total_26_1 ~ "DCQ total score"
+    )
+  ) %>%
+  bold_labels() %>%
+  # See: https://stackoverflow.com/questions/65665465/grouping-rows-in-gtsummary
+  modify_table_body(
+    mutate,
+    groupname_col = case_when(
+      variable %in% c(
+        "age_child_12_1", "age_child_14_1", "age_child_web_16_1",
+        "age_phase2_child_21_1", "age_26_1"
+      ) ~ "Age",
+      variable %in% c(
+        "mpvs_total_12_1",
+        "mpvs_total_child_14_1",
+        "mpvs_total_16_1",
+        "mpvs_total_phase_2_21_1"
+      ) ~ "MPVS total score"
+    )
+  ) %>%
+  modify_column_indent(
+    columns = label,
+    rows = variable %in% c(
+      "age_child_12_1", "age_child_14_1", "age_child_web_16_1",
+      "age_phase2_child_21_1", "age_26_1"
+    )
+  ) %>%
+  modify_column_indent(
+    columns = label,
+    rows = row_type %in% c("Missing", "missing"),
+    double_indent = T
+  ) %>%
+  modify_header(
+    label = "**Variable**"
+  ) %>%
+  modify_caption("Participant characteristics, by zygosity") %>%
+  # Include an "overall" column
+  add_overall(
+    last = T,
+    # The ** make it bold
+    col_label = "**All participants**<br>N = {N}"
+  ) %>%
+  bstfun::bold_italicize_group_labels(bold = T)
+
+summary_all
+
+
 df_essential_vars_long <- pivot_longer(
   df_essential_vars,
   colnames(df_1)[grepl(pattern = "mpvs_total", x = colnames(df_1))],

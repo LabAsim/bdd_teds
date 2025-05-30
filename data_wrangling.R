@@ -551,7 +551,7 @@ summary(
 #       return(is.numeric(x) | is.character(x))
 #     }, as.factor
 #   )
-# )α
+# )
 ############################################################################
 # Last but not least, drop only the rows that contain NA in MPVS columns!
 # We can impute the remaining NA!
