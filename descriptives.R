@@ -224,6 +224,9 @@ summary_all <- df_essential_vars %>%
     # The ** make it bold
     col_label = "**All participants**<br> \n N = {N}"
   ) %>%
+  add_p(
+    test = list(all_continuous() ~ "t.test", all_categorical() ~ "chisq.test")
+  ) %>%
   bstfun::bold_italicize_group_labels(bold = T)
 
 
