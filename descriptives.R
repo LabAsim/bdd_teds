@@ -1,7 +1,3 @@
-library(gtsummary)
-library(tidyverse)
-library(lavaan)
-
 # It's faster than running data_wrangling.R
 if (sys.nframe() == 0) {
   # if (exists("df_1") == F) {
@@ -15,7 +11,9 @@ if (sys.nframe() == 0) {
   }
 }
 
-
+library(gtsummary)
+library(tidyverse)
+library(lavaan)
 
 corr_mat <- cor(
   df_essential_vars %>% select(
@@ -177,7 +175,7 @@ summary_all <- df_essential_vars %>%
       age_phase2_child_21_1 ~ "wave 21y",
       age_26_1 ~ "wave 26y",
       mpvs_total_12_1 ~ "wave 12y",
-      mpvs_total_child_14_1 ~ "wave 14y)",
+      mpvs_total_child_14_1 ~ "wave 14y",
       mpvs_total_16_1 ~ "wave 16y",
       mpvs_total_phase_2_21_1 ~ "wave 21y",
       dcq_total_26_1 ~ "DCQ total score"
@@ -204,25 +202,30 @@ summary_all <- df_essential_vars %>%
     columns = label,
     rows = variable %in% c(
       "age_child_12_1", "age_child_14_1", "age_child_web_16_1",
-      "age_phase2_child_21_1", "age_26_1"
+      "age_phase2_child_21_1", "age_26_1",
+      "mpvs_total_12_1",
+      "mpvs_total_child_14_1",
+      "mpvs_total_16_1",
+      "mpvs_total_phase_2_21_1"
     )
   ) %>%
   modify_column_indent(
     columns = label,
     rows = row_type %in% c("Missing", "missing"),
-    double_indent = T
+    indent = 8
   ) %>%
   modify_header(
     label = "**Variable**"
   ) %>%
-  modify_caption("Participant characteristics, by zygosity") %>%
+  modify_caption("Table 1. Participant characteristics, by zygosity") %>%
   # Include an "overall" column
   add_overall(
     last = T,
     # The ** make it bold
-    col_label = "**All participants**<br>N = {N}"
+    col_label = "**All participants**<br> \n N = {N}"
   ) %>%
   bstfun::bold_italicize_group_labels(bold = T)
+
 
 summary_all
 
