@@ -40,18 +40,29 @@ model_scaled_32_without_covid <- "
     mpvs_total_16_1_scaled_32 ~ sex_1_fct
     mpvs_total_phase_2_21_1_scaled_32 ~ sex_1_fct
 "
-fit_fiml_scaled_32_without_covid <- sem(
+fit_fiml_scaled_32_without_covid_without_ED <- sem(
   model = model_scaled_32_without_covid,
   data = df_essential_vars_without_ED,
   cluster = "fam_id",
   missing = "fiml"
 )
-summary(fit_fiml_scaled_32_without_covid, standardized = T)
-lavaanPlot::lavaanPlot(
-  model = fit_fiml_scaled_32_without_covid,
+summary(fit_fiml_scaled_32_without_covid_without_ED, standardized = T)
+plot_fit_fiml_scaled_32_without_covid_without_ED <- lavaanPlot::lavaanPlot(
+  model = fit_fiml_scaled_32_without_covid_without_ED,
+  edge_options = list(color = "grey"),
+  coefs = TRUE, # covs = TRUE,
+  graph_options = list(rankdir = "TB", fontsize = "15"),
+  stars = c("regress", "latent", "covs"),
+  stand = F
+)
+plot_fit_fiml_scaled_32_without_covid_without_ED
+
+plot_fit_fiml_scaled_32_without_covid_without_ED_standardized <- lavaanPlot::lavaanPlot(
+  model = fit_fiml_scaled_32_without_covid_without_ED,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
   graph_options = list(rankdir = "TB", fontsize = "15"),
   stars = c("regress", "latent", "covs"),
   stand = T
 )
+plot_fit_fiml_scaled_32_without_covid_without_ED_standardized
