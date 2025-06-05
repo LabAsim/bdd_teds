@@ -1,18 +1,17 @@
+if (sys.nframe() == 0) {
+  source("data_management_hyp_2.R")
+}
 library(umx)
 library(lavaan)
 library(lavaanPlot)
 library(lavaan.mi)
-
-if (sys.nframe() == 0) {
-  source("data_management_hyp_2.R")
-}
 
 #######################
 # Using original data #
 #######################
 
 # fiml
-twin_diff_model_scaled <- "
+twin_diff_model_with_covid_scaled <- "
     dcq_total_26_1 ~ mpvs_total_12_1_scaled_32
     dcq_total_26_1 ~ mpvs_total_child_14_1_scaled_32
     dcq_total_26_1 ~ mpvs_total_16_1_scaled_32
@@ -30,15 +29,15 @@ twin_diff_model_scaled <- "
     mpvs_total_cov4_21_1_scaled_32 ~ mpvs_total_cov3_21_1_scaled_32
 "
 
-fit_fiml <- sem(
-  model = twin_diff_model_scaled, data = df_all_diffs,
+fit_fiml_diff_model_with_covid_scaled <- sem(
+  model = twin_diff_model_with_covid_scaled, data = df_all_diffs,
   missing = "fiml"
 )
-summary(fit_fiml)
+summary(fit_fiml_diff_model_with_covid_scaled)
 
 
 lavaanPlot::lavaanPlot(
-  model = fit_fiml,
+  model = fit_fiml_diff_model_with_covid_scaled,
   edge_options = list(color = "grey"),
   coefs = TRUE, covs = TRUE,
   graph_options = list(rankdir = "LR")
@@ -69,7 +68,7 @@ fit_ml <- sem(
 summary(fit_ml)
 
 # Excluding COVID period #
-twin_diff_model_scaled2 <- "
+twin_diff_model_scaled_without_covid <- "
     dcq_total_26_1 ~ mpvs_total_12_1_scaled_32
     dcq_total_26_1 ~ mpvs_total_child_14_1_scaled_32
     dcq_total_26_1 ~ mpvs_total_16_1_scaled_32
@@ -80,24 +79,37 @@ twin_diff_model_scaled2 <- "
 "
 
 fit_ml_without_covid <- sem(
-  model = twin_diff_model_scaled2, data = df_all_diffs
+  model = twin_diff_model_scaled_without_covid, data = df_all_diffs
 )
 summary(fit_ml_without_covid)
 
 
 fit_fiml_without_covid <- sem(
-  model = twin_diff_model_scaled2, data = df_all_diffs,
+  model = twin_diff_model_scaled_without_covid, data = df_all_diffs,
   missing = "fiml"
 )
-summary(fit_fiml_without_covid)
+summary(fit_fiml_without_covid, standardized = T)
 parameterestimates(fit_fiml_without_covid)
-lavaanPlot::lavaanPlot(
+
+plot_fit_fiml <- lavaanPlot::lavaanPlot(
   model = fit_fiml_without_covid,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
-  graph_options = list(rankdir = "LR"),
-  stars = c("regress", "latent", "covs")
+  graph_options = list(rankdir = "TB"),
+  stars = c("regress", "latent", "covs"),
+  stand = F
 )
+plot_fit_fiml
+
+plot_fit_fiml_standardized <- lavaanPlot::lavaanPlot(
+  model = fit_fiml_without_covid,
+  edge_options = list(color = "grey"),
+  coefs = TRUE, # covs = TRUE,
+  graph_options = list(rankdir = "TB"),
+  stars = c("regress", "latent", "covs"),
+  stand = T
+)
+plot_fit_fiml_standardized
 ######################
 # Using imputed data #
 ######################
@@ -266,7 +278,7 @@ if (sys.nframe() == 0) {
   summary(fit_mi)
   parameterEstimates.mi(fit_mi)
 
-  twin_diff_model_scaled2 <- "
+  twin_diff_model_scaled_without_covid <- "
       dcq_total_26_1 ~ mpvs_total_12_1_scaled_32
       dcq_total_26_1 ~ mpvs_total_parent_14_1_scaled_32
       dcq_total_26_1 ~ mpvs_total_16_1_scaled_32
@@ -284,7 +296,7 @@ if (sys.nframe() == 0) {
       mpvs_total_cov4_21_1_scaled_32 ~ mpvs_total_cov3_21_1_scaled_32
   "
 
-  fit_mi <- sem.mi(model = twin_diff_model_scaled2, data = data_imp_diff[1:2])
+  fit_mi <- sem.mi(model = twin_diff_model_scaled_without_covid, data = data_imp_diff[1:2])
   summary(fit_mi)
   parameterEstimates.mi(fit_mi)
 
