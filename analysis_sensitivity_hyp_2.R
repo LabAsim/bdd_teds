@@ -42,26 +42,39 @@ twin_diff_model_scaled2 <- "
     mpvs_total_phase_2_21_1_scaled_32 ~ mpvs_total_16_1_scaled_32
 "
 
-fit_ml_without_covid <- sem(
+fit_ml_diff_without_covid <- sem(
   model = twin_diff_model_scaled2, data = df_all_diffs_without_eating
 )
 summary(fit_ml_without_covid)
 
 
-fit_fiml_without_covid <- sem(
+fit_fiml_diff_without_covid <- sem(
   model = twin_diff_model_scaled2, data = df_all_diffs_without_eating,
   missing = "fiml"
 )
 
-summary(fit_fiml_without_covid)
-parameterestimates(fit_fiml_without_covid)
-lavaanPlot::lavaanPlot(
-  model = fit_fiml_without_covid,
+summary(fit_fiml_diff_without_covid)
+parameterestimates(fit_fiml_diff_without_covid)
+plot_fit_fiml_diff_without_covid <- lavaanPlot::lavaanPlot(
+  model = fit_fiml_diff_without_covid,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
   graph_options = list(rankdir = "TB"),
-  stars = c("regress", "latent", "covs")
+  stars = c("regress", "latent", "covs"),
+  stand = F
 )
+plot_fit_fiml_diff_without_covid
+
+plot_fit_fiml_diff_without_covid_standardized <- lavaanPlot::lavaanPlot(
+  model = fit_fiml_diff_without_covid,
+  edge_options = list(color = "grey"),
+  coefs = TRUE, # covs = TRUE,
+  graph_options = list(rankdir = "TB"),
+  stars = c("regress", "latent", "covs"),
+  stand = T
+)
+plot_fit_fiml_diff_without_covid_standardized
+
 
 #######################
 # Latent growth model #
