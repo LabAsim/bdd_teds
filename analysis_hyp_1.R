@@ -1,4 +1,3 @@
-library(umx)
 library(lavaan)
 
 if (sys.nframe() == 0) {
@@ -55,9 +54,19 @@ fit_plot <- lavaanPlot::lavaanPlot(
   coefs = TRUE, # covs = TRUE,
   graph_options = list(rankdir = "TB", fontsize = "15"),
   stars = c("regress", "latent", "covs"),
-  stand = T
+  stand = F
 )
 fit_plot
+
+fit_plot_standardized <- lavaanPlot::lavaanPlot(
+  model = fit_fiml_scaled_32_without_covid,
+  edge_options = list(color = "grey"),
+  coefs = TRUE, # covs = TRUE,
+  graph_options = list(rankdir = "TB", fontsize = "15"),
+  stars = c("regress", "latent", "covs"),
+  stand = T
+)
+fit_plot_standardized
 
 # The rows in the analysis above are the following;
 # test <- df_essential_vars %>%
