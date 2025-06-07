@@ -45,7 +45,7 @@ twin_diff_model_scaled2 <- "
 fit_ml_diff_without_covid <- sem(
   model = twin_diff_model_scaled2, data = df_all_diffs_without_eating
 )
-summary(fit_ml_without_covid)
+summary(fit_ml_diff_without_covid)
 
 
 fit_fiml_diff_without_covid <- sem(
@@ -53,14 +53,24 @@ fit_fiml_diff_without_covid <- sem(
   missing = "fiml"
 )
 
-summary(fit_fiml_diff_without_covid)
+summary(fit_fiml_diff_without_covid, standardized = T)
 parameterestimates(fit_fiml_diff_without_covid)
+
+labels <- list(
+  dcq_total_26_1 = "DCQ (26y)",
+  mpvs_total_12_1_scaled_32 = "MPVS (12y)",
+  mpvs_total_child_14_1_scaled_32 = "MPVS (14y)",
+  mpvs_total_16_1_scaled_32 = "MPVS (16y)",
+  mpvs_total_phase_2_21_1_scaled_32 = "MPVS (21y)"
+)
+
 plot_fit_fiml_diff_without_covid <- lavaanPlot::lavaanPlot(
   model = fit_fiml_diff_without_covid,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
   graph_options = list(rankdir = "TB"),
   stars = c("regress", "latent", "covs"),
+  labels = labels,
   stand = F
 )
 plot_fit_fiml_diff_without_covid
@@ -71,6 +81,7 @@ plot_fit_fiml_diff_without_covid_standardized <- lavaanPlot::lavaanPlot(
   coefs = TRUE, # covs = TRUE,
   graph_options = list(rankdir = "TB"),
   stars = c("regress", "latent", "covs"),
+  labels = labels,
   stand = T
 )
 plot_fit_fiml_diff_without_covid_standardized

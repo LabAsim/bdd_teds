@@ -77,7 +77,6 @@ twin_diff_model_scaled_without_covid <- "
     mpvs_total_16_1_scaled_32 ~ mpvs_total_child_14_1_scaled_32
     mpvs_total_phase_2_21_1_scaled_32 ~ mpvs_total_16_1_scaled_32
 "
-
 fit_ml_without_covid <- sem(
   model = twin_diff_model_scaled_without_covid, data = df_all_diffs
 )
@@ -91,12 +90,21 @@ fit_fiml_without_covid <- sem(
 summary(fit_fiml_without_covid, standardized = T)
 parameterestimates(fit_fiml_without_covid)
 
+labels <- list(
+  dcq_total_26_1 = "DCQ (26y)",
+  mpvs_total_12_1_scaled_32 = "MPVS (12y)",
+  mpvs_total_child_14_1_scaled_32 = "MPVS (14y)",
+  mpvs_total_16_1_scaled_32 = "MPVS (16y)",
+  mpvs_total_phase_2_21_1_scaled_32 = "MPVS (21y)"
+)
+
 plot_fit_fiml <- lavaanPlot::lavaanPlot(
   model = fit_fiml_without_covid,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
   graph_options = list(rankdir = "TB"),
   stars = c("regress", "latent", "covs"),
+  labels = labels,
   stand = F
 )
 plot_fit_fiml
@@ -107,17 +115,20 @@ plot_fit_fiml_standardized <- lavaanPlot::lavaanPlot(
   coefs = TRUE, # covs = TRUE,
   graph_options = list(rankdir = "TB"),
   stars = c("regress", "latent", "covs"),
+  labels = labels,
   stand = T
 )
 plot_fit_fiml_standardized
 ######################
 # Using imputed data #
 ######################
-if (exists("imp_derived") == F) {
-  if (file.exists("G:\\imp_derived.Rdata")) {
-    load("G:\\imp_derived.Rdata")
-  } else {
-    source("imputation_derived.R")
+if (sys.nframe() == 0) {
+  if (exists("imp_derived") == F) {
+    if (file.exists("G:\\imp_derived.Rdata")) {
+      load("G:\\imp_derived.Rdata")
+    } else {
+      source("imputation_derived.R")
+    }
   }
 }
 if (sys.nframe() == 0) {
