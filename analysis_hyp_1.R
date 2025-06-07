@@ -62,7 +62,7 @@ fit_fiml_scaled_32_without_covid <- sem(
 )
 summary(fit_fiml_scaled_32_without_covid, standardized = T)
 
-fit_plot <- lavaanPlot::lavaanPlot(
+fit_plot_scaled_32_without_covid <- lavaanPlot::lavaanPlot(
   model = fit_fiml_scaled_32_without_covid,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
@@ -71,9 +71,9 @@ fit_plot <- lavaanPlot::lavaanPlot(
   labels = labels,
   stand = F
 )
-fit_plot
+fit_plot_scaled_32_without_covid
 
-fit_plot_standardized <- lavaanPlot::lavaanPlot(
+fit_plot_scaled_32_without_covid_standardized <- lavaanPlot::lavaanPlot(
   model = fit_fiml_scaled_32_without_covid,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
@@ -82,7 +82,7 @@ fit_plot_standardized <- lavaanPlot::lavaanPlot(
   labels = labels,
   stand = T
 )
-fit_plot_standardized
+fit_plot_scaled_32_without_covid_standardized
 
 # The rows in the analysis above are the following;
 # test <- df_essential_vars %>%
