@@ -88,7 +88,13 @@ fit_fiml_without_covid <- sem(
   missing = "fiml"
 )
 summary(fit_fiml_without_covid, standardized = T)
-parameterestimates(fit_fiml_without_covid)
+parameters_fit_fiml_without_covid_MZ <- modify_parameter_estimates(
+  df = parameterestimates(
+    fit_fiml_without_covid,
+    standardized = T
+  ),
+  round_digits = 3
+)
 
 labels <- list(
   dcq_total_26_1 = "DCQ (26y)",

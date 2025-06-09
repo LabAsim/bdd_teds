@@ -61,7 +61,13 @@ fit_fiml_scaled_32_without_covid <- sem(
   missing = "fiml"
 )
 summary(fit_fiml_scaled_32_without_covid, standardized = T)
-
+parameters_fit_fiml_without_covid_phenotypic <- modify_parameter_estimates(
+  df = parameterestimates(
+    fit_fiml_scaled_32_without_covid,
+    standardized = T
+  ),
+  round_digits = 3
+)
 fit_plot_scaled_32_without_covid <- lavaanPlot::lavaanPlot(
   model = fit_fiml_scaled_32_without_covid,
   edge_options = list(color = "grey"),
@@ -172,7 +178,6 @@ fit_fiml_scaled_32_with_covid <- sem(
   missing = "fiml"
 )
 summary(fit_fiml_scaled_32_with_covid)
-beepr::beep("mario")
 
 ############
 # Using MI #
