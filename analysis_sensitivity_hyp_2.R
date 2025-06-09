@@ -42,20 +42,26 @@ twin_diff_model_scaled2 <- "
     mpvs_total_phase_2_21_1_scaled_32 ~ mpvs_total_16_1_scaled_32
 "
 
-fit_ml_diff_without_covid <- sem(
+fit_ml_diff_without_covid_ΜΖ_sensitivity <- sem(
   model = twin_diff_model_scaled2, data = df_all_diffs_without_eating
 )
-summary(fit_ml_diff_without_covid)
+summary(fit_ml_diff_without_covid_ΜΖ_sensitivity)
 
 
-fit_fiml_diff_without_covid <- sem(
+fit_fiml_diff_without_covid_ΜΖ_sensitivity <- sem(
   model = twin_diff_model_scaled2, data = df_all_diffs_without_eating,
   missing = "fiml"
 )
 
-summary(fit_fiml_diff_without_covid, standardized = T)
-parameterestimates(fit_fiml_diff_without_covid)
+summary(fit_fiml_diff_without_covid_ΜΖ_sensitivity, standardized = T)
 
+parameters_fit_fiml_without_covid_ΜΖ_sensitivity <- modify_parameter_estimates(
+  df = parameterestimates(
+    fit_fiml_diff_without_covid_ΜΖ_sensitivity,
+    standardized = T
+  ),
+  round_digits = 3
+)
 labels <- list(
   dcq_total_26_1 = "DCQ (26y)",
   mpvs_total_12_1_scaled_32 = "MPVS (12y)",
@@ -64,8 +70,8 @@ labels <- list(
   mpvs_total_phase_2_21_1_scaled_32 = "MPVS (21y)"
 )
 
-plot_fit_fiml_diff_without_covid <- lavaanPlot::lavaanPlot(
-  model = fit_fiml_diff_without_covid,
+plot_fit_fiml_diff_without_covid_ΜΖ_sensitivity <- lavaanPlot::lavaanPlot(
+  model = fit_fiml_diff_without_covid_ΜΖ_sensitivity,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
   graph_options = list(rankdir = "TB"),
@@ -73,10 +79,10 @@ plot_fit_fiml_diff_without_covid <- lavaanPlot::lavaanPlot(
   labels = labels,
   stand = F
 )
-plot_fit_fiml_diff_without_covid
+plot_fit_fiml_diff_without_covid_ΜΖ_sensitivity
 
-plot_fit_fiml_diff_without_covid_standardized <- lavaanPlot::lavaanPlot(
-  model = fit_fiml_diff_without_covid,
+plot_fit_fiml_diff_without_covid_standardized_ΜΖ_sensitivity <- lavaanPlot::lavaanPlot(
+  model = fit_fiml_diff_without_covid_ΜΖ_sensitivity,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
   graph_options = list(rankdir = "TB"),
@@ -84,7 +90,7 @@ plot_fit_fiml_diff_without_covid_standardized <- lavaanPlot::lavaanPlot(
   labels = labels,
   stand = T
 )
-plot_fit_fiml_diff_without_covid_standardized
+plot_fit_fiml_diff_without_covid_standardized_ΜΖ_sensitivity
 
 
 #######################
