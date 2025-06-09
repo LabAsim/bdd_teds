@@ -2137,3 +2137,52 @@ stopifnot(
 )
 
 rm(list = c("test", "testit"))
+
+test <- data.frame(
+  pvalue = c(0, 1, 0.001, 0.1, 0.5, 0.0001)
+)
+
+modify_parameter_estimates <- function(df, round_digits = 3, add_equal_sign = T) {
+  df[] <- lapply(
+    X = df[],
+    FUN = function(x) {
+      if (is.character(x) == F) {
+        x <- round(x, digits = round_digits)
+        return(x)
+      } else {
+        return(x)
+      }
+    }
+  )
+  df <- df %>%
+    mutate(
+      pvalue_str = case_when(
+        .data[["pvalue"]] < 0.001 ~ "<0.001",
+        .default = if (add_equal_sign == F) {
+          as.character(
+            round(.data[["pvalue"]], digits = round_digits)
+          )
+        } else {
+          as.character(
+            glue::glue(
+              "={as.character(round(.data[['pvalue']], digits = round_digits))}"
+            )
+          )
+        }
+      )
+    )
+  return(df)
+}
+
+testit <- modify_parameter_estimates(df = test)
+
+stopifnot(
+  all.equal(
+    current = testit,
+    target = data.frame(
+      pvalue = c(0, 1, 0.001, 0.1, 0.5, 0),
+      pvalue_str = c("<0.001", "=1", "=0.001", "=0.1", "=0.5", "<0.001")
+    )
+  )
+)
+rm(list = c("test", "testit"))
