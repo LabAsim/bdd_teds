@@ -111,7 +111,8 @@ plot_fit_fiml <- lavaanPlot::lavaanPlot(
   graph_options = list(rankdir = "TB"),
   stars = c("regress", "latent", "covs"),
   labels = labels,
-  stand = F
+  stand = F,
+  conf.int = T
 )
 plot_fit_fiml
 
@@ -122,7 +123,8 @@ plot_fit_fiml_standardized <- lavaanPlot::lavaanPlot(
   graph_options = list(rankdir = "TB"),
   stars = c("regress", "latent", "covs"),
   labels = labels,
-  stand = T
+  stand = T,
+  conf.int = T
 )
 plot_fit_fiml_standardized
 ######################

@@ -77,7 +77,8 @@ plot_fit_fiml_diff_without_covid_ΜΖ_sensitivity <- lavaanPlot::lavaanPlot(
   graph_options = list(rankdir = "TB"),
   stars = c("regress", "latent", "covs"),
   labels = labels,
-  stand = F
+  stand = F,
+  conf.int = T
 )
 plot_fit_fiml_diff_without_covid_ΜΖ_sensitivity
 
@@ -88,7 +89,8 @@ plot_fit_fiml_diff_without_covid_standardized_ΜΖ_sensitivity <- lavaanPlot::la
   graph_options = list(rankdir = "TB"),
   stars = c("regress", "latent", "covs"),
   labels = labels,
-  stand = T
+  stand = T,
+  conf.int = T
 )
 plot_fit_fiml_diff_without_covid_standardized_ΜΖ_sensitivity
 
@@ -127,6 +129,6 @@ lavaanPlot::lavaanPlot(
   model = fit_without_ED,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
-  graph_options = list(rankdir = "TB"),
+  graph_options = list(rankdir = "TB")
   # stars = c("regress", "latent", "covs")
 )

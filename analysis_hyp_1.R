@@ -68,6 +68,12 @@ parameters_fit_fiml_without_covid_phenotypic <- modify_parameter_estimates(
   ),
   round_digits = 3
 )
+
+parameters_fit_fiml_without_covid_phenotypic_standardised <- standardizedsolution(
+  fit_fiml_scaled_32_without_covid
+)
+
+
 fit_plot_scaled_32_without_covid <- lavaanPlot::lavaanPlot(
   model = fit_fiml_scaled_32_without_covid,
   edge_options = list(color = "grey"),
@@ -75,7 +81,8 @@ fit_plot_scaled_32_without_covid <- lavaanPlot::lavaanPlot(
   graph_options = list(rankdir = "TB", fontsize = "15"),
   stars = c("regress", "latent", "covs"),
   labels = labels,
-  stand = F
+  stand = F,
+  conf.int = T
 )
 fit_plot_scaled_32_without_covid
 
@@ -86,7 +93,8 @@ fit_plot_scaled_32_without_covid_standardized <- lavaanPlot::lavaanPlot(
   graph_options = list(rankdir = "TB", fontsize = "15"),
   stars = c("regress", "latent", "covs"),
   labels = labels,
-  stand = T
+  stand = T,
+  conf.int = T
 )
 fit_plot_scaled_32_without_covid_standardized
 
