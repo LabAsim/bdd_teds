@@ -1,3 +1,4 @@
+library(gt)
 # It's faster than running data_wrangling.R
 if (sys.nframe() == 0) {
   # if (exists("df_1") == F) {
@@ -27,6 +28,52 @@ corr_mat <- cor(
   use = "pairwise.complete.obs"
 )
 
+corr_mat_mpvs_dcq <- cor(
+  df_essential_vars %>% select(
+    all_of(
+      c(
+        "dcq_total_26_1", "mpvs_total_12_1", "mpvs_total_child_14_1",
+        "mpvs_total_16_1", "mpvs_total_phase_2_21_1"
+      )
+    )
+  ),
+  use = "pairwise.complete.obs"
+)
+
+table_corr_mat_mpvs_dcq <- corr_mat_mpvs_dcq %>%
+  as.data.frame() %>%
+  gt::gt(
+    # https://stackoverflow.com/questions/75260770/how-to-add-the-row-names-to-my-gt-table
+    rownames_to_stub = T
+  ) |>
+  gt::text_case_match(
+    "dcq_total_26_1" ~ "DCQ",
+    "mpvs_total_12_1" ~ "MPVS (12y)",
+    "mpvs_total_child_14_1" ~ "MPVS (14y)",
+    "mpvs_total_16_1" ~ "MPVS (16y)",
+    "mpvs_total_phase_2_21_1" ~ "MPVS (21y)"
+  ) %>%
+  gt::tab_header(
+    title = "Correlation matrix of DCQ and MPVS across waves"
+  ) %>%
+  gt::cols_label(
+    dcq_total_26_1 = "DCQ",
+    mpvs_total_12_1 = "MPVS (12y)",
+    mpvs_total_child_14_1 = "MPVS (14y)",
+    mpvs_total_16_1 = "MPVS (16y)",
+    mpvs_total_phase_2_21_1 = "MPVS (21y)"
+  ) |>
+  gt::text_case_match(
+    "dcq_total_26_1" ~ "DCQ",
+    "mpvs_total_12_1" ~ "MPVS (12y)",
+    "mpvs_total_child_14_1" ~ "MPVS (14y)",
+    "mpvs_total_16_1" ~ "MPVS (16y)",
+    "mpvs_total_phase_2_21_1" ~ "MPVS (21y)",
+    .locations = gt::cells_stub()
+  ) %>%
+  gt::fmt_number(
+    decimals = 3
+  )
 
 summary <- gtsummary::tbl_summary(
   data = df_essential_vars %>% select(
