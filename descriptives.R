@@ -25,7 +25,8 @@ corr_mat <- cor(
       )
     )
   ),
-  use = "pairwise.complete.obs"
+  use = "pairwise.complete.obs",
+  method = "spearman"
 )
 
 corr_mat_mpvs_dcq <- cor(
@@ -44,7 +45,8 @@ table_corr_mat_mpvs_dcq <- corr_mat_mpvs_dcq %>%
   as.data.frame() %>%
   gt::gt(
     # https://stackoverflow.com/questions/75260770/how-to-add-the-row-names-to-my-gt-table
-    rownames_to_stub = T
+    rownames_to_stub = T,
+    caption = "Table 2. Correlation matrix of DCQ and MPVS across waves"
   ) |>
   gt::text_case_match(
     "dcq_total_26_1" ~ "DCQ",
@@ -54,7 +56,8 @@ table_corr_mat_mpvs_dcq <- corr_mat_mpvs_dcq %>%
     "mpvs_total_phase_2_21_1" ~ "MPVS (21y)"
   ) %>%
   gt::tab_header(
-    title = "Correlation matrix of DCQ and MPVS across waves"
+    title = "",
+    subtitle = "Table 2. Spearman correlation matrix of DCQ and MPVS across waves"
   ) %>%
   gt::cols_label(
     dcq_total_26_1 = "DCQ",
@@ -73,7 +76,9 @@ table_corr_mat_mpvs_dcq <- corr_mat_mpvs_dcq %>%
   ) %>%
   gt::fmt_number(
     decimals = 3
-  )
+  ) %>%
+  gt::tab_options(heading.subtitle.font.size = "20pt")
+
 
 summary <- gtsummary::tbl_summary(
   data = df_essential_vars %>% select(
@@ -264,7 +269,12 @@ summary_all <- df_essential_vars %>%
   modify_header(
     label = "**Variable**"
   ) %>%
-  modify_caption("Table 1. Participant characteristics, by zygosity") %>%
+  modify_caption("Table 1. Participant characteristics") %>%
+  # modify_footnote_header(
+  #   footnote = "All but four subjects received both treatments in a crossover design",
+  #   columns = variable == "zygosity_binary_fct",
+  #   replace = FALSE
+  # ) |>
   # Include an "overall" column
   add_overall(
     last = T,
@@ -272,9 +282,16 @@ summary_all <- df_essential_vars %>%
     col_label = "**All participants**<br> \n N = {N}"
   ) %>%
   add_p(
-    test = list(all_continuous() ~ "t.test", all_categorical() ~ "chisq.test")
+    test = list(all_continuous() ~ "t.test", all_categorical() ~ "chisq.test"),
+    pvalue_fun = label_style_pvalue(digits = 3)
   ) %>%
-  bstfun::bold_italicize_group_labels(bold = T)
+  # This functions converts gtsummary to gt
+  bstfun::bold_italicize_group_labels(bold = T) %>%
+  gt::tab_header(
+    title = "",
+    subtitle = "Table 1. Participants characteristics"
+  ) %>%
+  gt::tab_options(heading.subtitle.font.size = "20px")
 
 
 summary_all
