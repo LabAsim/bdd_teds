@@ -77,7 +77,11 @@ table_corr_mat_mpvs_dcq <- corr_mat_mpvs_dcq %>%
   gt::fmt_number(
     decimals = 3
   ) %>%
-  gt::tab_options(heading.subtitle.font.size = "20pt")
+  gt::tab_options(heading.subtitle.font.size = "20pt") %>%
+  gt::tab_footnote(
+    footnote = "DCQ: Dysmorphic concerns questionnaire, MPVS: Multidimensional peer victimization scale, y: year(s)",
+    locations = NULL
+  )
 
 
 summary <- gtsummary::tbl_summary(
@@ -270,11 +274,6 @@ summary_all <- df_essential_vars %>%
     label = "**Variable**"
   ) %>%
   modify_caption("Table 1. Participant characteristics") %>%
-  # modify_footnote_header(
-  #   footnote = "All but four subjects received both treatments in a crossover design",
-  #   columns = variable == "zygosity_binary_fct",
-  #   replace = FALSE
-  # ) |>
   # Include an "overall" column
   add_overall(
     last = T,
@@ -291,7 +290,11 @@ summary_all <- df_essential_vars %>%
     title = "",
     subtitle = "Table 1. Participants characteristics"
   ) %>%
-  gt::tab_options(heading.subtitle.font.size = "20px")
+  gt::tab_options(heading.subtitle.font.size = "20px") %>%
+  gt::tab_footnote(
+    footnote = "MZ: Monozygotic, DZ: Dizygotic, DCQ: Dysmorphic concerns questionnaire, MPVS: Multidimensional peer victimization scale, y: year(s)",
+    locations = NULL
+  )
 
 
 summary_all
