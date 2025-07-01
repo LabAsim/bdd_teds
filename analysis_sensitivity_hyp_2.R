@@ -1,5 +1,5 @@
 library(lavaan)
-
+source("constants.R")
 df_essential_vars_without_ED <- df_essential_vars |>
   filter(
     eating_diagnosis_fct_26_1 == "No"
@@ -74,7 +74,11 @@ plot_fit_fiml_diff_without_covid_ΜΖ_sensitivity <- lavaanPlot::lavaanPlot(
   model = fit_fiml_diff_without_covid_ΜΖ_sensitivity,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
-  graph_options = list(rankdir = "TB"),
+  graph_options = list(
+    rankdir = "TB", fontsize = "15",
+    overlap = "true",
+    labelloc = "b", label = footnote
+  ),
   stars = c("regress", "latent", "covs"),
   labels = labels,
   stand = F,
@@ -86,7 +90,11 @@ plot_fit_fiml_diff_without_covid_standardized_ΜΖ_sensitivity <- lavaanPlot::la
   model = fit_fiml_diff_without_covid_ΜΖ_sensitivity,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
-  graph_options = list(rankdir = "TB"),
+  graph_options = list(
+    rankdir = "TB", fontsize = "15",
+    overlap = "true",
+    labelloc = "b", label = footnote
+  ),
   stars = c("regress", "latent", "covs"),
   labels = labels,
   stand = T,

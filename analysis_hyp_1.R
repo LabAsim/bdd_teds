@@ -1,5 +1,5 @@
 library(lavaan)
-
+source("constants.R")
 if (sys.nframe() == 0) {
   source("data_management_hyp_1.R")
 }
@@ -78,7 +78,11 @@ fit_plot_scaled_32_without_covid <- lavaanPlot::lavaanPlot(
   model = fit_fiml_scaled_32_without_covid,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
-  graph_options = list(rankdir = "TB", fontsize = "15"),
+  graph_options = list(
+    rankdir = "TB", fontsize = "15",
+    overlap = "true",
+    labelloc = "b", label = footnote
+  ),
   stars = c("regress", "latent", "covs"),
   labels = labels,
   stand = F,
@@ -90,7 +94,11 @@ fit_plot_scaled_32_without_covid_standardized <- lavaanPlot::lavaanPlot(
   model = fit_fiml_scaled_32_without_covid,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
-  graph_options = list(rankdir = "TB", fontsize = "15"),
+  graph_options = list(
+    rankdir = "TB", fontsize = "15",
+    overlap = "true",
+    labelloc = "b", label = footnote
+  ),
   stars = c("regress", "latent", "covs"),
   labels = labels,
   stand = T,
