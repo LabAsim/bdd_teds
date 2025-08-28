@@ -2186,3 +2186,62 @@ stopifnot(
   )
 )
 rm(list = c("test", "testit"))
+
+
+find_complete <- function(df, var) {
+  message("Splitting")
+  dflist <- split(data.table::as.data.table(df), by = "fam_id")
+  message("Splitted")
+  to_return <- lapply(
+    # X=dflist, FUN=function(inner_df){
+    X = seq_along(dflist), FUN = function(index) {
+      inner_df <- dflist[[index]]
+      inner_df <- as.data.frame(inner_df)
+      message("\r", "Family ID:", inner_df[1, "fam_id"], appendLF = F)
+      flush.console()
+      new_col_name <- glue::glue("pairs_flag_{var}")
+      inner_df[, new_col_name] <- NA
+      inner_df[, "pairs_flag"] <- NA
+      if (length(inner_df[, "pairs_flag"]) == 2) {
+        inner_df[, "pairs_flag"] <- "complete"
+        if (is.na(inner_df[1, var]) == T | is.na(inner_df[2, var]) == T) {
+          inner_df[, new_col_name] <- "incomplete"
+        } else {
+          inner_df[, new_col_name] <- "complete"
+        }
+      } else {
+        inner_df[, "pairs_flag"] <- "incomplete"
+      }
+
+      return(inner_df)
+    }
+  )
+  message("\n")
+  message("Done filtering")
+  # # https://stackoverflow.com/a/35951683
+  to_return <- unname(to_return)
+  to_return <- data.table::rbindlist(to_return)
+  to_return <- as.data.frame(to_return)
+  message("Done binding")
+  return(to_return)
+}
+
+
+test <- data.frame(
+  fam_id = c(1, 1, 2, 2, 5),
+  sex = c(0, 0, 1, 1, 0),
+  test_var = c(NA, 1, 2, 2, 3)
+)
+
+
+stopifnot(
+  all.equal(
+    current = find_complete(test),
+    target = data.frame(
+      fam_id = c(1, 1, 2, 2, 5),
+      sex = c(0, 0, 1, 1, 0),
+      pairs_flag_test_var = c("incomplete", "incomplete", "complete", "complete", NA),
+      pairs_flag = c("complete", "complete", "complete", "complete", "incomplete"),
+    )
+  )
+)

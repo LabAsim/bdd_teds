@@ -198,7 +198,7 @@ summary_all <- df_essential_vars %>%
   select(
     c(
       "zygosity_binary_fct",
-      "school_cohort_fct",
+      # "school_cohort_fct",
       "sex_1_fct",
       "eating_diagnosis_fct_26_1",
       "age_child_12_1",
@@ -222,7 +222,7 @@ summary_all <- df_essential_vars %>%
     missing_text = "Missing",
     missing_stat = "{N_miss} ({p_miss}%)",
     label = list(
-      school_cohort_fct ~ "School cohort",
+      # school_cohort_fct ~ "School cohort",
       sex_1_fct ~ "Sex",
       eating_diagnosis_fct_26_1 ~ "Eating disorder diagnosis",
       age_child_12_1 ~ "wave 12y",
@@ -292,7 +292,7 @@ summary_all <- df_essential_vars %>%
   ) %>%
   gt::tab_options(heading.subtitle.font.size = "20px") %>%
   gt::tab_footnote(
-    footnote = "MZ: Monozygotic, DZ: Dizygotic, DCQ: Dysmorphic concerns questionnaire, MPVS: Multidimensional peer victimization scale, y: year(s)",
+    footnote = "N refers to individuals, MZ: Monozygotic, DZ: Dizygotic, DCQ: Dysmorphic concerns questionnaire, MPVS: Multidimensional peer victimization scale, y: year(s)",
     locations = NULL
   )
 
@@ -563,3 +563,44 @@ summary_df_without_NA <- create_summary_df(
     "mpvs_total_cov4_21_1_scaled_32"
   )
 )
+twin_pairs_incompleteness <- find_complete(df_1, var = "mpvs_total_12_1")
+twin_pairs_incompleteness <- find_complete(
+  twin_pairs_incompleteness,
+  var = "mpvs_total_child_14_1"
+)
+twin_pairs_incompleteness <- find_complete(
+  twin_pairs_incompleteness,
+  var = "mpvs_total_16_1"
+)
+twin_pairs_incompleteness <- find_complete(
+  twin_pairs_incompleteness,
+  var = "mpvs_total_phase_2_21_1"
+)
+summary_twin_pairs_incompleteness <- twin_pairs_incompleteness %>%
+  select(
+    c(
+      "zygosity_binary_fct",
+      "pairs_flag_dcq_total_26_1",
+      "pairs_flag_mpvs_total_12_1",
+      "pairs_flag_mpvs_total_child_14_1",
+      "pairs_flag_mpvs_total_16_1",
+      "pairs_flag_mpvs_total_phase_2_21_1"
+    )
+  ) %>%
+  gtsummary::tbl_summary(
+    by = zygosity_binary_fct,
+    statistic = list(
+      all_categorical() ~ "{n} ({p}%)",
+      all_continuous() ~ "{mean} ({sd})"
+    ),
+    missing_text = "Missing",
+    missing_stat = "{N_miss} ({p_miss}%)",
+    label = list(
+      pairs_flag_dcq_total_26_1 ~ "DCQ total score",
+      pairs_flag_mpvs_total_12_1 ~ "MPVS 12y",
+      pairs_flag_mpvs_total_child_14_1 ~ "MPVS 14y",
+      pairs_flag_mpvs_total_16_1 ~ "MPVS 16y",
+      pairs_flag_mpvs_total_phase_2_21_1 ~ "MPVS 21y"
+    )
+  )
+summary_twin_pairs_incompleteness
