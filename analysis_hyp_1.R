@@ -60,7 +60,7 @@ fit_fiml_scaled_32_without_covid <- sem(
   cluster = "fam_id",
   missing = "fiml"
 )
-summary(fit_fiml_scaled_32_without_covid, standardized = T)
+summary(fit_fiml_scaled_32_without_covid, standardized = T, fit.measures = TRUE)
 parameters_fit_fiml_without_covid_phenotypic <- modify_parameter_estimates(
   df = parameterestimates(
     fit_fiml_scaled_32_without_covid,
@@ -86,7 +86,8 @@ fit_plot_scaled_32_without_covid <- lavaanPlot::lavaanPlot(
   stars = c("regress", "latent", "covs"),
   labels = labels,
   stand = F,
-  conf.int = T
+  conf.int = T,
+  edge_styles = T
 )
 fit_plot_scaled_32_without_covid
 
@@ -102,7 +103,8 @@ fit_plot_scaled_32_without_covid_standardized <- lavaanPlot::lavaanPlot(
   stars = c("regress", "latent", "covs"),
   labels = labels,
   stand = T,
-  conf.int = T
+  conf.int = T,
+  edge_styles = T
 )
 fit_plot_scaled_32_without_covid_standardized
 
