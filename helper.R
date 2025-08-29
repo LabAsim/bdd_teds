@@ -2236,12 +2236,13 @@ test <- data.frame(
 
 stopifnot(
   all.equal(
-    current = find_complete(test),
+    current = find_complete(test, var = "test_var"),
     target = data.frame(
       fam_id = c(1, 1, 2, 2, 5),
       sex = c(0, 0, 1, 1, 0),
+      test_var = c(NA, 1, 2, 2, 3),
       pairs_flag_test_var = c("incomplete", "incomplete", "complete", "complete", NA),
-      pairs_flag = c("complete", "complete", "complete", "complete", "incomplete"),
+      pairs_flag = c("complete", "complete", "complete", "complete", "incomplete")
     )
   )
 )
