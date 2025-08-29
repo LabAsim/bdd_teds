@@ -563,7 +563,12 @@ summary_df_without_NA <- create_summary_df(
     "mpvs_total_cov4_21_1_scaled_32"
   )
 )
-twin_pairs_incompleteness <- find_complete(df_1, var = "mpvs_total_12_1")
+
+twin_pairs_incompleteness <- find_complete(df_1, var = "dcq_total_26_1")
+twin_pairs_incompleteness <- find_complete(
+  twin_pairs_incompleteness,
+  var = "mpvs_total_12_1"
+)
 twin_pairs_incompleteness <- find_complete(
   twin_pairs_incompleteness,
   var = "mpvs_total_child_14_1"
