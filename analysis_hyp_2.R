@@ -36,6 +36,7 @@ fit_fiml_diff_model_with_covid_scaled <- sem(
 )
 summary(fit_fiml_diff_model_with_covid_scaled)
 
+resid(fit_fiml_diff_model_with_covid_scaled, type = "cor.bollen")
 
 lavaanPlot::lavaanPlot(
   model = fit_fiml_diff_model_with_covid_scaled,
@@ -78,17 +79,69 @@ twin_diff_model_scaled_without_covid <- "
     mpvs_total_16_1_scaled_32 ~ mpvs_total_child_14_1_scaled_32
     mpvs_total_phase_2_21_1_scaled_32 ~ mpvs_total_16_1_scaled_32
 "
-fit_ml_without_covid <- sem(
-  model = twin_diff_model_scaled_without_covid, data = df_all_diffs
-)
-summary(fit_ml_without_covid)
+# fit_ml_without_covid <- sem(
+#   model = twin_diff_model_scaled_without_covid, data = df_all_diffs
+# )
+# summary(fit_ml_without_covid)
 
 
 fit_fiml_without_covid <- sem(
   model = twin_diff_model_scaled_without_covid, data = df_all_diffs,
   missing = "fiml"
 )
-summary(fit_fiml_without_covid, standardized = T)
+# It failed global exact fit test (chi2)
+summary(fit_fiml_without_covid, standardized = T, fit.measures = T)
+modindices(fit_fiml_without_covid, sort = T)
+
+resid(fit_fiml_without_covid, type = "cor.bollen")
+resid(fit_fiml_without_covid, type = "standardized")
+lavResiduals(fit_fiml_without_covid, type = "cor.bollen", se = T, zstat = T)
+resid(fit_fiml_without_covid, type = "normalized")
+# The model failed global and local fit
+
+#############################################
+# Parameters added according to modincides #
+#############################################
+twin_diff_model_scaled_without_covid1 <- "
+    dcq_total_26_1 ~ mpvs_total_12_1_scaled_32
+    dcq_total_26_1 ~ mpvs_total_child_14_1_scaled_32
+    dcq_total_26_1 ~ mpvs_total_16_1_scaled_32
+    dcq_total_26_1 ~ mpvs_total_phase_2_21_1_scaled_32
+    mpvs_total_child_14_1_scaled_32 ~ mpvs_total_12_1_scaled_32
+    mpvs_total_16_1_scaled_32 ~ mpvs_total_child_14_1_scaled_32
+    mpvs_total_phase_2_21_1_scaled_32 ~ mpvs_total_16_1_scaled_32
+    # These added from the modindinces based on mi and the theory
+    # (12y cannot be regressed on 21y)
+
+    mpvs_total_child_14_1_scaled_32 ~~mpvs_total_phase_2_21_1_scaled_32
+    mpvs_total_16_1_scaled_32  ~ mpvs_total_12_1_scaled_32
+
+    # Another over-identified model could add this cov
+    # instead of the aforementioned
+    # Covs
+    #mpvs_total_12_1_scaled_32  ~~ mpvs_total_phase_2_21_1_scaled_32
+    #mpvs_total_12_1_scaled_32  ~~ mpvs_total_16_1_scaled_32
+
+"
+
+fit_fiml_without_covid1 <- sem(
+  model = twin_diff_model_scaled_without_covid1, data = df_all_diffs,
+  missing = "fiml"
+)
+summary(fit_fiml_without_covid1, standardized = T, fit.measures = T)
+modindices(fit_fiml_without_covid1, sort = T)
+
+resid(fit_fiml_without_covid1, type = "cor.bollen")
+resid(fit_fiml_without_covid1, type = "standardized")
+lavResiduals(fit_fiml_without_covid1, type = "cor.bollen", se = T, zstat = T)
+resid(fit_fiml_without_covid1, type = "normalized")
+
+
+
+
+
+
+
 parameters_fit_fiml_without_covid_MZ <- modify_parameter_estimates(
   df = parameterestimates(
     fit_fiml_without_covid,
@@ -96,6 +149,7 @@ parameters_fit_fiml_without_covid_MZ <- modify_parameter_estimates(
   ),
   round_digits = 3
 )
+
 
 labels <- list(
   dcq_total_26_1 = "DCQ (26y)",
@@ -106,7 +160,7 @@ labels <- list(
 )
 
 plot_fit_fiml <- lavaanPlot::lavaanPlot(
-  model = fit_fiml_without_covid,
+  model = fit_fiml_without_covid1,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
   graph_options = list(
