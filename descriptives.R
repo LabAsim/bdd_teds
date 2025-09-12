@@ -607,5 +607,23 @@ summary_twin_pairs_incompleteness <- twin_pairs_incompleteness %>%
       pairs_flag_mpvs_total_16_1 ~ "MPVS 16y",
       pairs_flag_mpvs_total_phase_2_21_1 ~ "MPVS 21y"
     )
+  ) %>%
+  # Include an "overall" column
+  add_overall(
+    last = T,
+    # The ** make it bold
+    col_label = "**All participants**<br> \n N = {N}"
+  ) %>%
+  # This functions converts gtsummary to gt
+  bstfun::bold_italicize_group_labels(bold = T) %>%
+  gt::tab_header(
+    title = "",
+    subtitle = "Table 1. Participants characteristics"
+  ) %>%
+  gt::tab_options(heading.subtitle.font.size = "20px") %>%
+  gt::tab_footnote(
+    footnote = footnote_acronyms_2,
+    locations = NULL
   )
+
 summary_twin_pairs_incompleteness
