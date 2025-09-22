@@ -113,7 +113,7 @@ twin_diff_model_scaled_without_covid1 <- "
     # These added from the modindinces based on mi and the theory
     # (12y cannot be regressed on 21y)
 
-    mpvs_total_child_14_1_scaled_32 ~~mpvs_total_phase_2_21_1_scaled_32
+    mpvs_total_child_14_1_scaled_32 ~~ mpvs_total_phase_2_21_1_scaled_32
     mpvs_total_16_1_scaled_32  ~ mpvs_total_12_1_scaled_32
 
     # Another over-identified model could add this cov
@@ -137,14 +137,9 @@ lavResiduals(fit_fiml_without_covid1, type = "cor.bollen", se = T, zstat = T)
 resid(fit_fiml_without_covid1, type = "normalized")
 
 
-
-
-
-
-
 parameters_fit_fiml_without_covid_MZ <- modify_parameter_estimates(
   df = parameterestimates(
-    fit_fiml_without_covid,
+    fit_fiml_without_covid1,
     standardized = T
   ),
   round_digits = 3
@@ -177,7 +172,7 @@ plot_fit_fiml <- lavaanPlot::lavaanPlot(
 plot_fit_fiml
 
 plot_fit_fiml_standardized <- lavaanPlot::lavaanPlot(
-  model = fit_fiml_without_covid,
+  model = fit_fiml_without_covid1,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
   graph_options = list(
