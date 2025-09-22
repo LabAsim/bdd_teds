@@ -62,6 +62,7 @@ fit_fiml_scaled_32_without_covid <- sem(
 )
 summary(fit_fiml_scaled_32_without_covid, standardized = T, fit.measures = TRUE)
 modindices(fit_fiml_scaled_32_without_covid, sort = T)
+resid(fit_fiml_scaled_32_without_covid, type = "cor.bollen")
 
 ##################################################################
 # Add covariances for MPVS vars that do not regress one another. #
