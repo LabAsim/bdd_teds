@@ -15,7 +15,7 @@ if (sys.nframe() == 0) {
 library(gtsummary)
 library(tidyverse)
 library(lavaan)
-
+source("constants.R")
 corr_mat <- cor(
   df_essential_vars %>% select(
     all_of(
