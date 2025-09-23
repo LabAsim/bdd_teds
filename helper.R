@@ -1,5 +1,5 @@
 library(tidyverse)
-
+library(flextable)
 
 time_and_beep <- function(f, sound = 1) {
   function(...) {
@@ -2293,4 +2293,24 @@ extract_cov_residuals <- function(residual_obj) {
   cov_resid <- as.data.frame(residual_obj[["cov"]])
   colnames(cov_resid)
   return(cov_resid)
+}
+
+
+
+color_corr_residuals <- function(resid_df, limit, bg_color) {
+  flextable(resid_df) %>%
+    bg(
+      # https://stackoverflow.com/a/11672966
+      j = base::setdiff(
+        x = colnames(resid_df),
+        y = "vars"
+      ),
+      bg = function(x) {
+        case_when(
+          abs(x) > limit ~ bg_color,
+          # x < -0.1 ~ "gray",
+          TRUE ~ "white"
+        )
+      }
+    )
 }
