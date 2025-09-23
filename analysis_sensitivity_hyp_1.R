@@ -72,8 +72,9 @@ plot_fit_fiml_scaled_32_without_covid_without_ED <- lavaanPlot::lavaanPlot(
   ),
   stars = c("regress", "latent", "covs"),
   labels = labels,
-  stand = F,
-  conf.int = T
+  stand = T,
+  conf.int = T,
+  edge_styles = T
 )
 plot_fit_fiml_scaled_32_without_covid_without_ED
 
@@ -89,6 +90,7 @@ plot_fit_fiml_scaled_32_without_covid_without_ED_standardized <- lavaanPlot::lav
   stars = c("regress", "latent", "covs"),
   labels = labels,
   stand = T,
-  conf.int = T
+  conf.int = T,
+  edge_styles = T
 )
 plot_fit_fiml_scaled_32_without_covid_without_ED_standardized
