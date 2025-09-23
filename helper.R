@@ -2274,8 +2274,8 @@ testit <- data.frame(
   A = c(1, 2),
   B = c(2, 1)
 )
-rownames(testit) <- c("MPVS(14y)", "MPVS(16y)")
-colnames(testit) <- c("MPVS(14y)", "MPVS(16y)")
+rownames(testit) <- c("MPVS (14y)", "MPVS (16y)")
+colnames(testit) <- c("MPVS (14y)", "MPVS (16y)")
 
 source("constants.R")
 stopifnot(
