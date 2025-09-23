@@ -53,7 +53,7 @@ fit_fiml_diff_without_covid_ΜΖ_sensitivity <- sem(
   missing = "fiml"
 )
 
-summary(fit_fiml_diff_without_covid_ΜΖ_sensitivity, standardized = T)
+summary(fit_fiml_diff_without_covid_ΜΖ_sensitivity, standardized = T, fit.measures = T)
 
 
 resid(fit_fiml_diff_without_covid_ΜΖ_sensitivity, type = "cor.bollen")
@@ -86,7 +86,10 @@ fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified <- sem(
   missing = "fiml"
 )
 
-summary(fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified, standardized = T)
+summary(
+  fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified,
+  standardized = T, fit.measures = T
+)
 
 
 resid(fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified, type = "cor.bollen")
