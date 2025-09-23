@@ -120,6 +120,14 @@ parameters_fit_fiml_without_covid_phenotypic_with_covs_standardised <- standardi
   fit_fiml_scaled_32_without_covid_with_covs
 )
 
+
+parameters_fit_fiml_without_covid_phenotypic_with_covs_standardised <- modify_parameter_estimates(
+  df = parameters_fit_fiml_without_covid_phenotypic_with_covs_standardised,
+  round_digits = 3
+)
+
+
+
 resid(fit_fiml_scaled_32_without_covid_with_covs, type = "cor.bollen")
 # lavResiduals(fit_fiml_scaled_32_without_covid_with_covs)
 # residuals(fit_fiml_scaled_32_without_covid_with_covs, type = "standardized")
@@ -251,20 +259,20 @@ summary(fit_fiml_scaled_32_with_covid)
 ############
 # Using MI #
 ############
-
-if (sys.nframe() == 0) {
-  if (exists("imp_derived") == F) {
-    if (file.exists("G:\\imp_derived.Rdata")) {
-      load("G:\\imp_derived.Rdata")
-    } else {
-      source("imputation_derived.R")
-    }
-  }
-
-  # Do not use semTools, it's deprecated
-  library(lavaan.mi)
-
-  fit_mi <- sem.mi(model = model_scaled_32_without_covid, data = imp_data_derived)
-  summary(fit_mi)
-  parameterEstimates.mi(fit_mi)
-}
+#
+# if (sys.nframe() == 0) {
+#   if (exists("imp_derived") == F) {
+#     if (file.exists("G:\\imp_derived.Rdata")) {
+#       load("G:\\imp_derived.Rdata")
+#     } else {
+#       source("imputation_derived.R")
+#     }
+#   }
+#
+#   # Do not use semTools, it's deprecated
+#   library(lavaan.mi)
+#
+#   fit_mi <- sem.mi(model = model_scaled_32_without_covid, data = imp_data_derived)
+#   summary(fit_mi)
+#   parameterEstimates.mi(fit_mi)
+# }
