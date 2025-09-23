@@ -2246,3 +2246,51 @@ stopifnot(
     )
   )
 )
+
+
+
+change_df_labels <- function(df, labels) {
+  new_labels <- c()
+  for (name in colnames(df)) {
+    if (name %in% names(labels)) {
+      new_labels <- append(new_labels, labels[[name]])
+    } else {
+      new_labels <- append(new_labels, name)
+    }
+  }
+  colnames(df) <- new_labels
+  rownames(df) <- new_labels
+  return(df)
+}
+
+
+test <- data.frame(
+  mpvs_total_child_14_1_scaled_32   = c(1, 2),
+  mpvs_total_16_1_scaled_32         = c(2, 1)
+)
+rownames(test) <- c("mpvs_total_child_14_1_scaled_32", "mpvs_total_16_1_scaled_32")
+
+testit <- data.frame(
+  A = c(1, 2),
+  B = c(2, 1)
+)
+rownames(testit) <- c("MPVS(14y)", "MPVS(16y)")
+colnames(testit) <- c("MPVS(14y)", "MPVS(16y)")
+
+source("constants.R")
+stopifnot(
+  all.equal(
+    current = change_df_labels(df = test, labels = var_labels),
+    target = testit
+  )
+)
+
+rm("test")
+rm("testit")
+
+
+extract_cov_residuals <- function(residual_obj) {
+  cov_resid <- as.data.frame(residual_obj[["cov"]])
+  colnames(cov_resid)
+  return(cov_resid)
+}
