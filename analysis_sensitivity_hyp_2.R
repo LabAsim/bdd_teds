@@ -55,9 +55,51 @@ fit_fiml_diff_without_covid_ΜΖ_sensitivity <- sem(
 
 summary(fit_fiml_diff_without_covid_ΜΖ_sensitivity, standardized = T)
 
+
+resid(fit_fiml_diff_without_covid_ΜΖ_sensitivity, type = "cor.bollen")
+lavResiduals(fit_fiml_diff_without_covid_ΜΖ_sensitivity)
+residuals(fit_fiml_diff_without_covid_ΜΖ_sensitivity, type = "standardized")
+residuals(fit_fiml_diff_without_covid_ΜΖ_sensitivity, type = "normalized")
+modindices(fit_fiml_diff_without_covid_ΜΖ_sensitivity, sort. = T)
+# Model has poor global and local fit
+
+
+twin_diff_model_scaled_modified <- "
+    dcq_total_26_1 ~ mpvs_total_12_1_scaled_32
+    dcq_total_26_1 ~ mpvs_total_child_14_1_scaled_32
+    dcq_total_26_1 ~ mpvs_total_16_1_scaled_32
+    dcq_total_26_1 ~ mpvs_total_phase_2_21_1_scaled_32
+    mpvs_total_child_14_1_scaled_32 ~ mpvs_total_12_1_scaled_32
+    mpvs_total_16_1_scaled_32 ~ mpvs_total_child_14_1_scaled_32
+    mpvs_total_phase_2_21_1_scaled_32 ~ mpvs_total_16_1_scaled_32
+
+    # Added
+    mpvs_total_child_14_1_scaled_32 ~~ mpvs_total_phase_2_21_1_scaled_32
+    mpvs_total_12_1_scaled_32  ~~ mpvs_total_16_1_scaled_32
+
+    # An alternative addition is the following
+    # mpvs_total_16_1_scaled_32  ~ mpvs_total_12_1_scaled_32
+    # mpvs_total_child_14_1_scaled_32 ~~ mpvs_total_phase_2_21_1_scaled_32
+"
+fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified <- sem(
+  model = twin_diff_model_scaled_modified, data = df_all_diffs_without_eating,
+  missing = "fiml"
+)
+
+summary(fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified, standardized = T)
+
+
+resid(fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified, type = "cor.bollen")
+lavResiduals(fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified)
+residuals(fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified, type = "standardized")
+residuals(fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified, type = "normalized")
+modindices(fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified, sort. = T)
+
+
+# Use the modified model!
 parameters_fit_fiml_without_covid_ΜΖ_sensitivity <- modify_parameter_estimates(
   df = parameterestimates(
-    fit_fiml_diff_without_covid_ΜΖ_sensitivity,
+    fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified,
     standardized = T
   ),
   round_digits = 3
@@ -71,7 +113,7 @@ labels <- list(
 )
 
 plot_fit_fiml_diff_without_covid_ΜΖ_sensitivity <- lavaanPlot::lavaanPlot(
-  model = fit_fiml_diff_without_covid_ΜΖ_sensitivity,
+  model = fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
   graph_options = list(
@@ -81,8 +123,9 @@ plot_fit_fiml_diff_without_covid_ΜΖ_sensitivity <- lavaanPlot::lavaanPlot(
   ),
   stars = c("regress", "latent", "covs"),
   labels = labels,
-  stand = F,
-  conf.int = T
+  stand = T,
+  conf.int = T,
+  edge_styles = T
 )
 plot_fit_fiml_diff_without_covid_ΜΖ_sensitivity
 
@@ -98,7 +141,8 @@ plot_fit_fiml_diff_without_covid_standardized_ΜΖ_sensitivity <- lavaanPlot::la
   stars = c("regress", "latent", "covs"),
   labels = labels,
   stand = T,
-  conf.int = T
+  conf.int = T,
+  edge_styles = T
 )
 plot_fit_fiml_diff_without_covid_standardized_ΜΖ_sensitivity
 
@@ -107,36 +151,36 @@ plot_fit_fiml_diff_without_covid_standardized_ΜΖ_sensitivity
 # Latent growth model #
 #######################
 
-latent_growth_model <- "
-  # intercept and slope with fixed coefficients
-  intercept =~ 1*mpvs_total_12_1_scaled_32 + 1*mpvs_total_child_14_1_scaled_32 + 1*mpvs_total_16_1_scaled_32 + 1*mpvs_total_phase_2_21_1_scaled_32
-  slope =~ 0*mpvs_total_12_1_scaled_32 + 1*mpvs_total_child_14_1_scaled_32 + 2*mpvs_total_16_1_scaled_32 + 3*mpvs_total_phase_2_21_1_scaled_32
-
-  # Regressions
-  dcq_total_26_1 ~ intercept
-  dcq_total_26_1 ~ slope
-
-  intercept ~ slope
-"
-fit <- growth(
-  latent_growth_model,
-  data = df_all_diffs,
-  missing = "fiml"
-)
-summary(fit, standardized = T)
-
-
-fit_without_ED <- growth(
-  latent_growth_model,
-  data = df_all_diffs_without_eating,
-  missing = "fiml"
-)
-summary(fit_without_ED, standardized = T)
-
-lavaanPlot::lavaanPlot(
-  model = fit_without_ED,
-  edge_options = list(color = "grey"),
-  coefs = TRUE, # covs = TRUE,
-  graph_options = list(rankdir = "TB")
-  # stars = c("regress", "latent", "covs")
-)
+# latent_growth_model <- "
+#   # intercept and slope with fixed coefficients
+#   intercept =~ 1*mpvs_total_12_1_scaled_32 + 1*mpvs_total_child_14_1_scaled_32 + 1*mpvs_total_16_1_scaled_32 + 1*mpvs_total_phase_2_21_1_scaled_32
+#   slope =~ 0*mpvs_total_12_1_scaled_32 + 1*mpvs_total_child_14_1_scaled_32 + 2*mpvs_total_16_1_scaled_32 + 3*mpvs_total_phase_2_21_1_scaled_32
+#
+#   # Regressions
+#   dcq_total_26_1 ~ intercept
+#   dcq_total_26_1 ~ slope
+#
+#   intercept ~ slope
+# "
+# fit <- growth(
+#   latent_growth_model,
+#   data = df_all_diffs,
+#   missing = "fiml"
+# )
+# summary(fit, standardized = T)
+#
+#
+# fit_without_ED <- growth(
+#   latent_growth_model,
+#   data = df_all_diffs_without_eating,
+#   missing = "fiml"
+# )
+# summary(fit_without_ED, standardized = T)
+#
+# lavaanPlot::lavaanPlot(
+#   model = fit_without_ED,
+#   edge_options = list(color = "grey"),
+#   coefs = TRUE, # covs = TRUE,
+#   graph_options = list(rankdir = "TB")
+#   # stars = c("regress", "latent", "covs")
+# )
