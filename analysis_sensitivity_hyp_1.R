@@ -52,6 +52,19 @@ resid(fit_fiml_scaled_32_without_covid_without_ED, type = "cor.bollen")
 modindices(fit_fiml_scaled_32_without_covid_without_ED, sort. = T)
 
 
+fit_fiml_scaled_32_without_covid_without_ED_residuals <- round(
+  change_df_labels(
+    df = extract_cov_residuals(
+      residual_obj = resid(
+        fit_fiml_scaled_32_without_covid_without_ED,
+        type = "cor.bollen"
+      )
+    ),
+    labels = var_labels
+  ),
+  digits = 3
+)
+
 
 model_scaled_32_without_covid_modified <- "
     # DCQ
@@ -94,6 +107,21 @@ summary(fit_fiml_scaled_32_without_covid_without_ED_modified, standardized = T, 
 
 resid(fit_fiml_scaled_32_without_covid_without_ED_modified, type = "cor.bollen")
 modindices(fit_fiml_scaled_32_without_covid_without_ED_modified, sort. = T)
+
+
+fit_fiml_scaled_32_without_covid_without_ED_modified_residuals <- round(
+  change_df_labels(
+    df = extract_cov_residuals(
+      residual_obj = resid(
+        fit_fiml_scaled_32_without_covid_without_ED_modified,
+        type = "cor.bollen"
+      )
+    ),
+    labels = var_labels
+  ),
+  digits = 3
+)
+
 
 labels <- list(
   dcq_total_26_1 = "DCQ (26y)",

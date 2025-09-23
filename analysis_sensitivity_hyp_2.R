@@ -63,6 +63,20 @@ residuals(fit_fiml_diff_without_covid_ΜΖ_sensitivity, type = "normalized")
 modindices(fit_fiml_diff_without_covid_ΜΖ_sensitivity, sort. = T)
 # Model has poor global and local fit
 
+fit_fiml_diff_without_covid_ΜΖ_sensitivity_residuals <- round(
+  change_df_labels(
+    df = extract_cov_residuals(
+      residual_obj = resid(
+        fit_fiml_diff_without_covid_ΜΖ_sensitivity,
+        type = "cor.bollen"
+      )
+    ),
+    labels = var_labels
+  ),
+  digits = 3
+)
+
+
 
 twin_diff_model_scaled_modified <- "
     dcq_total_26_1 ~ mpvs_total_12_1_scaled_32
@@ -97,6 +111,20 @@ lavResiduals(fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified)
 residuals(fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified, type = "standardized")
 residuals(fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified, type = "normalized")
 modindices(fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified, sort. = T)
+
+
+fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified_residuals <- round(
+  change_df_labels(
+    df = extract_cov_residuals(
+      residual_obj = resid(
+        fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified,
+        type = "cor.bollen"
+      )
+    ),
+    labels = var_labels
+  ),
+  digits = 3
+)
 
 
 # Use the modified model!

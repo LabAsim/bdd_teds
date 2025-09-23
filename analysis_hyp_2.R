@@ -94,6 +94,21 @@ lavResiduals(fit_fiml_without_covid, type = "cor.bollen", se = T, zstat = T)
 resid(fit_fiml_without_covid, type = "normalized")
 # The model failed global and local fit
 
+
+fit_fiml_without_covid_residuals <- round(
+  change_df_labels(
+    df = extract_cov_residuals(
+      residual_obj = resid(
+        fit_fiml_without_covid,
+        type = "cor.bollen"
+      )
+    ),
+    labels = var_labels
+  ),
+  digits = 3
+)
+
+
 #############################################
 # Parameters added according to modincides #
 #############################################
@@ -129,6 +144,21 @@ resid(fit_fiml_without_covid1, type = "cor.bollen")
 resid(fit_fiml_without_covid1, type = "standardized")
 lavResiduals(fit_fiml_without_covid1, type = "cor.bollen", se = T, zstat = T)
 resid(fit_fiml_without_covid1, type = "normalized")
+
+
+fit_fiml_without_covid1_residuals <- round(
+  change_df_labels(
+    df = extract_cov_residuals(
+      residual_obj = resid(
+        fit_fiml_without_covid1,
+        type = "cor.bollen"
+      )
+    ),
+    labels = var_labels
+  ),
+  digits = 3
+)
+
 
 
 parameters_fit_fiml_without_covid_MZ <- modify_parameter_estimates(

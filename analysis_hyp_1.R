@@ -64,6 +64,18 @@ summary(fit_fiml_scaled_32_without_covid, standardized = T, fit.measures = TRUE)
 modindices(fit_fiml_scaled_32_without_covid, sort = T)
 resid(fit_fiml_scaled_32_without_covid, type = "cor.bollen")
 
+
+
+fit_fiml_scaled_32_without_covid_residuals <- round(
+  change_df_labels(
+    df = extract_cov_residuals(
+      residual_obj = resid(fit_fiml_scaled_32_without_covid, type = "cor.bollen")
+    ),
+    labels = var_labels
+  ),
+  digits = 3
+)
+
 ##################################################################
 # Add covariances for MPVS vars that do not regress one another. #
 ##################################################################
@@ -132,6 +144,25 @@ resid(fit_fiml_scaled_32_without_covid_with_covs, type = "cor.bollen")
 # lavResiduals(fit_fiml_scaled_32_without_covid_with_covs)
 # residuals(fit_fiml_scaled_32_without_covid_with_covs, type = "standardized")
 # residuals(fit_fiml_scaled_32_without_covid_with_covs, type = "normalized")
+
+
+
+
+fit_fiml_scaled_32_without_covid_with_covs_residuals <- round(
+  change_df_labels(
+    df = extract_cov_residuals(
+      residual_obj = resid(
+        fit_fiml_scaled_32_without_covid_with_covs,
+        type = "cor.bollen"
+      )
+    ),
+    labels = var_labels
+  ),
+  digits = 3
+)
+
+
+
 
 fit_plot_scaled_32_without_covid_with_covs <- lavaanPlot::lavaanPlot(
   model = fit_fiml_scaled_32_without_covid_with_covs,
