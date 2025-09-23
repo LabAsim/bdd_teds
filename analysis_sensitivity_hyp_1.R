@@ -46,7 +46,7 @@ fit_fiml_scaled_32_without_covid_without_ED <- sem(
   cluster = "fam_id",
   missing = "fiml"
 )
-summary(fit_fiml_scaled_32_without_covid_without_ED, standardized = T)
+summary(fit_fiml_scaled_32_without_covid_without_ED, standardized = T, fit.measures = T)
 
 resid(fit_fiml_scaled_32_without_covid_without_ED, type = "cor.bollen")
 modindices(fit_fiml_scaled_32_without_covid_without_ED, sort. = T)
@@ -84,20 +84,16 @@ model_scaled_32_without_covid_modified <- "
     mpvs_total_child_14_1_scaled_32 ~~ mpvs_total_16_1_scaled_32
     mpvs_total_16_1_scaled_32   ~~ mpvs_total_phase_2_21_1_scaled_32
 "
-fit_fiml_scaled_32_without_covid_without_ED <- sem(
+fit_fiml_scaled_32_without_covid_without_ED_modified <- sem(
   model = model_scaled_32_without_covid_modified,
   data = df_essential_vars_without_ED,
   cluster = "fam_id",
   missing = "fiml"
 )
-summary(fit_fiml_scaled_32_without_covid_without_ED, standardized = T)
+summary(fit_fiml_scaled_32_without_covid_without_ED_modified, standardized = T, fit.measures = T)
 
-resid(fit_fiml_scaled_32_without_covid_without_ED, type = "cor.bollen")
-modindices(fit_fiml_scaled_32_without_covid_without_ED, sort. = T)
-
-
-
-
+resid(fit_fiml_scaled_32_without_covid_without_ED_modified, type = "cor.bollen")
+modindices(fit_fiml_scaled_32_without_covid_without_ED_modified, sort. = T)
 
 labels <- list(
   dcq_total_26_1 = "DCQ (26y)",
@@ -113,7 +109,7 @@ labels <- list(
   age_26_1 = "Age (26y)"
 )
 plot_fit_fiml_scaled_32_without_covid_without_ED <- lavaanPlot::lavaanPlot(
-  model = fit_fiml_scaled_32_without_covid_without_ED,
+  model = fit_fiml_scaled_32_without_covid_without_ED_modified,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
   graph_options = list(
@@ -130,7 +126,7 @@ plot_fit_fiml_scaled_32_without_covid_without_ED <- lavaanPlot::lavaanPlot(
 plot_fit_fiml_scaled_32_without_covid_without_ED
 
 plot_fit_fiml_scaled_32_without_covid_without_ED_standardized <- lavaanPlot::lavaanPlot(
-  model = fit_fiml_scaled_32_without_covid_without_ED,
+  model = fit_fiml_scaled_32_without_covid_without_ED_modified,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
   graph_options = list(
