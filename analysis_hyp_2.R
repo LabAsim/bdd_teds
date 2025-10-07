@@ -123,13 +123,10 @@ twin_diff_model_scaled_without_covid1 <- "
     # These added from the modindinces based on mi and the theory
     # (12y cannot be regressed on 21y)
 
-    mpvs_total_child_14_1_scaled_32 ~~ mpvs_total_phase_2_21_1_scaled_32
-    mpvs_total_16_1_scaled_32  ~ mpvs_total_12_1_scaled_32
-
     # Another over-identified model could add this cov
     # instead of the aforementioned parameters
-    #mpvs_total_12_1_scaled_32  ~~ mpvs_total_phase_2_21_1_scaled_32
-    #mpvs_total_12_1_scaled_32  ~~ mpvs_total_16_1_scaled_32
+    mpvs_total_child_14_1_scaled_32  ~~ mpvs_total_phase_2_21_1_scaled_32
+    mpvs_total_12_1_scaled_32  ~~ mpvs_total_16_1_scaled_32
 
 "
 
@@ -211,6 +208,101 @@ plot_fit_fiml_standardized <- lavaanPlot::lavaanPlot(
   edge_styles = T
 )
 plot_fit_fiml_standardized
+
+#####################
+# Equivalent models #
+#####################
+
+twin_diff_model_scaled_without_covid_equiv1 <- "
+    dcq_total_26_1 ~ mpvs_total_12_1_scaled_32
+    dcq_total_26_1 ~ mpvs_total_child_14_1_scaled_32
+    dcq_total_26_1 ~ mpvs_total_16_1_scaled_32
+    dcq_total_26_1 ~ mpvs_total_phase_2_21_1_scaled_32
+    mpvs_total_child_14_1_scaled_32 ~ mpvs_total_12_1_scaled_32
+    mpvs_total_16_1_scaled_32 ~ mpvs_total_child_14_1_scaled_32
+    mpvs_total_phase_2_21_1_scaled_32 ~ mpvs_total_16_1_scaled_32
+    # These added from the modindinces based on mi and the theory
+    # (12y cannot be regressed on 21y)
+
+    #mpvs_total_child_14_1_scaled_32 ~~ mpvs_total_phase_2_21_1_scaled_32
+    #mpvs_total_16_1_scaled_32  ~ mpvs_total_12_1_scaled_32
+
+    # Another over-identified model could add this cov
+    # instead of the aforementioned parameters
+    mpvs_total_12_1_scaled_32  ~~ mpvs_total_phase_2_21_1_scaled_32
+    mpvs_total_12_1_scaled_32  ~~ mpvs_total_16_1_scaled_32
+
+"
+
+fit_fiml_without_covid_equiv1 <- sem(
+  model = twin_diff_model_scaled_without_covid_equiv1, data = df_all_diffs,
+  missing = "fiml"
+)
+summary(fit_fiml_without_covid_equiv1, standardized = T, fit.measures = T)
+
+
+color_corr_residuals(
+  resid_df = (round(
+    change_df_labels(
+      df = extract_cov_residuals(
+        residual_obj = resid(
+          fit_fiml_without_covid_equiv1,
+          type = "cor.bollen"
+        )
+      ),
+      labels = var_labels
+    ),
+    digits = 3
+  ) %>% rownames_to_column(var = "vars")),
+  limit = 0.1,
+  bg_color = "gray"
+)
+
+twin_diff_model_scaled_without_covid_equiv2 <- "
+    dcq_total_26_1 ~ mpvs_total_12_1_scaled_32
+    dcq_total_26_1 ~ mpvs_total_child_14_1_scaled_32
+    dcq_total_26_1 ~ mpvs_total_16_1_scaled_32
+    dcq_total_26_1 ~ mpvs_total_phase_2_21_1_scaled_32
+    mpvs_total_child_14_1_scaled_32 ~ mpvs_total_12_1_scaled_32
+    mpvs_total_16_1_scaled_32 ~ mpvs_total_child_14_1_scaled_32
+    mpvs_total_phase_2_21_1_scaled_32 ~ mpvs_total_16_1_scaled_32
+    # These added from the modindinces based on mi and the theory
+    # (12y cannot be regressed on 21y)
+
+    mpvs_total_child_14_1_scaled_32 ~~ mpvs_total_phase_2_21_1_scaled_32
+    mpvs_total_16_1_scaled_32  ~ mpvs_total_12_1_scaled_32
+
+    # Another over-identified model could add this cov
+    # instead of the aforementioned parameters
+
+"
+
+fit_fiml_without_covid_equiv2 <- sem(
+  model = twin_diff_model_scaled_without_covid_equiv2, data = df_all_diffs,
+  missing = "fiml"
+)
+summary(fit_fiml_without_covid_equiv2, standardized = T, fit.measures = T)
+
+
+color_corr_residuals(
+  resid_df = (round(
+    change_df_labels(
+      df = extract_cov_residuals(
+        residual_obj = resid(
+          fit_fiml_without_covid_equiv2,
+          type = "cor.bollen"
+        )
+      ),
+      labels = var_labels
+    ),
+    digits = 3
+  ) %>% rownames_to_column(var = "vars")),
+  limit = 0.1,
+  bg_color = "gray"
+)
+
+
+
 ######################
 # Using imputed data #
 ######################
