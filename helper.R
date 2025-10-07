@@ -2298,7 +2298,7 @@ extract_cov_residuals <- function(residual_obj) {
 
 
 color_corr_residuals <- function(resid_df, limit, bg_color) {
-  flextable(resid_df) %>%
+  ft <- flextable::flextable(data = resid_df) |>
     bg(
       # https://stackoverflow.com/a/11672966
       j = base::setdiff(
@@ -2306,11 +2306,12 @@ color_corr_residuals <- function(resid_df, limit, bg_color) {
         y = "vars"
       ),
       bg = function(x) {
-        case_when(
+        dplyr::case_when(
           abs(x) > limit ~ bg_color,
           # x < -0.1 ~ "gray",
           TRUE ~ "white"
         )
       }
     )
+  return(ft)
 }
