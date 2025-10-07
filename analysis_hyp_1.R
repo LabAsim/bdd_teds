@@ -182,7 +182,7 @@ fit_plot_scaled_32_without_covid_with_covs <- lavaanPlot::lavaanPlot(
 fit_plot_scaled_32_without_covid_with_covs
 
 fit_plot_scaled_32_without_covid_with_covs_standardized <- lavaanPlot::lavaanPlot(
-  model = fit_fiml_scaled_32_without_covid,
+  model = fit_fiml_scaled_32_without_covid_with_covs,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
   graph_options = list(

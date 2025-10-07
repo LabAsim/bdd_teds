@@ -161,7 +161,7 @@ plot_fit_fiml_diff_without_covid_ΜΖ_sensitivity <- lavaanPlot::lavaanPlot(
 plot_fit_fiml_diff_without_covid_ΜΖ_sensitivity
 
 plot_fit_fiml_diff_without_covid_standardized_ΜΖ_sensitivity <- lavaanPlot::lavaanPlot(
-  model = fit_fiml_diff_without_covid_ΜΖ_sensitivity,
+  model = fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
   graph_options = list(
