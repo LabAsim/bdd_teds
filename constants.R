@@ -10,10 +10,10 @@ var_labels <- list(
   "mpvs_total_child_14_1_scaled_32" = "MPVS (14y)",
   "mpvs_total_16_1_scaled_32" = "MPVS (16y)",
   "mpvs_total_phase_2_21_1_scaled_32" = "MPVS (21y)",
-  "age_child_12_1" = "Age(12y)",
-  "age_child_14_1" = "Age(14y)",
-  "age_child_web_16_1" = "Age(16y)",
-  "age_phase2_child_21_1" = "Age(21y)",
-  "age_26_1" = "Age(26y)",
+  "age_child_12_1" = "Age (12y)",
+  "age_child_14_1" = "Age (14y)",
+  "age_child_web_16_1" = "Age (16y)",
+  "age_phase2_child_21_1" = "Age (21y)",
+  "age_26_1" = "Age (26y)",
   "sex_1_fct" = "Sex"
 )
