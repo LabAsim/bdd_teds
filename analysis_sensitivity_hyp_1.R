@@ -169,3 +169,21 @@ plot_fit_fiml_scaled_32_without_covid_without_ED_standardized <- lavaanPlot::lav
   edge_styles = T
 )
 plot_fit_fiml_scaled_32_without_covid_without_ED_standardized
+
+
+color_corr_residuals(
+  resid_df = (round(
+    change_df_labels(
+      df = extract_cov_residuals(
+        residual_obj = resid(
+          fit_fiml_scaled_32_without_covid_without_ED_modified,
+          type = "cor.bollen"
+        )
+      ),
+      labels = var_labels
+    ),
+    digits = 3
+  ) %>% rownames_to_column(var = "vars")),
+  limit = 0.1,
+  bg_color = "gray"
+)

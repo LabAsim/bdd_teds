@@ -162,6 +162,24 @@ fit_fiml_scaled_32_without_covid_with_covs_residuals <- round(
 
 
 
+color_corr_residuals(
+  resid_df = (round(
+    change_df_labels(
+      df = extract_cov_residuals(
+        residual_obj = resid(
+          fit_fiml_scaled_32_without_covid_without_ED_modified,
+          type = "cor.bollen"
+        )
+      ),
+      labels = var_labels
+    ),
+    digits = 3
+  ) %>% rownames_to_column(var = "vars")),
+  limit = 0.1,
+  bg_color = "gray"
+)
+
+
 fit_plot_scaled_32_without_covid_with_covs <- lavaanPlot::lavaanPlot(
   model = fit_fiml_scaled_32_without_covid_with_covs,
   edge_options = list(color = "grey"),
@@ -192,139 +210,10 @@ fit_plot_scaled_32_without_covid_with_covs_standardized <- lavaanPlot::lavaanPlo
   labels = labels,
   stand = T,
   conf.int = T,
-  edge_styles = T
+  edge_styles = T,
+  covs = TRUE
 )
 fit_plot_scaled_32_without_covid_with_covs_standardized
-
-#####################
-# Equivalent models #
-#####################
-model_scaled_32_without_covid_with_covs_equiv1 <- "
-    # DCQ
-    dcq_total_26_1 ~ mpvs_total_12_1_scaled_32
-    dcq_total_26_1 ~ mpvs_total_child_14_1_scaled_32
-    dcq_total_26_1 ~ mpvs_total_16_1_scaled_32
-    dcq_total_26_1 ~ mpvs_total_phase_2_21_1_scaled_32
-
-    # Mpvs
-    mpvs_total_child_14_1_scaled_32 ~ mpvs_total_12_1_scaled_32
-    mpvs_total_16_1_scaled_32 ~ mpvs_total_child_14_1_scaled_32
-    mpvs_total_phase_2_21_1_scaled_32 ~ mpvs_total_16_1_scaled_32
-
-    # Age
-    dcq_total_26_1 ~ age_26_1
-    mpvs_total_12_1_scaled_32 ~ age_child_12_1
-    mpvs_total_child_14_1_scaled_32 ~ age_child_14_1
-    mpvs_total_16_1_scaled_32 ~ age_child_web_16_1
-    mpvs_total_phase_2_21_1_scaled_32 ~ age_phase2_child_21_1
-
-    # Sex
-    dcq_total_26_1 ~ sex_1_fct
-    mpvs_total_12_1_scaled_32 ~ sex_1_fct
-    mpvs_total_child_14_1_scaled_32 ~ sex_1_fct
-    mpvs_total_16_1_scaled_32 ~ sex_1_fct
-    mpvs_total_phase_2_21_1_scaled_32 ~ sex_1_fct
-
-    # Added
-    mpvs_total_16_1_scaled_32   ~  mpvs_total_12_1_scaled_32
-    mpvs_total_phase_2_21_1_scaled_32   ~ mpvs_total_child_14_1_scaled_32
-    mpvs_total_phase_2_21_1_scaled_32  ~~ mpvs_total_12_1_scaled_32
-"
-
-fit_fiml_scaled_32_without_covid_with_covs_equiv1 <- sem(
-  model = model_scaled_32_without_covid_with_covs_equiv1,
-  data = df_essential_vars,
-  cluster = "fam_id",
-  missing = "fiml"
-)
-summary(fit_fiml_scaled_32_without_covid_with_covs_equiv1, standardized = T, fit.measures = TRUE)
-resid(
-  fit_fiml_scaled_32_without_covid_with_covs_equiv1,
-  type = "cor.bollen"
-)
-color_corr_residuals(
-  resid_df = (round(
-    change_df_labels(
-      df = extract_cov_residuals(
-        residual_obj = resid(
-          fit_fiml_scaled_32_without_covid_with_covs_equiv1,
-          type = "cor.bollen"
-        )
-      ),
-      labels = var_labels
-    ),
-    digits = 3
-  ) %>% rownames_to_column(var = "vars")),
-  limit = 0.1,
-  bg_color = "gray"
-)
-model_scaled_32_without_covid_with_covs_equiv2 <- "
-    # DCQ
-    dcq_total_26_1 ~ mpvs_total_12_1_scaled_32
-    dcq_total_26_1 ~ mpvs_total_child_14_1_scaled_32
-    dcq_total_26_1 ~ mpvs_total_16_1_scaled_32
-    dcq_total_26_1 ~ mpvs_total_phase_2_21_1_scaled_32
-
-    # Mpvs
-    mpvs_total_child_14_1_scaled_32 ~ mpvs_total_12_1_scaled_32
-    mpvs_total_16_1_scaled_32 ~ mpvs_total_child_14_1_scaled_32
-    mpvs_total_phase_2_21_1_scaled_32 ~ mpvs_total_16_1_scaled_32
-
-    # Age
-    dcq_total_26_1 ~ age_26_1
-    mpvs_total_12_1_scaled_32 ~ age_child_12_1
-    mpvs_total_child_14_1_scaled_32 ~ age_child_14_1
-    mpvs_total_16_1_scaled_32 ~ age_child_web_16_1
-    mpvs_total_phase_2_21_1_scaled_32 ~ age_phase2_child_21_1
-
-    # Sex
-    dcq_total_26_1 ~ sex_1_fct
-    mpvs_total_12_1_scaled_32 ~ sex_1_fct
-    mpvs_total_child_14_1_scaled_32 ~ sex_1_fct
-    mpvs_total_16_1_scaled_32 ~ sex_1_fct
-    mpvs_total_phase_2_21_1_scaled_32 ~ sex_1_fct
-
-    # Added
-    mpvs_total_16_1_scaled_32   ~  mpvs_total_12_1_scaled_32
-    mpvs_total_16_1_scaled_32   ~~ mpvs_total_phase_2_21_1_scaled_32
-    mpvs_total_phase_2_21_1_scaled_32  ~~ mpvs_total_12_1_scaled_32
-"
-
-fit_fiml_scaled_32_without_covid_with_covs_equiv2 <- sem(
-  model = model_scaled_32_without_covid_with_covs_equiv2,
-  data = df_essential_vars,
-  cluster = "fam_id",
-  missing = "fiml"
-)
-summary(fit_fiml_scaled_32_without_covid_with_covs_equiv2, standardized = T, fit.measures = TRUE)
-
-color_corr_residuals(
-  resid_df = (round(
-    change_df_labels(
-      df = extract_cov_residuals(
-        residual_obj = resid(
-          fit_fiml_scaled_32_without_covid_with_covs_equiv2,
-          type = "cor.bollen"
-        )
-      ),
-      labels = var_labels
-    ),
-    digits = 3
-  ) %>% rownames_to_column(var = "vars")),
-  limit = 0.1,
-  bg_color = "gray"
-)
-
-
-
-
-
-
-
-
-
-
-
 
 
 
