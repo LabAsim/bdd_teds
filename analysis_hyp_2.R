@@ -85,7 +85,11 @@ fit_fiml_without_covid <- sem(
   missing = "fiml"
 )
 # It failed global exact fit test (chi2)
-summary(fit_fiml_without_covid, standardized = T, fit.measures = T)
+fit_fiml_without_covid_summary <- summary(
+  fit_fiml_without_covid,
+  standardized = T,
+  fit.measures = T
+)
 modindices(fit_fiml_without_covid, sort = T)
 
 resid(fit_fiml_without_covid, type = "cor.bollen")
@@ -108,6 +112,23 @@ fit_fiml_without_covid_residuals <- round(
   digits = 3
 )
 
+color_corr_residuals(
+  resid_df = (round(
+    change_df_labels(
+      df = extract_cov_residuals(
+        residual_obj = resid(
+          fit_fiml_without_covid,
+          type = "cor.bollen"
+        )
+      ),
+      labels = var_labels
+    ),
+    digits = 3
+  ) %>% rownames_to_column(var = "vars")),
+  limit = 0.1,
+  bg_color = "gray"
+)
+
 
 #############################################
 # Parameters added according to modincides #
@@ -120,13 +141,10 @@ twin_diff_model_scaled_without_covid1 <- "
     mpvs_total_child_14_1_scaled_32 ~ mpvs_total_12_1_scaled_32
     mpvs_total_16_1_scaled_32 ~ mpvs_total_child_14_1_scaled_32
     mpvs_total_phase_2_21_1_scaled_32 ~ mpvs_total_16_1_scaled_32
-    # These added from the modindinces based on mi and the theory
-    # (12y cannot be regressed on 21y)
 
-    # Another over-identified model could add this cov
-    # instead of the aforementioned parameters
-    mpvs_total_child_14_1_scaled_32  ~~ mpvs_total_phase_2_21_1_scaled_32
-    mpvs_total_12_1_scaled_32  ~~ mpvs_total_16_1_scaled_32
+    # Added
+    mpvs_total_phase_2_21_1_scaled_32  ~ mpvs_total_child_14_1_scaled_32
+    mpvs_total_16_1_scaled_32 ~ mpvs_total_12_1_scaled_32
 
 "
 
@@ -134,7 +152,11 @@ fit_fiml_without_covid1 <- sem(
   model = twin_diff_model_scaled_without_covid1, data = df_all_diffs,
   missing = "fiml"
 )
-summary(fit_fiml_without_covid1, standardized = T, fit.measures = T)
+fit_fiml_without_covid1_summary <- summary(
+  fit_fiml_without_covid1,
+  standardized = T,
+  fit.measures = T
+)
 modindices(fit_fiml_without_covid1, sort = T)
 
 resid(fit_fiml_without_covid1, type = "cor.bollen")
@@ -142,6 +164,22 @@ resid(fit_fiml_without_covid1, type = "standardized")
 lavResiduals(fit_fiml_without_covid1, type = "cor.bollen", se = T, zstat = T)
 resid(fit_fiml_without_covid1, type = "normalized")
 
+color_corr_residuals(
+  resid_df = (round(
+    change_df_labels(
+      df = extract_cov_residuals(
+        residual_obj = resid(
+          fit_fiml_without_covid1,
+          type = "cor.bollen"
+        )
+      ),
+      labels = var_labels
+    ),
+    digits = 3
+  ) %>% rownames_to_column(var = "vars")),
+  limit = 0.1,
+  bg_color = "gray"
+)
 
 fit_fiml_without_covid1_residuals <- round(
   change_df_labels(

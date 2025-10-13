@@ -60,7 +60,11 @@ fit_fiml_scaled_32_without_covid <- sem(
   cluster = "fam_id",
   missing = "fiml"
 )
-summary(fit_fiml_scaled_32_without_covid, standardized = T, fit.measures = TRUE)
+fit_fiml_scaled_32_without_covid_summary <- summary(
+  fit_fiml_scaled_32_without_covid,
+  standardized = T,
+  fit.measures = TRUE
+)
 modindices(fit_fiml_scaled_32_without_covid, sort = T)
 resid(fit_fiml_scaled_32_without_covid, type = "cor.bollen")
 
@@ -76,10 +80,10 @@ fit_fiml_scaled_32_without_covid_residuals <- round(
   digits = 3
 )
 
-##################################################################
-# Add covariances for MPVS vars that do not regress one another. #
-##################################################################
-model_scaled_32_without_covid_with_covs <- "
+##################
+# Modified model #
+##################
+model_scaled_32_without_covid_modified <- "
     # DCQ
     dcq_total_26_1 ~ mpvs_total_12_1_scaled_32
     dcq_total_26_1 ~ mpvs_total_child_14_1_scaled_32
@@ -105,53 +109,62 @@ model_scaled_32_without_covid_with_covs <- "
     mpvs_total_16_1_scaled_32 ~ sex_1_fct
     mpvs_total_phase_2_21_1_scaled_32 ~ sex_1_fct
 
+    # Added
+    mpvs_total_16_1_scaled_32 ~ mpvs_total_12_1_scaled_32
+    mpvs_total_phase_2_21_1_scaled_32 ~ mpvs_total_12_1_scaled_32
+    mpvs_total_phase_2_21_1_scaled_32 ~ mpvs_total_child_14_1_scaled_32
+
     # Covs
-    mpvs_total_12_1_scaled_32 ~~ mpvs_total_16_1_scaled_32
-    mpvs_total_12_1_scaled_32 ~~ mpvs_total_phase_2_21_1_scaled_32
-    mpvs_total_child_14_1_scaled_32 ~~ mpvs_total_phase_2_21_1_scaled_32
+    # mpvs_total_12_1_scaled_32 ~~ mpvs_total_16_1_scaled_32
+    # mpvs_total_12_1_scaled_32 ~~ mpvs_total_phase_2_21_1_scaled_32
+    # mpvs_total_child_14_1_scaled_32 ~~ mpvs_total_phase_2_21_1_scaled_32
 "
 
-fit_fiml_scaled_32_without_covid_with_covs <- sem(
-  model = model_scaled_32_without_covid_with_covs,
+fit_fiml_scaled_32_without_covid_modified <- sem(
+  model = model_scaled_32_without_covid_modified,
   data = df_essential_vars,
   cluster = "fam_id",
   missing = "fiml"
 )
-summary(fit_fiml_scaled_32_without_covid_with_covs, standardized = T, fit.measures = TRUE)
+fit_fiml_scaled_32_without_covid_modified_sumary <- summary(
+  fit_fiml_scaled_32_without_covid_modified,
+  standardized = T,
+  fit.measures = TRUE
+)
 
 
-parameters_fit_fiml_without_covid_with_covs_phenotypic <- modify_parameter_estimates(
+parameters_fit_fiml_without_covid_modified_phenotypic <- modify_parameter_estimates(
   df = parameterestimates(
-    fit_fiml_scaled_32_without_covid_with_covs,
+    fit_fiml_scaled_32_without_covid_modified,
     standardized = T
   ),
   round_digits = 3
 )
 
-parameters_fit_fiml_without_covid_phenotypic_with_covs_standardised <- standardizedsolution(
-  fit_fiml_scaled_32_without_covid_with_covs
+parameters_fit_fiml_without_covid_phenotypic_modified_standardised <- standardizedsolution(
+  fit_fiml_scaled_32_without_covid_modified
 )
 
 
-parameters_fit_fiml_without_covid_phenotypic_with_covs_standardised <- modify_parameter_estimates(
-  df = parameters_fit_fiml_without_covid_phenotypic_with_covs_standardised,
+parameters_fit_fiml_without_covid_phenotypic_modified_standardised <- modify_parameter_estimates(
+  df = parameters_fit_fiml_without_covid_phenotypic_modified_standardised,
   round_digits = 3
 )
 
 
 
-resid(fit_fiml_scaled_32_without_covid_with_covs, type = "cor.bollen")
-# lavResiduals(fit_fiml_scaled_32_without_covid_with_covs)
-# residuals(fit_fiml_scaled_32_without_covid_with_covs, type = "standardized")
-# residuals(fit_fiml_scaled_32_without_covid_with_covs, type = "normalized")
+resid(fit_fiml_scaled_32_without_covid_modified, type = "cor.bollen")
+# lavResiduals(fit_fiml_scaled_32_without_covid_modified)
+# residuals(fit_fiml_scaled_32_without_covid_modified, type = "standardized")
+# residuals(fit_fiml_scaled_32_without_covid_modified, type = "normalized")
 
 
 
-fit_fiml_scaled_32_without_covid_with_covs_residuals <- round(
+fit_fiml_scaled_32_without_covid_modified_residuals <- round(
   change_df_labels(
     df = extract_cov_residuals(
       residual_obj = resid(
-        fit_fiml_scaled_32_without_covid_with_covs,
+        fit_fiml_scaled_32_without_covid_modified,
         type = "cor.bollen"
       )
     ),
@@ -167,7 +180,7 @@ color_corr_residuals(
     change_df_labels(
       df = extract_cov_residuals(
         residual_obj = resid(
-          fit_fiml_scaled_32_without_covid_without_ED_modified,
+          fit_fiml_scaled_32_without_covid_modified,
           type = "cor.bollen"
         )
       ),
@@ -180,8 +193,8 @@ color_corr_residuals(
 )
 
 
-fit_plot_scaled_32_without_covid_with_covs <- lavaanPlot::lavaanPlot(
-  model = fit_fiml_scaled_32_without_covid_with_covs,
+fit_plot_scaled_32_without_covid_modified <- lavaanPlot::lavaanPlot(
+  model = fit_fiml_scaled_32_without_covid_modified,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
   graph_options = list(
@@ -195,14 +208,14 @@ fit_plot_scaled_32_without_covid_with_covs <- lavaanPlot::lavaanPlot(
   conf.int = T,
   edge_styles = T
 )
-fit_plot_scaled_32_without_covid_with_covs
+fit_plot_scaled_32_without_covid_modified
 
-fit_plot_scaled_32_without_covid_with_covs_standardized <- lavaanPlot::lavaanPlot(
-  model = fit_fiml_scaled_32_without_covid_with_covs,
+fit_plot_scaled_32_without_covid_modified_standardized <- lavaanPlot::lavaanPlot(
+  model = fit_fiml_scaled_32_without_covid_modified,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
   graph_options = list(
-    rankdir = "TB", fontsize = "15",
+    rankdir = "LR", fontsize = "15",
     overlap = "true",
     labelloc = "b", label = footnote
   ),
@@ -210,10 +223,9 @@ fit_plot_scaled_32_without_covid_with_covs_standardized <- lavaanPlot::lavaanPlo
   labels = labels,
   stand = T,
   conf.int = T,
-  edge_styles = T,
-  covs = TRUE
+  edge_styles = T
 )
-fit_plot_scaled_32_without_covid_with_covs_standardized
+fit_plot_scaled_32_without_covid_modified_standardized
 
 
 

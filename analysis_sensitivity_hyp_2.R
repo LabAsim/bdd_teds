@@ -53,7 +53,11 @@ fit_fiml_diff_without_covid_ΜΖ_sensitivity <- sem(
   missing = "fiml"
 )
 
-summary(fit_fiml_diff_without_covid_ΜΖ_sensitivity, standardized = T, fit.measures = T)
+fit_fiml_diff_without_covid_ΜΖ_sensitivity_summary <- summary(
+  fit_fiml_diff_without_covid_ΜΖ_sensitivity,
+  standardized = T,
+  fit.measures = T
+)
 
 
 resid(fit_fiml_diff_without_covid_ΜΖ_sensitivity, type = "cor.bollen")
@@ -76,6 +80,22 @@ fit_fiml_diff_without_covid_ΜΖ_sensitivity_residuals <- round(
   digits = 3
 )
 
+color_corr_residuals(
+  resid_df = (round(
+    change_df_labels(
+      df = extract_cov_residuals(
+        residual_obj = resid(
+          fit_fiml_diff_without_covid_ΜΖ_sensitivity,
+          type = "cor.bollen"
+        )
+      ),
+      labels = var_labels
+    ),
+    digits = 3
+  ) %>% rownames_to_column(var = "vars")),
+  limit = 0.1,
+  bg_color = "gray"
+)
 
 
 twin_diff_model_scaled_modified <- "
@@ -88,8 +108,12 @@ twin_diff_model_scaled_modified <- "
     mpvs_total_phase_2_21_1_scaled_32 ~ mpvs_total_16_1_scaled_32
 
     # Added
-    mpvs_total_child_14_1_scaled_32 ~~ mpvs_total_phase_2_21_1_scaled_32
-    mpvs_total_12_1_scaled_32  ~~ mpvs_total_16_1_scaled_32
+    mpvs_total_phase_2_21_1_scaled_32  ~ mpvs_total_child_14_1_scaled_32
+    mpvs_total_16_1_scaled_32 ~ mpvs_total_12_1_scaled_32
+
+    # Added
+    # mpvs_total_child_14_1_scaled_32 ~~ mpvs_total_phase_2_21_1_scaled_32
+    # mpvs_total_12_1_scaled_32  ~~ mpvs_total_16_1_scaled_32
 
     # An alternative addition is the following
     # mpvs_total_16_1_scaled_32  ~ mpvs_total_12_1_scaled_32
@@ -100,7 +124,7 @@ fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified <- sem(
   missing = "fiml"
 )
 
-summary(
+fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified_summary <- summary(
   fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified,
   standardized = T, fit.measures = T
 )
@@ -112,6 +136,22 @@ residuals(fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified, type = "standar
 residuals(fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified, type = "normalized")
 modindices(fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified, sort. = T)
 
+color_corr_residuals(
+  resid_df = (round(
+    change_df_labels(
+      df = extract_cov_residuals(
+        residual_obj = resid(
+          fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified,
+          type = "cor.bollen"
+        )
+      ),
+      labels = var_labels
+    ),
+    digits = 3
+  ) %>% rownames_to_column(var = "vars")),
+  limit = 0.1,
+  bg_color = "gray"
+)
 
 fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified_residuals <- round(
   change_df_labels(
