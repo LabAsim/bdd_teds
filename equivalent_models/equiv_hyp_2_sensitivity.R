@@ -15,23 +15,20 @@ dag <- lavaanToGraph(s1, labels = var_labels)
 
 coordinates(dag) <- list(
   x = c(
-    sex_1_fct = 3,
-    mpvs_total_12_1_scaled_32 = -2,
-    mpvs_total_child_14_1_scaled_32 = -1,
+    mpvs_total_12_1_scaled_32 = -4,
+    mpvs_total_child_14_1_scaled_32 = -2,
     mpvs_total_16_1_scaled_32 = 0,
-    mpvs_total_phase_2_21_1_scaled_32 = 1,
-    dcq_total_26_1 = 0
+    mpvs_total_phase_2_21_1_scaled_32 = 2,
+    dcq_total_26_1 = 2 * 2
   ),
   y = c(
-    sex_1_fct = -3,
     mpvs_total_12_1_scaled_32 = -4,
-    mpvs_total_child_14_1_scaled_32 = -3,
-    mpvs_total_16_1_scaled_32 = -2,
-    mpvs_total_phase_2_21_1_scaled_32 = -1,
-    dcq_total_26_1 = 1
+    mpvs_total_child_14_1_scaled_32 = -2,
+    mpvs_total_16_1_scaled_32 = -1,
+    mpvs_total_phase_2_21_1_scaled_32 = 2,
+    dcq_total_26_1 = -2
   )
 )
-
 
 # It's easier to view the plots separately
 lapply(equivalentDAGs(dag), plot)

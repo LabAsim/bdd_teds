@@ -10,6 +10,7 @@ s <- s %>% filter(
   user == 1
 )
 dag <- lavaanToGraph(s, labels = unlist(var_labels))
+
 coordinates(dag) <- list(
   x = c(
     sex_1_fct = 0,
@@ -26,19 +27,18 @@ coordinates(dag) <- list(
   ),
   y = c(
     sex_1_fct = 2,
-    age_child_12_1 = -5,
-    age_child_14_1 = -5,
-    age_child_web_16_1 = -5,
-    age_phase2_child_21_1 = -5,
-    mpvs_total_12_1_scaled_32 = -4,
-    mpvs_total_child_14_1_scaled_32 = -3,
+    age_child_12_1 = -4,
+    age_child_14_1 = -4,
+    age_child_web_16_1 = -4,
+    age_phase2_child_21_1 = -4,
+    mpvs_total_12_1_scaled_32 = -2,
+    mpvs_total_child_14_1_scaled_32 = -1,
     mpvs_total_16_1_scaled_32 = -2,
     mpvs_total_phase_2_21_1_scaled_32 = -1,
-    age_26_1 = -5,
+    age_26_1 = -4,
     dcq_total_26_1 = -3
   )
 )
-plot(dag)
 lapply(equivalentDAGs(dag), plot)
 # dag |> ggdag_equivalent_dags(
 #   node_size = 16,
