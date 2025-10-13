@@ -2315,3 +2315,33 @@ color_corr_residuals <- function(resid_df, limit, bg_color) {
     )
   return(ft)
 }
+
+
+###########
+# P-value #
+###########
+
+convert_pvalue_to_string <- function(x, round_digits = 3) {
+  if (is.character(x) == T) {
+    x <- as.numeric(x)
+  }
+  x <- round(x, digits = round_digits)
+  if (x < 0.001) {
+    return("<0.001")
+  } else {
+    return(as.character(x))
+  }
+}
+stopifnot(
+  all.equal(
+    current = convert_pvalue_to_string(x = 0.00001),
+    target = "<0.001"
+  )
+)
+
+stopifnot(
+  all.equal(
+    current = convert_pvalue_to_string(x = 0.001),
+    target = "0.001"
+  )
+)
