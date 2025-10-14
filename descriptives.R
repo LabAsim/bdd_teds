@@ -278,7 +278,7 @@ summary_all <- df_essential_vars %>%
   add_overall(
     last = T,
     # The ** make it bold
-    col_label = "**All participants**<br> \n N = {N}"
+    col_label = "**All participants**<br> \n n = {N}"
   ) %>%
   add_p(
     test = list(all_continuous() ~ "t.test", all_categorical() ~ "chisq.test"),
