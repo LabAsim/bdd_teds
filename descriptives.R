@@ -300,6 +300,192 @@ summary_all <- df_essential_vars %>%
 summary_all
 
 
+summary_all2 <- df_essential_vars %>%
+  select(
+    c(
+      "zygosity_binary_fct",
+      # "school_cohort_fct",
+      "sex_1_fct",
+      "eating_diagnosis_fct_26_1",
+      "age_child_12_1",
+      "age_child_14_1",
+      "age_child_web_16_1",
+      "age_phase2_child_21_1",
+      "age_26_1",
+      "mpvs_total_12_1",
+      "mpvs_total_child_14_1",
+      "mpvs_total_16_1",
+      "mpvs_total_phase_2_21_1",
+      "dcq_total_26_1"
+    )
+  ) %>%
+  gtsummary::tbl_summary(
+    by = zygosity_binary_fct,
+    statistic = list(
+      all_categorical() ~ "{n}    ({p}%)",
+      all_continuous() ~ "{mean} ({sd})"
+    ),
+    missing_text = "Missing",
+    missing_stat = "{N_miss} ({p_miss}%)",
+    label = list(
+      # school_cohort_fct ~ "School cohort",
+      sex_1_fct ~ "Sex, n(%)",
+      eating_diagnosis_fct_26_1 ~ "Eating disorder diagnosis, n(%)",
+      age_child_12_1 ~ "wave 12y",
+      age_child_14_1 ~ "wave 14y",
+      age_child_web_16_1 ~ "wave 16y",
+      age_phase2_child_21_1 ~ "wave 21y",
+      age_26_1 ~ "wave 26y",
+      mpvs_total_12_1 ~ "wave 12y",
+      mpvs_total_child_14_1 ~ "wave 14y",
+      mpvs_total_16_1 ~ "wave 16y",
+      mpvs_total_phase_2_21_1 ~ "wave 21y",
+      dcq_total_26_1 ~ "DCQ total score, M(SD)"
+    )
+  ) %>%
+  bold_labels() %>%
+  # Include an "overall" column
+  add_overall(
+    last = T,
+    # The ** make it bold
+    col_label = "**All participants**<br> \n n = {N}"
+  ) %>%
+  modify_table_body(
+    ~ .x %>%
+      rbind(
+        tibble(
+          variable = "Demographics",
+          var_type = NA,
+          var_label = "Demographics",
+          row_type = "label",
+          label = "Demographics",
+          stat_1 = NA,
+          stat_2 = NA,
+          stat_0 = NA
+        )
+      ) %>%
+      rbind(
+        tibble(
+          variable = "Study variables",
+          var_type = NA,
+          var_label = "Study variables",
+          row_type = "label",
+          label = "Study variables",
+          stat_1 = NA,
+          stat_2 = NA,
+          stat_0 = NA
+        )
+      ) %>%
+      rbind(
+        tibble(
+          variable = "Age",
+          var_type = NA,
+          var_label = "Age",
+          row_type = "label",
+          label = "Age M(SD)",
+          stat_1 = NA,
+          stat_2 = NA,
+          stat_0 = NA
+        )
+      ) %>%
+      rbind(
+        tibble(
+          variable = "MPVS",
+          var_type = NA,
+          var_label = "MPVS",
+          row_type = "label",
+          label = "MPVS M(SD)",
+          stat_1 = NA,
+          stat_2 = NA,
+          stat_0 = NA
+        )
+      ) %>%
+      arrange(
+        factor(
+          variable,
+          levels = c(
+            "Demographics",
+            "sex_1_fct",
+            "Age",
+            "age_child_12_1",
+            "age_child_14_1",
+            "age_child_web_16_1",
+            "age_phase2_child_21_1",
+            "age_26_1",
+            "Study variables",
+            "eating_diagnosis_fct_26_1",
+            "MPVS",
+            "mpvs_total_12_1",
+            "mpvs_total_child_14_1",
+            "mpvs_total_16_1",
+            "mpvs_total_phase_2_21_1",
+            "dcq_total_26_1"
+          )
+        )
+      )
+  ) %>%
+  modify_column_indent(
+    columns = label,
+    rows = variable %in% c(
+      "MPVS",
+      "Age"
+    ),
+    indent = 2
+  ) %>%
+  modify_column_indent(
+    columns = label,
+    rows = variable %in% c(
+      "sex_1_fct",
+      "dcq_total_26_1",
+      "eating_diagnosis_fct_26_1"
+    ),
+    indent = 2
+  ) %>%
+  modify_column_indent(
+    columns = label,
+    rows = str_detect(
+      string = variable,
+      pattern = "age"
+    ),
+    indent = 4
+  ) %>%
+  modify_column_indent(
+    columns = label,
+    rows = row_type == "missing",
+    indent = 8
+  ) %>%
+  modify_column_indent(
+    columns = label,
+    rows = str_detect(
+      string = variable,
+      pattern = "mpvs"
+    ),
+    indent = 4
+  ) %>%
+  modify_header(
+    label = ""
+  ) %>%
+  modify_caption("Table 1. Participant characteristics") %>%
+  add_p(
+    test = list(all_continuous() ~ "t.test", all_categorical() ~ "chisq.test"),
+    pvalue_fun = label_style_pvalue(digits = 3)
+  ) %>%
+  # This functions converts gtsummary to gt
+  bstfun::bold_italicize_group_labels(bold = T) %>%
+  gt::tab_header(
+    title = "",
+    subtitle = "Table 1. Participants characteristics"
+  ) %>%
+  gt::tab_options(heading.subtitle.font.size = "20px") %>%
+  gt::tab_footnote(
+    footnote = footnote_acronyms_2,
+    locations = NULL
+  )
+
+summary_all2
+
+
+
 df_essential_vars_long <- pivot_longer(
   df_essential_vars,
   colnames(df_1)[grepl(pattern = "mpvs_total", x = colnames(df_1))],
