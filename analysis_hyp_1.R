@@ -138,7 +138,7 @@ parameters_fit_fiml_without_covid_modified_phenotypic <- modify_parameter_estima
     fit_fiml_scaled_32_without_covid_modified,
     standardized = T
   ),
-  round_digits = 3
+  round_digits = 2
 )
 
 parameters_fit_fiml_without_covid_phenotypic_modified_standardised <- standardizedsolution(
@@ -148,7 +148,7 @@ parameters_fit_fiml_without_covid_phenotypic_modified_standardised <- standardiz
 
 parameters_fit_fiml_without_covid_phenotypic_modified_standardised <- modify_parameter_estimates(
   df = parameters_fit_fiml_without_covid_phenotypic_modified_standardised,
-  round_digits = 3
+  round_digits = 2
 )
 
 
@@ -215,7 +215,7 @@ fit_plot_scaled_32_without_covid_modified_standardized <- lavaanPlot::lavaanPlot
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
   graph_options = list(
-    rankdir = "LR", fontsize = "15",
+    rankdir = "TB", fontsize = "14",
     overlap = "true",
     labelloc = "b", label = footnote
   ),

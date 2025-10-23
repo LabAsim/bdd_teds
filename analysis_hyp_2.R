@@ -201,7 +201,7 @@ parameters_fit_fiml_without_covid_MZ <- modify_parameter_estimates(
     fit_fiml_without_covid1,
     standardized = T
   ),
-  round_digits = 3
+  round_digits = 2
 )
 
 
