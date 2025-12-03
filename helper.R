@@ -469,11 +469,21 @@ drop_identical_values <- function(
           # (the same or different values between the twins)
           return(df)
         } else if (drop_same_value == T) {
-          if (round(df[1, var]) == round(df[2, var])) {
-            return(NULL)
+          if (is.factor(df[, var]) == T) {
+            if (df[1, var] == df[2, var]) {
+              return(NULL)
+            } else {
+              # The values are different, we should retain them
+              return(df)
+            }
           } else {
-            # The values are different, we should retain them
-            return(df)
+            # Numeric class
+            if (round(df[1, var]) == round(df[2, var])) {
+              return(NULL)
+            } else {
+              # The values are different, we should retain them
+              return(df)
+            }
           }
         }
       } else {
@@ -2345,3 +2355,107 @@ stopifnot(
     target = "0.001"
   )
 )
+
+
+
+add_labels_cols <- function(df) {
+  df <- df |>
+    mutate(
+      to = case_when(
+        lhs == "mpvs_total_12_1_scaled_32" ~ "MPVS12",
+        lhs == "mpvs_total_child_14_1_scaled_32" ~ "MPVS14",
+        lhs == "mpvs_total_16_1_scaled_32" ~ "MPVS16",
+        lhs == "mpvs_total_phase_2_21_1_scaled_32" ~ "MPVS21",
+        lhs == "dcq_total_26_1" ~ "BDD",
+        lhs == "sex_1_fct" ~ "Sex",
+        lhs == "age_child_12_1" ~ "Age12",
+        lhs == "age_child_14_1" ~ "Age14",
+        lhs == "age_child_web_16_1" ~ "Age16",
+        lhs == "age_phase2_child_21_1" ~ "Age21",
+        lhs == "age_26_1" ~ "Age26",
+      )
+    ) |>
+    mutate(
+      from = case_when(
+        rhs == "mpvs_total_12_1_scaled_32" ~ "MPVS12",
+        rhs == "mpvs_total_child_14_1_scaled_32" ~ "MPVS14",
+        rhs == "mpvs_total_16_1_scaled_32" ~ "MPVS16",
+        rhs == "mpvs_total_phase_2_21_1_scaled_32" ~ "MPVS21",
+        rhs == "dcq_total_26_1" ~ "BDD",
+        rhs == "sex_1_fct" ~ "Sex",
+        rhs == "age_child_12_1" ~ "Age12",
+        rhs == "age_child_14_1" ~ "Age14",
+        rhs == "age_child_web_16_1" ~ "Age16",
+        rhs == "age_phase2_child_21_1" ~ "Age21",
+        rhs == "age_26_1" ~ "Age26",
+      )
+    )
+}
+
+test <- data.frame(
+  rhs = c(
+    "mpvs_total_12_1_scaled_32",
+    "mpvs_total_child_14_1_scaled_32",
+    "mpvs_total_16_1_scaled_32",
+    "mpvs_total_phase_2_21_1_scaled_32",
+    "dcq_total_26_1",
+    "sex_1_fct",
+    "age_child_12_1",
+    "age_child_14_1",
+    "age_child_web_16_1",
+    "age_phase2_child_21_1",
+    "age_26_1"
+  ),
+  lhs = c(
+    "mpvs_total_12_1_scaled_32",
+    "mpvs_total_child_14_1_scaled_32",
+    "mpvs_total_16_1_scaled_32",
+    "mpvs_total_phase_2_21_1_scaled_32",
+    "dcq_total_26_1",
+    "sex_1_fct",
+    "age_child_12_1",
+    "age_child_14_1",
+    "age_child_web_16_1",
+    "age_phase2_child_21_1",
+    "age_26_1"
+  )
+)
+
+equal_test <- data.frame(
+  from = c(
+    "MPVS12",
+    "MPVS14",
+    "MPVS16",
+    "MPVS21",
+    "BDD",
+    "Sex",
+    "Age12",
+    "Age14",
+    "Age16",
+    "Age21",
+    "Age26"
+  ),
+  to = c(
+    "MPVS12",
+    "MPVS14",
+    "MPVS16",
+    "MPVS21",
+    "BDD",
+    "Sex",
+    "Age12",
+    "Age14",
+    "Age16",
+    "Age21",
+    "Age26"
+  )
+)
+
+stopifnot(
+  all.equal(
+    current = add_labels_cols(df = test)[, c("from", "to")],
+    target = equal_test
+  )
+)
+
+rm("test")
+rm("equal_test")
