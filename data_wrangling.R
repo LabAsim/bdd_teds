@@ -518,6 +518,18 @@ summary(
     }, as.factor
   )
 )
+
+df$dcq_total_26_1_cutoff17 <- ifelse(
+  test = is.na(df$dcq_total_26_1) == T,
+  yes = NA,
+  no = ifelse(
+    test = df$dcq_total_26_1 >= 17,
+    yes = "yes",
+    no = "no"
+  )
+)
+df$dcq_total_26_1_cutoff17 <- factor(df$dcq_total_26_1_cutoff17)
+df$dcq_total_26_1_cutoff17_numeric <- as.numeric(df$dcq_total_26_1_cutoff17)
 ###############
 # Save raw df #
 ###############
@@ -605,7 +617,7 @@ df <- remove_twins_without_var_decorated(
   df = df_raw_named_without_excluded_1,
   group_var = "fam_id",
   sex_var = "sex_1",
-  pattern = "dcq_total",
+  pattern = "dcq_total_26_1$",
   keep_empty_cotwin = T,
   NA_threshold = 1
 )
