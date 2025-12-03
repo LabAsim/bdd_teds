@@ -40,7 +40,8 @@ vars <- c(
   "age_cov4_child_21_1",
   "age_26_1",
   colnames(df_1)[grepl(pattern = "mpvs_total", x = colnames(df_1))],
-  "dcq_total_26_1"
+  "dcq_total_26_1",
+  "dcq_total_26_1_cutoff17"
 )
 
 df_essential_vars <- df_1 %>%
@@ -51,3 +52,17 @@ df_essential_vars <- scale_mpvs(
   scale_size = 32,
   from_vars = colnames(df_essential_vars)[grepl(pattern = "mpvs_total", x = colnames(df_essential_vars))]
 )
+
+# Mean var across waves, without omitting NAs
+mpvs_vars <- c(
+  "mpvs_total_12_1_scaled_32",
+  "mpvs_total_child_14_1_scaled_32",
+  "mpvs_total_16_1_scaled_32",
+  "mpvs_total_phase_2_21_1_scaled_32"
+)
+
+df_essential_vars <- cbind(
+  df_essential_vars,
+  data.frame(mpvs_mean_scaled_32 = rowMeans(df_essential_vars[, mpvs_vars], na.rm = T))
+)
+rm("mpvs_vars")
