@@ -344,11 +344,15 @@ summary_all2 <- df_essential_vars %>%
     )
   ) %>%
   bold_labels() %>%
+  modify_header(
+    # See https://www.danieldsjoberg.com/gtsummary/reference/modify.html#ref-examples
+    all_stat_cols() ~ "**{level}** (n = {n})"
+  ) %>%
   # Include an "overall" column
   add_overall(
     last = T,
     # The ** make it bold
-    col_label = "**All participants**<br> \n n = {N}"
+    col_label = "**All participants**<br> \n (N = {N})"
   ) %>%
   modify_table_body(
     ~ .x %>%
@@ -382,7 +386,7 @@ summary_all2 <- df_essential_vars %>%
           var_type = NA,
           var_label = "Age",
           row_type = "label",
-          label = "Age M(SD)",
+          label = "Age, M(SD)",
           stat_1 = NA,
           stat_2 = NA,
           stat_0 = NA
@@ -394,7 +398,7 @@ summary_all2 <- df_essential_vars %>%
           var_type = NA,
           var_label = "MPVS",
           row_type = "label",
-          label = "MPVS M(SD)",
+          label = "MPVS, M(SD)",
           stat_1 = NA,
           stat_2 = NA,
           stat_0 = NA
@@ -462,6 +466,11 @@ summary_all2 <- df_essential_vars %>%
     ),
     indent = 4
   ) %>%
+  modify_column_indent(
+    columns = label,
+    rows = row_type == "missing",
+    indent = 8
+  ) %>%
   modify_header(
     label = ""
   ) %>%
@@ -470,6 +479,8 @@ summary_all2 <- df_essential_vars %>%
     test = list(all_continuous() ~ "t.test", all_categorical() ~ "chisq.test"),
     pvalue_fun = label_style_pvalue(digits = 3)
   ) %>%
+  # See https://stackoverflow.com/q/74705598
+  modify_footnote(everything() ~ NA) %>%
   # This functions converts gtsummary to gt
   bstfun::bold_italicize_group_labels(bold = T) %>%
   gt::tab_header(
