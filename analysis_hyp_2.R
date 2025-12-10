@@ -195,11 +195,20 @@ fit_fiml_without_covid1_residuals <- round(
 )
 
 
+parameters_fit_fiml_without_covid_MZ_standardised <- standardizedsolution(
+  fit_fiml_without_covid1
+)
+
+
+parameters_fit_fiml_without_covid_MZ_standardised <- modify_parameter_estimates(
+  df = parameters_fit_fiml_without_covid_MZ_standardised,
+  round_digits = 2
+)
 
 parameters_fit_fiml_without_covid_MZ <- modify_parameter_estimates(
   df = parameterestimates(
     fit_fiml_without_covid1,
-    standardized = T
+    standardized = F
   ),
   round_digits = 2
 )
@@ -213,7 +222,7 @@ labels <- list(
   mpvs_total_phase_2_21_1_scaled_32 = "MPVS (21y)"
 )
 
-plot_fit_fiml <- lavaanPlot::lavaanPlot(
+plot_fit_fiml_lavaanplot <- lavaanPlot::lavaanPlot(
   model = fit_fiml_without_covid1,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
@@ -228,9 +237,9 @@ plot_fit_fiml <- lavaanPlot::lavaanPlot(
   conf.int = T,
   edge_styles = T
 )
-plot_fit_fiml
+plot_fit_fiml_lavaanplot
 
-plot_fit_fiml_standardized <- lavaanPlot::lavaanPlot(
+plot_fit_fiml_standardized_lavaanplot <- lavaanPlot::lavaanPlot(
   model = fit_fiml_without_covid1,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
@@ -245,7 +254,12 @@ plot_fit_fiml_standardized <- lavaanPlot::lavaanPlot(
   conf.int = T,
   edge_styles = T
 )
-plot_fit_fiml_standardized
+plot_fit_fiml_standardized_lavaanplot
+
+
+
+
+source("dags\\dag_hyp2.R")
 
 ######################
 # Using imputed data #

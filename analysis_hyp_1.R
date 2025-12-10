@@ -136,7 +136,7 @@ fit_fiml_scaled_32_without_covid_modified_sumary <- summary(
 parameters_fit_fiml_without_covid_modified_phenotypic <- modify_parameter_estimates(
   df = parameterestimates(
     fit_fiml_scaled_32_without_covid_modified,
-    standardized = T
+    standardized = F
   ),
   round_digits = 2
 )
@@ -210,7 +210,7 @@ fit_plot_scaled_32_without_covid_modified <- lavaanPlot::lavaanPlot(
 )
 fit_plot_scaled_32_without_covid_modified
 
-fit_plot_scaled_32_without_covid_modified_standardized <- lavaanPlot::lavaanPlot(
+fit_plot_scaled_32_without_covid_modified_standardized_lavaanplot <- lavaanPlot::lavaanPlot(
   model = fit_fiml_scaled_32_without_covid_modified,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
@@ -225,7 +225,10 @@ fit_plot_scaled_32_without_covid_modified_standardized <- lavaanPlot::lavaanPlot
   conf.int = T,
   edge_styles = T
 )
-fit_plot_scaled_32_without_covid_modified_standardized
+fit_plot_scaled_32_without_covid_modified_standardized_lavaanplot
+
+
+source("dags\\dag_hyp1.R")
 
 
 
