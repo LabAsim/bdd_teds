@@ -41,7 +41,8 @@ vars <- c(
   "age_26_1",
   colnames(df_1)[grepl(pattern = "mpvs_total", x = colnames(df_1))],
   "dcq_total_26_1",
-  "dcq_total_26_1_cutoff17"
+  "dcq_total_26_1_cutoff17",
+  "dcq_total_26_1_cutoff17_numeric"
 )
 
 df_essential_vars <- df_1 %>%
