@@ -1,7 +1,9 @@
 footnote <- "'MZ: Monozygotic, DZ: Dizygotic, DCQ: Dysmorphic concerns questionnaire, MPVS: Multidimensional peer victimization scale, y: year(s)
     ***: p-value <=0.001, **: 0.001 < p-value <= 0.01, *: 0.01 < p-value <= 0.05'"
-footnote_acronyms <- "'MZ: Monozygotic, DZ: Dizygotic, DCQ: Dysmorphic concerns questionnaire, MPVS: Multidimensional peer victimization scale, y: year(s)'"
+footnote_acronyms <- "'MZ: Monozygotic, DZ: Dizygotic, DCQ: Dysmorphic concerns questionnaire,MPVS: Multidimensional peer victimization scale, y: year(s)'"
 footnote_acronyms_2 <- "n refers to the number of individuals, MZ: Monozygotic, DZ: Dizygotic, DCQ: Dysmorphic concerns questionnaire, MPVS: Multidimensional peer victimization scale, y: year(s). At 16y MPVS had 6 items, whereas a 16-item version was used at all other waves. Pearson's Chi-squared test was used for categorical variables; Welch Two Sample t-test for continuous"
+foonote_acronymns_for_dag_plots <- "MZ: Monozygotic, DZ: Dizygotic, DCQ: Dysmorphic concerns questionnaire, MPVS: Multidimensional peer victimization scale, y: year(s)
+Dashed lines: p-value>0.05. Solid lines: p-value<=0.05"
 
 
 var_labels <- list(
