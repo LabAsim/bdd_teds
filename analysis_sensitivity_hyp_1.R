@@ -167,6 +167,26 @@ fit_fiml_scaled_32_without_covid_without_ED_modified_residuals <- round(
 )
 
 
+parameters_fit_fiml_scaled_32_without_covid_without_ED_modified_phenotypic <- modify_parameter_estimates(
+  df = parameterestimates(
+    fit_fiml_scaled_32_without_covid_without_ED_modified,
+    standardized = F
+  ),
+  round_digits = 2
+)
+
+parameters_fit_fiml_scaled_32_without_covid_without_ED_modified_standardised <- standardizedsolution(
+  fit_fiml_scaled_32_without_covid_without_ED_modified
+)
+
+
+parameters_fit_fiml_scaled_32_without_covid_without_ED_modified_standardised <- modify_parameter_estimates(
+  df = parameters_fit_fiml_scaled_32_without_covid_without_ED_modified_standardised,
+  round_digits = 2
+)
+
+
+
 labels <- list(
   dcq_total_26_1 = "DCQ (26y)",
   mpvs_total_12_1_scaled_32 = "MPVS (12y)",
@@ -180,7 +200,7 @@ labels <- list(
   age_phase2_child_21_1 = "Age (21y)",
   age_26_1 = "Age (26y)"
 )
-plot_fit_fiml_scaled_32_without_covid_without_ED <- lavaanPlot::lavaanPlot(
+plot_fit_fiml_scaled_32_without_covid_without_ED_lavaanplot <- lavaanPlot::lavaanPlot(
   model = fit_fiml_scaled_32_without_covid_without_ED_modified,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
@@ -195,9 +215,9 @@ plot_fit_fiml_scaled_32_without_covid_without_ED <- lavaanPlot::lavaanPlot(
   conf.int = T,
   edge_styles = T
 )
-plot_fit_fiml_scaled_32_without_covid_without_ED
+plot_fit_fiml_scaled_32_without_covid_without_ED_lavaanplot
 
-plot_fit_fiml_scaled_32_without_covid_without_ED_standardized <- lavaanPlot::lavaanPlot(
+plot_fit_fiml_scaled_32_without_covid_without_ED_standardized_lavaanplot <- lavaanPlot::lavaanPlot(
   model = fit_fiml_scaled_32_without_covid_without_ED_modified,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
@@ -212,4 +232,6 @@ plot_fit_fiml_scaled_32_without_covid_without_ED_standardized <- lavaanPlot::lav
   conf.int = T,
   edge_styles = T
 )
-plot_fit_fiml_scaled_32_without_covid_without_ED_standardized
+plot_fit_fiml_scaled_32_without_covid_without_ED_standardized_lavaanplot
+
+source("dags\\dag_sensitivity_hyp1.R")

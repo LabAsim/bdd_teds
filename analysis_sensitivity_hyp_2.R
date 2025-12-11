@@ -167,14 +167,26 @@ fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified_residuals <- round(
 )
 
 
-# Use the modified model!
+
+parameters_fit_fiml_without_covid_ΜΖ_sensitivity_standardised <- standardizedsolution(
+  fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified
+)
+
+
+parameters_fit_fiml_without_covid_ΜΖ_sensitivity_standardised <- modify_parameter_estimates(
+  df = parameters_fit_fiml_without_covid_ΜΖ_sensitivity_standardised,
+  round_digits = 2
+)
+
 parameters_fit_fiml_without_covid_ΜΖ_sensitivity <- modify_parameter_estimates(
   df = parameterestimates(
     fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified,
-    standardized = T
+    standardized = F
   ),
-  round_digits = 3
+  round_digits = 2
 )
+
+
 labels <- list(
   dcq_total_26_1 = "DCQ (26y)",
   mpvs_total_12_1_scaled_32 = "MPVS (12y)",
@@ -183,7 +195,7 @@ labels <- list(
   mpvs_total_phase_2_21_1_scaled_32 = "MPVS (21y)"
 )
 
-plot_fit_fiml_diff_without_covid_ΜΖ_sensitivity <- lavaanPlot::lavaanPlot(
+plot_fit_fiml_diff_without_covid_ΜΖ_sensitivity_lavaanplot <- lavaanPlot::lavaanPlot(
   model = fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
@@ -198,9 +210,9 @@ plot_fit_fiml_diff_without_covid_ΜΖ_sensitivity <- lavaanPlot::lavaanPlot(
   conf.int = T,
   edge_styles = T
 )
-plot_fit_fiml_diff_without_covid_ΜΖ_sensitivity
+plot_fit_fiml_diff_without_covid_ΜΖ_sensitivity_lavaanplot
 
-plot_fit_fiml_diff_without_covid_standardized_ΜΖ_sensitivity <- lavaanPlot::lavaanPlot(
+plot_fit_fiml_diff_without_covid_standardized_ΜΖ_sensitivity_lavaanplot <- lavaanPlot::lavaanPlot(
   model = fit_fiml_diff_without_covid_ΜΖ_sensitivity_modified,
   edge_options = list(color = "grey"),
   coefs = TRUE, # covs = TRUE,
@@ -215,8 +227,9 @@ plot_fit_fiml_diff_without_covid_standardized_ΜΖ_sensitivity <- lavaanPlot::la
   conf.int = T,
   edge_styles = T
 )
-plot_fit_fiml_diff_without_covid_standardized_ΜΖ_sensitivity
+plot_fit_fiml_diff_without_covid_standardized_ΜΖ_sensitivity_lavaanplot
 
+source("dags\\dag_sensitivity_hyp2.R")
 
 #######################
 # Latent growth model #
