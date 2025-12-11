@@ -53,20 +53,13 @@ edges <- tidy_hyp2_modified$data %>%
     estimate = round(runif(n(), -0.5, 0.5), 2)
   )
 
-node_radius <- 0.6
-# Calculate direction vector
-edges <- edges %>%
-  rowwise() %>%
-  mutate(
-    dx = xend - x,
-    dy = yend - y,
-    length = sqrt(dx^2 + dy^2),
-    # shrink by node radius (example: 0.3 units)
-    xstart_adj = x + dx / length * node_radius,
-    ystart_adj = y + dy / length * node_radius,
-    xend_adj = xend - dx / length * node_radius,
-    yend_adj = yend - dy / length * node_radius
-  )
+node_radius <- 0.80
+
+edges <- adjust_edges(
+  edges_df = edges,
+  node_radius = node_radius,
+  reduction_parameter = 0.2
+)
 
 edges <- left_join(
   x = edges,
@@ -81,121 +74,23 @@ edges <- left_join(
   )
 )
 
-# Plot using edge-specific curvature
-plot_fit_fiml_standardized <- ggplot(data = edges) +
-  # We use geom_label to wrap the text in rectangle box
-  # See https://stackoverflow.com/a/44012702
-  geom_label(
-    data = tidy_hyp2_modified$data,
-    aes(x = x, y = y, label = label),
-    color = "black",
-    size = 9, fontface = "bold",
-    hjust = 0.5
-  ) +
-  # Otherwise, we could use a
-  # geom_dag_node(
-  #   data = tidy_hyp2_modified$data,
-  #   aes(x = x, y = y),
-  #   # see shapes
-  #   # https://ggplot2.tidyverse.org/reference/scale_shape.html#details
-  #   shape = 22,
-  #   fill = "white", color = "black",
-  #   size = 28
-  # ) +
-  # geom_dag_text(
-  #   data = tidy_hyp2_modified$data,
-  #   aes(x = x, y = y, label = label),
-  #   color = "black",
-  #   size = 3.5, fontface = "bold",
-  #   hjust = 0.5
-  # ) +
-  geomtextpath::geom_textsegment(
-    data = edges %>% filter(curvature != 1) %>%
-      filter(pvalue <= 0.05),
-    aes(
-      x = xstart_adj, y = ystart_adj,
-      xend = xend_adj, yend = yend_adj,
-      label = paste0(
-        "β=", est.std, "\n (", ci.lower, " — ", ci.upper, ")"
-      )
-    ),
-    arrow = arrow(length = unit(3, "mm"), type = "closed"),
-    # inherit.aes = F,
-    hjust = 0.33,
-    size = 8,
-    angle = -190,
-    linetype = 1
-  ) +
-  geomtextpath::geom_textsegment(
-    data = edges %>% filter(curvature != 1) %>%
-      filter(pvalue > 0.05),
-    aes(
-      x = xstart_adj, y = ystart_adj,
-      xend = xend_adj, yend = yend_adj,
-      label = paste0(
-        "β=", est.std, "\n (", ci.lower, " — ", ci.upper, ")"
-      )
-    ),
-    arrow = arrow(length = unit(3, "mm"), type = "closed"),
-    # inherit.aes = F,
-    hjust = 0.33,
-    size = 8,
-    angle = -190,
-    linetype = 2
-  ) +
-  geomtextpath::geom_textcurve(
-    data = (edges %>% filter(curvature == 1)),
-    aes(
-      x = xstart_adj, y = ystart_adj,
-      xend = xend_adj, yend = yend_adj, label = paste0(
-        "β=", est.std, "\n (", ci.lower, " — ", ci.upper, ")"
-      )
-    ),
-    arrow = arrow(length = unit(3, "mm"), type = "closed"),
-    curvature = -0.2,
-    size = 8,
-    hjust = 0.6
-  ) +
-  coord_cartesian(xlim = c(-2, 14), ylim = c(1, 2.2)) +
-  theme_dag()
-plot_fit_fiml_standardized
 
+plot_fit_fiml_standardized <- draw_dag(
+  edges = edges,
+  tidy_model = tidy_hyp2_modified,
+  footnote = foonote_acronymns_for_dag_plots
+) +
+  coord_cartesian(xlim = c(-2, 14), ylim = c(1, 2.2))
 
-# ggsave(
-#   "img\\plot_fit_fiml_standardized.tiff",
-#   width = 70,
-#   height = 30,
-#   units = "cm",
-#   device = "tiff"
-# )
-#
-#
-# tiff(
-#   "img\\plot_fit_fiml_standardized.tiff",
-#   width = 70,
-#   height = 30,
-#   units = "cm",
-#   res = 300
-# )
-# print(plot_fit_fiml_standardized)
-# dev.off()
-
-png(
-  "img\\plot_fit_fiml_standardized.png",
-  width = 75,
-  height = 40,
-  units = "cm",
-  res = 300
+save_dag(
+  path = "img\\plot_fit_fiml_standardized.png",
+  plot = plot_fit_fiml_standardized
 )
-print(plot_fit_fiml_standardized)
-dev.off()
 
 
 ##################
 # Unstandardised #
 ##################
-
-
 edges <- tidy_hyp2_modified$data %>%
   filter(!is.na(to)) %>%
   mutate(
@@ -209,27 +104,20 @@ edges <- tidy_hyp2_modified$data %>%
     estimate = round(runif(n(), -0.5, 0.5), 2)
   )
 
-node_radius <- 0.6
+node_radius <- 0.8
 # Calculate direction vector
-edges <- edges %>%
-  rowwise() %>%
-  mutate(
-    dx = xend - x,
-    dy = yend - y,
-    length = sqrt(dx^2 + dy^2),
-    # shrink by node radius (example: 0.3 units)
-    xstart_adj = x + dx / length * node_radius,
-    ystart_adj = y + dy / length * node_radius,
-    xend_adj = xend - dx / length * node_radius,
-    yend_adj = yend - dy / length * node_radius
-  )
 
+edges <- adjust_edges(
+  edges_df = edges,
+  node_radius = node_radius,
+  reduction_parameter = 0.2
+)
 
 edges <- left_join(
   x = edges,
   y = data.frame(
     add_labels_cols(
-      parameters_fit_fiml_without_covid_modified_phenotypic
+      parameters_fit_fiml_without_covid_MZ
     )[1:14, c("est", "pvalue", "from", "to", "ci.lower", "ci.upper")]
   ),
   by = join_by(
@@ -238,74 +126,13 @@ edges <- left_join(
   )
 )
 
-# Plot using edge-specific curvature
-plot_fit_fiml <- ggplot(data = edges) +
-  # We use geom_label to wrap the text in rectangle box
-  # See https://stackoverflow.com/a/44012702
-  geom_label(
-    data = tidy_hyp2_modified$data,
-    aes(x = x, y = y, label = label),
-    color = "black",
-    size = 9, fontface = "bold",
-    hjust = 0.5
-  ) +
-  geomtextpath::geom_textsegment(
-    data = edges %>% filter(curvature != 1) %>%
-      filter(pvalue <= 0.05),
-    aes(
-      x = xstart_adj, y = ystart_adj,
-      xend = xend_adj, yend = yend_adj,
-      label = paste0(
-        "β=", est, "\n (", ci.lower, " — ", ci.upper, ")"
-      )
-    ),
-    arrow = arrow(length = unit(3, "mm"), type = "closed"),
-    # inherit.aes = F,
-    hjust = 0.33,
-    size = 8,
-    angle = -190,
-    linetype = 1
-  ) +
-  geomtextpath::geom_textsegment(
-    data = edges %>% filter(curvature != 1) %>%
-      filter(pvalue > 0.05),
-    aes(
-      x = xstart_adj, y = ystart_adj,
-      xend = xend_adj, yend = yend_adj,
-      label = paste0(
-        "β=", est, "\n (", ci.lower, " — ", ci.upper, ")"
-      )
-    ),
-    arrow = arrow(length = unit(3, "mm"), type = "closed"),
-    # inherit.aes = F,
-    hjust = 0.33,
-    size = 8,
-    angle = -190,
-    linetype = 2
-  ) +
-  geomtextpath::geom_textcurve(
-    data = (edges %>% filter(curvature == 1)),
-    aes(
-      x = xstart_adj, y = ystart_adj,
-      xend = xend_adj, yend = yend_adj, label = paste0(
-        "β=", est, "\n (", ci.lower, " — ", ci.upper, ")"
-      )
-    ),
-    arrow = arrow(length = unit(3, "mm"), type = "closed"),
-    curvature = -0.2,
-    size = 8,
-    hjust = 0.6
-  ) +
-  coord_cartesian(xlim = c(-2, 14), ylim = c(1, 2.2)) +
-  theme_dag()
-plot_fit_fiml
+plot_fit_fiml <- draw_dag(
+  edges = edges, tidy_model = tidy_hyp2_modified,
+  footnote = foonote_acronymns_for_dag_plots
+) +
+  coord_cartesian(xlim = c(-2, 14), ylim = c(1, 2.2))
 
-png(
-  "img\\plot_fit_fiml.png",
-  width = 75,
-  height = 40,
-  units = "cm",
-  res = 300
+save_dag(
+  path = "img\\plot_fit_fiml.png",
+  plot = plot_fit_fiml
 )
-print(plot_fit_fiml)
-dev.off()

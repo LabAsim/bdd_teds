@@ -1,5 +1,6 @@
 library(ggplot2)
 library(ggdag)
+source("dags\\helper.R")
 hyp1_modified <- ggdag::dagify(
   BDD ~ MPVS12, # The form is effect ~ cause
   BDD ~ MPVS14,
@@ -76,20 +77,25 @@ edges <- tidy_hyp1_modified$data %>%
     estimate = round(runif(n(), -0.5, 0.5), 2)
   )
 
-node_radius <- 0.6
+node_radius <- 0.75
 # Calculate direction vector
-edges <- edges %>%
-  rowwise() %>%
-  mutate(
-    dx = xend - x,
-    dy = yend - y,
-    length = sqrt(dx^2 + dy^2),
-    # shrink by node radius (example: 0.3 units)
-    xstart_adj = x + dx / length * node_radius,
-    ystart_adj = y + dy / length * node_radius,
-    xend_adj = xend - dx / length * node_radius,
-    yend_adj = yend - dy / length * node_radius
-  )
+# edges <- edges %>%
+#   rowwise() %>%
+#   mutate(
+#     dx = xend - x,
+#     dy = yend - y,
+#     length = sqrt(dx^2 + dy^2),
+#     # shrink by node radius (example: 0.3 units)
+#     xstart_adj = x + dx / length * node_radius,
+#     ystart_adj = y + dy / length * node_radius,
+#     xend_adj = xend - dx / length * node_radius,
+#     yend_adj = yend - dy / length * node_radius
+#   )
+edges <- adjust_edges(
+  edges_df = edges,
+  node_radius = node_radius,
+  reduction_parameter = 0.1
+)
 
 edges <- left_join(
   x = edges,
@@ -167,7 +173,8 @@ fit_plot_scaled_32_without_covid_modified_standardized <- ggplot(data = edges) +
     linetype = 2
   ) +
   geomtextpath::geom_textcurve(
-    data = (edges %>% filter(curvature == 1)),
+    data = (edges %>% filter(curvature == 1) %>%
+      filter(pvalue > 0.05)),
     aes(
       x = xstart_adj, y = ystart_adj,
       xend = xend_adj, yend = yend_adj, label = paste0(
@@ -176,12 +183,32 @@ fit_plot_scaled_32_without_covid_modified_standardized <- ggplot(data = edges) +
     ),
     arrow = arrow(length = unit(3, "mm"), type = "closed"),
     curvature = -0.2,
-    size = 8,
-    hjust = 0.6
+    linetype = 2,
+    size = 11,
+    hjust = 0.63
+  ) +
+  geomtextpath::geom_textcurve(
+    data = (edges %>% filter(curvature == 1) %>%
+      filter(pvalue <= 0.05)),
+    aes(
+      x = xstart_adj, y = ystart_adj,
+      xend = xend_adj, yend = yend_adj, label = paste0(
+        "β=", est.std, "\n (", ci.lower, " — ", ci.upper, ")"
+      )
+    ),
+    arrow = arrow(length = unit(3, "mm"), type = "closed"),
+    curvature = -0.2,
+    size = 11,
+    hjust = 0.63
   ) +
   # coord_cartesian(xlim = c(-2, 14), ylim = c(0, 7.1)) +
   theme_dag()
 fit_plot_scaled_32_without_covid_modified_standardized
+
+fit_plot_scaled_32_without_covid_modified_standardized <- draw_dag(
+  edges = edges, tidy_model = tidy_hyp1_modified,
+  footnote = foonote_acronymns_for_dag_plots
+)
 
 
 # ggsave(
@@ -202,16 +229,11 @@ fit_plot_scaled_32_without_covid_modified_standardized
 # )
 # print(fit_plot_scaled_32_without_covid_modified_standardized)
 # dev.off()
-
-png(
-  "img\\fit_plot_scaled_32_without_covid_modified_standardized.png",
-  width = 80,
-  height = 30,
-  units = "cm",
-  res = 300
+save_dag(
+  path = "img\\fit_plot_scaled_32_without_covid_modified_standardized.png",
+  plot = fit_plot_scaled_32_without_covid_modified_standardized
 )
-print(fit_plot_scaled_32_without_covid_modified_standardized)
-dev.off()
+
 
 ##################
 # Unstandardised #
@@ -232,20 +254,13 @@ edges <- tidy_hyp1_modified$data %>%
     estimate = round(runif(n(), -0.5, 0.5), 2)
   )
 
-node_radius <- 0.6
-# Calculate direction vector
-edges <- edges %>%
-  rowwise() %>%
-  mutate(
-    dx = xend - x,
-    dy = yend - y,
-    length = sqrt(dx^2 + dy^2),
-    # shrink by node radius (example: 0.3 units)
-    xstart_adj = x + dx / length * node_radius,
-    ystart_adj = y + dy / length * node_radius,
-    xend_adj = xend - dx / length * node_radius,
-    yend_adj = yend - dy / length * node_radius
-  )
+node_radius <- 0.75
+
+edges <- adjust_edges(
+  edges_df = edges,
+  node_radius = node_radius,
+  reduction_parameter = 0.1
+)
 
 edges <- left_join(
   x = edges,
@@ -260,75 +275,13 @@ edges <- left_join(
   )
 )
 
-# Plot using edge-specific curvature
-fit_plot_scaled_32_without_covid_modified <- ggplot(data = edges) +
-  # We use geom_label to wrap the text in rectangle box
-  # See https://stackoverflow.com/a/44012702
-  geom_label(
-    data = tidy_hyp1_modified$data,
-    aes(x = x, y = y, label = label),
-    color = "black",
-    size = 9, fontface = "bold",
-    hjust = 0.5
-  ) +
-  geomtextpath::geom_textsegment(
-    data = edges %>% filter(curvature != 1) %>%
-      filter(pvalue <= 0.05),
-    aes(
-      x = xstart_adj, y = ystart_adj,
-      xend = xend_adj, yend = yend_adj,
-      label = paste0(
-        "β=", est, "\n (", ci.lower, " — ", ci.upper, ")"
-      )
-    ),
-    arrow = arrow(length = unit(3, "mm"), type = "closed"),
-    # inherit.aes = F,
-    hjust = 0.33,
-    size = 8,
-    angle = -190,
-    linetype = 1
-  ) +
-  geomtextpath::geom_textsegment(
-    data = edges %>% filter(curvature != 1) %>%
-      filter(pvalue > 0.05),
-    aes(
-      x = xstart_adj, y = ystart_adj,
-      xend = xend_adj, yend = yend_adj,
-      label = paste0(
-        "β=", est, "\n (", ci.lower, " — ", ci.upper, ")"
-      )
-    ),
-    arrow = arrow(length = unit(3, "mm"), type = "closed"),
-    # inherit.aes = F,
-    hjust = 0.33,
-    size = 8,
-    angle = -190,
-    linetype = 2
-  ) +
-  geomtextpath::geom_textcurve(
-    data = (edges %>% filter(curvature == 1)),
-    aes(
-      x = xstart_adj, y = ystart_adj,
-      xend = xend_adj, yend = yend_adj, label = paste0(
-        "β=", est, "\n (", ci.lower, " — ", ci.upper, ")"
-      )
-    ),
-    arrow = arrow(length = unit(3, "mm"), type = "closed"),
-    curvature = -0.2,
-    size = 8,
-    hjust = 0.6
-  ) +
-  # coord_cartesian(xlim = c(-2, 14), ylim = c(0, 7.1)) +
-  theme_dag()
-fit_plot_scaled_32_without_covid_modified
 
-
-png(
-  "img\\fit_plot_scaled_32_without_covid_modified.png",
-  width = 80,
-  height = 30,
-  units = "cm",
-  res = 300
+fit_plot_scaled_32_without_covid_modified <- draw_dag(
+  edges = edges, tidy_model = tidy_hyp1_modified,
+  footnote = foonote_acronymns_for_dag_plots
 )
-print(fit_plot_scaled_32_without_covid_modified)
-dev.off()
+
+save_dag(
+  path = "img\\fit_plot_scaled_32_without_covid_modified.png",
+  plot = fit_plot_scaled_32_without_covid_modified
+)
