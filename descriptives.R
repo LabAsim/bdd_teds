@@ -415,7 +415,6 @@ summary_all2 <- df_essential_vars %>%
             "age_child_14_1",
             "age_child_web_16_1",
             "age_phase2_child_21_1",
-            "age_26_1",
             "Study variables",
             "eating_diagnosis_fct_26_1",
             "MPVS",
@@ -484,8 +483,8 @@ summary_all2 <- df_essential_vars %>%
   # This functions converts gtsummary to gt
   bstfun::bold_italicize_group_labels(bold = T) %>%
   gt::tab_header(
-    title = "",
-    subtitle = "Table 1. Participants characteristics"
+    title = "Table 1. Participants characteristics",
+    subtitle = ""
   ) %>%
   gt::tab_options(heading.subtitle.font.size = "20px") %>%
   gt::tab_footnote(
@@ -805,21 +804,27 @@ summary_twin_pairs_incompleteness <- twin_pairs_incompleteness %>%
       pairs_flag_mpvs_total_phase_2_21_1 ~ "MPVS 21y"
     )
   ) %>%
+  modify_header(
+    # See https://www.danieldsjoberg.com/gtsummary/reference/modify.html#ref-examples
+    all_stat_cols() ~ "**{level}** (n = {n})"
+  ) %>%
   # Include an "overall" column
   add_overall(
     last = T,
     # The ** make it bold
-    col_label = "**All participants**<br> \n N = {N}"
+    col_label = "**All participants**<br> \n (N = {N})"
   ) %>%
+  # See https://stackoverflow.com/q/74705598
+  modify_footnote(everything() ~ NA) %>%
   # This functions converts gtsummary to gt
   bstfun::bold_italicize_group_labels(bold = T) %>%
   gt::tab_header(
-    title = "",
-    subtitle = "Table 1. Participants characteristics"
+    title = "Table 1. Participants characteristics",
+    subtitle = ""
   ) %>%
   gt::tab_options(heading.subtitle.font.size = "20px") %>%
   gt::tab_footnote(
-    footnote = footnote_acronyms_2,
+    footnote = footnote_acronyms_incompleteness,
     locations = NULL
   )
 
