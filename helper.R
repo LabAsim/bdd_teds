@@ -1288,6 +1288,7 @@ remove_twins_without_var <- function(
     pattern = "dcq_item",
     antipattern = "",
     keep_empty_cotwin = T,
+    # NA threshold needs to be the length of the final length of our columns, after taking into account the antipatterns
     NA_threshold = 7) {
   for (var in c(sex_var, group_var)) {
     if ((var %in% colnames(df)) == F) {
@@ -1323,26 +1324,29 @@ remove_twins_without_var <- function(
     X = seq_along(dflist), FUN = function(index) {
       inner_df <- dflist[[index]]
       inner_df <- as.data.frame(inner_df)
-
       # df_twin_1 <- inner_df[1,colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]]
       # df_twin_2 <- inner_df[2,colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]]
       columns <- colnames(inner_df)[grepl(pattern = pattern, x = colnames(inner_df))]
       if (index == length(dflist)) {
         to_print <- paste(capture.output(columns))
-        message("\n", to_print)
+        message("\n Initial columns:", to_print)
       }
       message("\r", "Family ID:", inner_df[1, "fam_id"], appendLF = F)
       flush.console()
-      if (antipattern != "") {
+      if (is.list(antipattern) == T) {
+        for (list_item in antipattern) {
+          columns <- columns[!grepl(pattern = list_item, x = columns)]
+        }
+      } else if (antipattern != "") {
         columns <- columns[!grepl(pattern = antipattern, x = columns)]
       }
       if (index == length(dflist)) {
         to_print <- paste(capture.output(columns))
-        message("\n", to_print)
+        message("\n Columns to be processed:", to_print)
       }
       N_NA_twin_1 <- sum(is.na(inner_df[1, columns]))
       N_NA_twin_2 <- sum(is.na(inner_df[2, columns]))
-
+      # message("\r", "Family ID to be processed:", inner_df[1, "fam_id"], appendLF = F)
       if ((N_NA_twin_1 == NA_threshold) & (N_NA_twin_2 == NA_threshold)) {
         return(NULL)
       }
@@ -1494,6 +1498,7 @@ remove_twins_without_var2 <- function(
   # to_return <- do.call(rbind, to_return)
   return(df %>% as.data.frame())
 }
+
 test <- data.frame(
   fam_id = c(1, 1, 2, 2, 3, 3, 4, 4),
   sex = c(0, 0, 1, 1, 0, 1, 1, 1),
@@ -1581,6 +1586,34 @@ stopifnot(
     )
   )
 )
+
+
+
+test <- data.frame(
+  fam_id = c(1, 1, 2, 2, 3, 3, 4, 4),
+  sex = c(0, 0, 1, 1, 0, 1, 1, 1),
+  test_var1 = c(1:5, NA, NA, NA),
+  test_var2 = c(1, 1, 1, NA, NA, NA, NA, NA),
+  test_var3 = c(1, NA, 1, NA, 1, NA, NA, NA)
+)
+testit <- remove_twins_without_var(
+  df = test, keep_empty_cotwin = T,
+  sex_var = "sex", NA_threshold = 1, pattern = "test",
+  antipattern = list("var1", "var3")
+)
+stopifnot(
+  all.equal(
+    testit,
+    data.frame(
+      fam_id = c(1, 1, 2, 2),
+      sex = c(0, 0, 1, 1),
+      test_var1 = c(1:4),
+      test_var2 = c(1, 1, 1, NA),
+      test_var3 = c(1, NA, 1, NA)
+    )
+  )
+)
+
 
 rm(list = c("test", "testit"))
 
