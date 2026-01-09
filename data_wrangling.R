@@ -549,6 +549,18 @@ df <- df[df$acontact == 1, ]
 df <- df[df$sexzyg != 7, ]
 df <- df[df$aperinat == 0, ]
 
+
+# The excluded twins
+sprintf(
+  "Excluded %d twins", NROW(df) - NROW(df[df$exclude2 == 0 & df$exclude1 == 0, ])
+)
+# NROW(df[df$sexzyg == 7 | df$acontact == 0 | df$aperinat == 1, ] )
+# We don't have the medexcluded,
+# thus there is a difference between the above and below line
+# NROW(df) - NROW(df[df$exclude2 == 0 & df$exclude1==0, ])
+# NROW(df[df$exclude2 == 1 | df$exclude1==1, ])
+
+
 summary(
   mutate_if(
     df[, c("eating_diagnosis_fct_26_1", lifetime_items, "eating_derived_fct_26_1", derived_items)], function(x) {
@@ -622,16 +634,32 @@ df <- remove_twins_without_var_decorated(
   NA_threshold = 1
 )
 
+
+N_WITHOUT_DCQ_TOTAL <- NROW(df_raw_named_without_excluded_1) - NROW(df)
+N_WITH_DCQ_TOTAL <- NROW(df)
+sprintf(
+  "%d had no DCQ total", N_WITHOUT_DCQ_TOTAL
+)
+
+
 df <- remove_twins_without_var_decorated(
   df = df,
   group_var = "fam_id",
   sex_var = "sex_1",
   pattern = "mpvs_total",
-  antipattern = "cov",
+  antipattern = list("cov", "teacher", "parent"),
   keep_empty_cotwin = T,
-  NA_threshold = 6 # Six columns of MPVS total scores (without covid vars)
+  NA_threshold = 4
+  # Four columns (excluding cov + teacher + parent)
+  # Six columns of MPVS total scores (without covid vars)
   # Ten columns of MPVS total scores
 )
+
+N_WITHOUT_MPVS_TOTAL <- N_WITH_DCQ_TOTAL - NROW(df)
+sprintf(
+  "%d had no MPVS total", N_WITHOUT_MPVS_TOTAL
+)
+
 
 df <- df %>% dplyr::select(-all_of("to_remove"))
 
