@@ -2492,3 +2492,18 @@ stopifnot(
 
 rm("test")
 rm("equal_test")
+
+
+# Source - https://stackoverflow.com/a
+specify_decimal <- function(number, digits) {
+  trimws(format(round(number, digits), nsmall = digits))
+}
+
+stopifnot(
+  all.equal(
+    specify_decimal(
+      0.9, 2
+    ),
+    "0.90"
+  )
+)
