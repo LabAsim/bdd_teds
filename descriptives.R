@@ -415,6 +415,7 @@ summary_all2 <- df_essential_vars %>%
             "age_child_14_1",
             "age_child_web_16_1",
             "age_phase2_child_21_1",
+            "age_26_1",
             "Study variables",
             "eating_diagnosis_fct_26_1",
             "MPVS",
