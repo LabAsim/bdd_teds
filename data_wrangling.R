@@ -519,6 +519,22 @@ summary(
   )
 )
 
+
+
+df$dcq_total_26_1_cutoff11 <- ifelse(
+  test = is.na(df$dcq_total_26_1) == T,
+  yes = NA,
+  no = ifelse(
+    test = df$dcq_total_26_1 >= 11,
+    yes = "yes",
+    no = "no"
+  )
+)
+df$dcq_total_26_1_cutoff11 <- factor(df$dcq_total_26_1_cutoff11)
+df$dcq_total_26_1_cutoff11_numeric <- as.numeric(df$dcq_total_26_1_cutoff11)
+
+
+
 df$dcq_total_26_1_cutoff17 <- ifelse(
   test = is.na(df$dcq_total_26_1) == T,
   yes = NA,
