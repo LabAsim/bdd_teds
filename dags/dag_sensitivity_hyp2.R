@@ -1,5 +1,6 @@
 library(ggplot2)
 library(ggdag)
+source("dags\\helper.R")
 hyp2_modified <- ggdag::dagify(
   BDD ~ MPVS12, # The form is effect ~ cause
   BDD ~ MPVS14,
