@@ -77,7 +77,7 @@ edges <- tidy_hyp1_modified$data %>%
     estimate = round(runif(n(), -0.5, 0.5), 2)
   )
 
-node_radius <- 0.75
+node_radius <- 0.80
 # Calculate direction vector
 # edges <- edges %>%
 #   rowwise() %>%
@@ -94,7 +94,7 @@ node_radius <- 0.75
 edges <- adjust_edges(
   edges_df = edges,
   node_radius = node_radius,
-  reduction_parameter = 0.1
+  reduction_parameter = 0.2
 )
 
 edges <- left_join(
@@ -110,106 +110,15 @@ edges <- left_join(
   )
 )
 
-# Plot using edge-specific curvature
-fit_plot_scaled_32_without_covid_modified_standardized <- ggplot(data = edges) +
-  # We use geom_label to wrap the text in rectangle box
-  # See https://stackoverflow.com/a/44012702
-  geom_label(
-    data = tidy_hyp1_modified$data,
-    aes(x = x, y = y, label = label),
-    color = "black",
-    size = 9, fontface = "bold",
-    hjust = 0.5
-  ) +
-  # Otherwise, we could use a
-  # geom_dag_node(
-  #   data = tidy_hyp1_modified$data,
-  #   aes(x = x, y = y),
-  #   # see shapes
-  #   # https://ggplot2.tidyverse.org/reference/scale_shape.html#details
-  #   shape = 22,
-  #   fill = "white", color = "black",
-  #   size = 28
-  # ) +
-  # geom_dag_text(
-  #   data = tidy_hyp1_modified$data,
-  #   aes(x = x, y = y, label = label),
-  #   color = "black",
-  #   size = 3.5, fontface = "bold",
-  #   hjust = 0.5
-  # ) +
-  geomtextpath::geom_textsegment(
-    data = edges %>% filter(curvature != 1) %>%
-      filter(pvalue <= 0.05),
-    aes(
-      x = xstart_adj, y = ystart_adj,
-      xend = xend_adj, yend = yend_adj,
-      label = paste0(
-        "β=", est.std, "\n (", ci.lower, " — ", ci.upper, ")"
-      )
-    ),
-    arrow = arrow(length = unit(3, "mm"), type = "closed"),
-    # inherit.aes = F,
-    hjust = 0.33,
-    size = 8,
-    angle = -190,
-    linetype = 1
-  ) +
-  geomtextpath::geom_textsegment(
-    data = edges %>% filter(curvature != 1) %>%
-      filter(pvalue > 0.05),
-    aes(
-      x = xstart_adj, y = ystart_adj,
-      xend = xend_adj, yend = yend_adj,
-      label = paste0(
-        "β=", est.std, "\n (", ci.lower, " — ", ci.upper, ")"
-      )
-    ),
-    arrow = arrow(length = unit(3, "mm"), type = "closed"),
-    # inherit.aes = F,
-    hjust = 0.33,
-    size = 8,
-    angle = -190,
-    linetype = 2
-  ) +
-  geomtextpath::geom_textcurve(
-    data = (edges %>% filter(curvature == 1) %>%
-      filter(pvalue > 0.05)),
-    aes(
-      x = xstart_adj, y = ystart_adj,
-      xend = xend_adj, yend = yend_adj, label = paste0(
-        "β=", est.std, "\n (", ci.lower, " — ", ci.upper, ")"
-      )
-    ),
-    arrow = arrow(length = unit(3, "mm"), type = "closed"),
-    curvature = -0.2,
-    linetype = 2,
-    size = 11,
-    hjust = 0.63
-  ) +
-  geomtextpath::geom_textcurve(
-    data = (edges %>% filter(curvature == 1) %>%
-      filter(pvalue <= 0.05)),
-    aes(
-      x = xstart_adj, y = ystart_adj,
-      xend = xend_adj, yend = yend_adj, label = paste0(
-        "β=", est.std, "\n (", ci.lower, " — ", ci.upper, ")"
-      )
-    ),
-    arrow = arrow(length = unit(3, "mm"), type = "closed"),
-    curvature = -0.2,
-    size = 11,
-    hjust = 0.63
-  ) +
-  # coord_cartesian(xlim = c(-2, 14), ylim = c(0, 7.1)) +
-  theme_dag()
-fit_plot_scaled_32_without_covid_modified_standardized
-
 fit_plot_scaled_32_without_covid_modified_standardized <- draw_dag(
   edges = edges, tidy_model = tidy_hyp1_modified,
   footnote = foonote_acronymns_for_dag_plots
 )
 
+save_dag(
+  path = "img\\fit_plot_scaled_32_without_covid_modified_standardized.png",
+  plot = fit_plot_scaled_32_without_covid_modified_standardized
+)
 
 # ggsave(
 #   "img\\fit_plot_scaled_32_without_covid_modified_standardized.tiff",
@@ -229,10 +138,6 @@ fit_plot_scaled_32_without_covid_modified_standardized <- draw_dag(
 # )
 # print(fit_plot_scaled_32_without_covid_modified_standardized)
 # dev.off()
-save_dag(
-  path = "img\\fit_plot_scaled_32_without_covid_modified_standardized.png",
-  plot = fit_plot_scaled_32_without_covid_modified_standardized
-)
 
 
 ##################
@@ -254,12 +159,13 @@ edges <- tidy_hyp1_modified$data %>%
     estimate = round(runif(n(), -0.5, 0.5), 2)
   )
 
-node_radius <- 0.75
+node_radius <- 0.80
+reduction_parameter <- 0.2
 
 edges <- adjust_edges(
   edges_df = edges,
   node_radius = node_radius,
-  reduction_parameter = 0.1
+  reduction_parameter = reduction_parameter
 )
 
 edges <- left_join(

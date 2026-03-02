@@ -62,6 +62,9 @@ hyp1_modified <- ggdag::dagify(
 )
 
 tidy_hyp1_modified <- tidy_dagitty(hyp1_modified)
+
+node_radius <- 0.80
+reduction_parameter <- 0.2
 #############################################
 # Without eating disorders - unstandardised #
 #############################################
@@ -80,12 +83,11 @@ edges <- tidy_hyp1_modified$data %>%
     estimate = round(runif(n(), -0.5, 0.5), 2)
   )
 
-node_radius <- 0.75
 
 edges <- adjust_edges(
   edges_df = edges,
   node_radius = node_radius,
-  reduction_parameter = 0.1
+  reduction_parameter = reduction_parameter
 )
 
 edges <- left_join(
@@ -132,12 +134,11 @@ edges <- tidy_hyp1_modified$data %>%
     estimate = round(runif(n(), -0.5, 0.5), 2)
   )
 
-node_radius <- 0.75
 
 edges <- adjust_edges(
   edges_df = edges,
   node_radius = node_radius,
-  reduction_parameter = 0.1
+  reduction_parameter = reduction_parameter
 )
 
 edges <- left_join(
