@@ -566,9 +566,10 @@ df <- df[df$sexzyg != 7, ]
 df <- df[df$aperinat == 0, ]
 
 
+N_EXCLUDED_TWINS <- NROW(df_raw) - NROW(df[df$exclude2 == 0 & df$exclude1 == 0, ])
 # The excluded twins
 sprintf(
-  "Excluded %d twins", NROW(df_raw) - NROW(df[df$exclude2 == 0 & df$exclude1 == 0, ])
+  "Excluded %d twins", N_EXCLUDED_TWINS
 )
 # NROW(df[df$sexzyg == 7 | df$acontact == 0 | df$aperinat == 1, ] )
 # We don't have the medexcluded,
