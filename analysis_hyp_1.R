@@ -141,13 +141,13 @@ parameters_fit_fiml_without_covid_modified_phenotypic <- modify_parameter_estima
   round_digits = 2
 )
 
-parameters_fit_fiml_without_covid_phenotypic_modified_standardised <- standardizedsolution(
+parameters_fit_fiml_without_covid_phenotypic_modified_standardized <- standardizedsolution(
   fit_fiml_scaled_32_without_covid_modified
 )
 
 
-parameters_fit_fiml_without_covid_phenotypic_modified_standardised <- modify_parameter_estimates(
-  df = parameters_fit_fiml_without_covid_phenotypic_modified_standardised,
+parameters_fit_fiml_without_covid_phenotypic_modified_standardized <- modify_parameter_estimates(
+  df = parameters_fit_fiml_without_covid_phenotypic_modified_standardized,
   round_digits = 2
 )
 

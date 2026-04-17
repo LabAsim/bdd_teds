@@ -65,7 +65,7 @@ edges <- left_join(
   x = edges,
   y = data.frame(
     add_labels_cols(
-      parameters_fit_fiml_without_covid_MZ_standardised
+      parameters_fit_fiml_without_covid_MZ_standardized
     )[1:14, c("est.std", "pvalue", "from", "to", "ci.lower", "ci.upper")]
   ),
   by = join_by(

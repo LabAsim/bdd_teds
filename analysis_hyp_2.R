@@ -195,13 +195,13 @@ fit_fiml_without_covid1_residuals <- round(
 )
 
 
-parameters_fit_fiml_without_covid_MZ_standardised <- standardizedsolution(
+parameters_fit_fiml_without_covid_MZ_standardized <- standardizedsolution(
   fit_fiml_without_covid1
 )
 
 
-parameters_fit_fiml_without_covid_MZ_standardised <- modify_parameter_estimates(
-  df = parameters_fit_fiml_without_covid_MZ_standardised,
+parameters_fit_fiml_without_covid_MZ_standardized <- modify_parameter_estimates(
+  df = parameters_fit_fiml_without_covid_MZ_standardized,
   round_digits = 2
 )
 
