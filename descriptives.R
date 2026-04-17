@@ -33,13 +33,20 @@ corr_mat_mpvs_dcq <- cor(
   df_essential_vars %>% select(
     all_of(
       c(
-        "dcq_total_26_1", "mpvs_total_12_1", "mpvs_total_child_14_1",
-        "mpvs_total_16_1", "mpvs_total_phase_2_21_1"
+        "mpvs_total_12_1", "mpvs_total_child_14_1",
+        "mpvs_total_16_1", "mpvs_total_phase_2_21_1",
+        "dcq_total_26_1"
       )
     )
   ),
   use = "pairwise.complete.obs"
 )
+
+# We need only two digits for the publication
+corr_mat_mpvs_dcq <- round(corr_mat_mpvs_dcq, digits = 2)
+
+# We don't need the upper part of the matrix
+corr_mat_mpvs_dcq[upper.tri(corr_mat_mpvs_dcq)] <- ""
 
 table_corr_mat_mpvs_dcq <- corr_mat_mpvs_dcq %>%
   as.data.frame() %>%
@@ -74,15 +81,14 @@ table_corr_mat_mpvs_dcq <- corr_mat_mpvs_dcq %>%
     "mpvs_total_phase_2_21_1" ~ "MPVS (21y)",
     .locations = gt::cells_stub()
   ) %>%
-  gt::fmt_number(
-    decimals = 3
-  ) %>%
+  # gt::fmt_number(
+  #   decimals = 2
+  # ) %>%
   gt::tab_options(heading.subtitle.font.size = "20pt") %>%
   gt::tab_footnote(
     footnote = "DCQ: Dysmorphic concerns questionnaire, MPVS: Multidimensional peer victimization scale, y: year(s)",
     locations = NULL
   )
-
 
 summary <- gtsummary::tbl_summary(
   data = df_essential_vars %>% select(
@@ -316,7 +322,8 @@ summary_all2 <- df_essential_vars %>%
       "mpvs_total_child_14_1",
       "mpvs_total_16_1",
       "mpvs_total_phase_2_21_1",
-      "dcq_total_26_1"
+      "dcq_total_26_1",
+      "dcq_total_26_1_cutoff11"
     )
   ) %>%
   gtsummary::tbl_summary(
@@ -324,6 +331,10 @@ summary_all2 <- df_essential_vars %>%
     statistic = list(
       all_categorical() ~ "{n}    ({p}%)",
       all_continuous() ~ "{mean} ({sd})"
+    ),
+    type = list(
+      eating_diagnosis_fct_26_1 ~ "categorical",
+      dcq_total_26_1_cutoff11 ~ "categorical"
     ),
     missing_text = "Missing",
     missing_stat = "{N_miss} ({p_miss}%)",
@@ -340,7 +351,8 @@ summary_all2 <- df_essential_vars %>%
       mpvs_total_child_14_1 ~ "wave 14y",
       mpvs_total_16_1 ~ "wave 16y",
       mpvs_total_phase_2_21_1 ~ "wave 21y",
-      dcq_total_26_1 ~ "DCQ total score, M(SD)"
+      dcq_total_26_1 ~ "DCQ total score, M(SD)",
+      dcq_total_26_1_cutoff11 ~ "DCQ 11p-cutoff, n(%)"
     )
   ) %>%
   bold_labels() %>%
@@ -423,7 +435,8 @@ summary_all2 <- df_essential_vars %>%
             "mpvs_total_child_14_1",
             "mpvs_total_16_1",
             "mpvs_total_phase_2_21_1",
-            "dcq_total_26_1"
+            "dcq_total_26_1",
+            "dcq_total_26_1_cutoff11"
           )
         )
       )
@@ -441,7 +454,8 @@ summary_all2 <- df_essential_vars %>%
     rows = variable %in% c(
       "sex_1_fct",
       "dcq_total_26_1",
-      "eating_diagnosis_fct_26_1"
+      "eating_diagnosis_fct_26_1",
+      "dcq_total_26_1_cutoff11"
     ),
     indent = 2
   ) %>%
@@ -452,6 +466,29 @@ summary_all2 <- df_essential_vars %>%
       pattern = "age"
     ),
     indent = 4
+  ) %>%
+  modify_column_indent(
+    columns = label,
+    rows = str_detect(
+      string = variable,
+      pattern = "No"
+    ),
+    indent = 4
+  ) %>%
+  modify_column_indent(
+    columns = label,
+    rows = variable == "sex_1_fct" & row_type == "level",
+    indent = 4
+  ) %>%
+  modify_column_indent(
+    columns = label,
+    rows = variable == "eating_diagnosis_fct_26_1" & row_type == "level",
+    indent = 8
+  ) %>%
+  modify_column_indent(
+    columns = label,
+    rows = variable == "dcq_total_26_1_cutoff11" & row_type == "level",
+    indent = 8
   ) %>%
   modify_column_indent(
     columns = label,
