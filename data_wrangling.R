@@ -526,8 +526,8 @@ df$dcq_total_26_1_cutoff11 <- ifelse(
   yes = NA,
   no = ifelse(
     test = df$dcq_total_26_1 >= 11,
-    yes = "yes",
-    no = "no"
+    yes = "Yes",
+    no = "No"
   )
 )
 df$dcq_total_26_1_cutoff11 <- factor(df$dcq_total_26_1_cutoff11)
@@ -540,8 +540,8 @@ df$dcq_total_26_1_cutoff17 <- ifelse(
   yes = NA,
   no = ifelse(
     test = df$dcq_total_26_1 >= 17,
-    yes = "yes",
-    no = "no"
+    yes = "Yes",
+    no = "No"
   )
 )
 df$dcq_total_26_1_cutoff17 <- factor(df$dcq_total_26_1_cutoff17)
