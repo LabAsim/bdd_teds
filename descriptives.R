@@ -53,7 +53,7 @@ table_corr_mat_mpvs_dcq <- corr_mat_mpvs_dcq %>%
   gt::gt(
     # https://stackoverflow.com/questions/75260770/how-to-add-the-row-names-to-my-gt-table
     rownames_to_stub = T,
-    caption = "Table 2. Correlation matrix of DCQ and MPVS across waves"
+    caption = "" # Table 2. Correlation matrix of DCQ and MPVS across waves
   ) |>
   gt::text_case_match(
     "dcq_total_26_1" ~ "DCQ",
@@ -61,10 +61,6 @@ table_corr_mat_mpvs_dcq <- corr_mat_mpvs_dcq %>%
     "mpvs_total_child_14_1" ~ "MPVS (14y)",
     "mpvs_total_16_1" ~ "MPVS (16y)",
     "mpvs_total_phase_2_21_1" ~ "MPVS (21y)"
-  ) %>%
-  gt::tab_header(
-    title = "",
-    subtitle = "Table 2. Spearman correlation matrix of DCQ and MPVS across waves"
   ) %>%
   gt::cols_label(
     dcq_total_26_1 = "DCQ",
@@ -85,6 +81,10 @@ table_corr_mat_mpvs_dcq <- corr_mat_mpvs_dcq %>%
   #   decimals = 2
   # ) %>%
   gt::tab_options(heading.subtitle.font.size = "20pt") %>%
+  gt::tab_header(
+    title = "Table 2. Spearman correlation matrix of DCQ and MPVS across waves",
+    subtitle = ""
+  ) %>%
   gt::tab_footnote(
     footnote = "DCQ: Dysmorphic concerns questionnaire, MPVS: Multidimensional peer victimization scale, y: year(s)",
     locations = NULL
