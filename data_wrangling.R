@@ -565,7 +565,7 @@ df <- df[df$acontact == 1, ]
 df <- df[df$sexzyg != 7, ]
 df <- df[df$aperinat == 0, ]
 
-
+N_WITH_EXCLUDED_TWINS <- NROW(df_raw)
 N_EXCLUDED_TWINS <- NROW(df_raw) - NROW(df[df$exclude2 == 0 & df$exclude1 == 0, ])
 # The excluded twins
 sprintf(
