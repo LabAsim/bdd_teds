@@ -2,10 +2,8 @@ if (sys.nframe() == 0) {
   source("data_management_hyp_2.R")
 }
 source("constants.R")
-library(umx)
 library(lavaan)
 library(lavaanPlot)
-library(lavaan.mi)
 
 #######################
 # Using original data #
@@ -264,6 +262,7 @@ source("dags\\dag_hyp2.R")
 ######################
 # Using imputed data #
 ######################
+# library(lavaan.mi)
 # if (sys.nframe() == 0) {
 #   if (exists("imp_derived") == F) {
 #     if (file.exists("G:\\imp_derived.Rdata")) {
