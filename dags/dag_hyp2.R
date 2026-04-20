@@ -1,5 +1,6 @@
 library(ggplot2)
 library(ggdag)
+source("dags\\helper.R")
 hyp2_modified <- ggdag::dagify(
   BDD ~ MPVS12, # The form is effect ~ cause
   BDD ~ MPVS14,
@@ -14,10 +15,10 @@ hyp2_modified <- ggdag::dagify(
   outcome = "BDD",
   coords = list(
     x = c(
-      MPVS12 = -2,
-      MPVS14 = 2,
-      MPVS16 = 6,
-      MPVS21 = 10,
+      MPVS12 = 0,
+      MPVS14 = 4,
+      MPVS16 = 8,
+      MPVS21 = 12,
       BDD = 14
     ),
     y = c(
@@ -39,13 +40,22 @@ hyp2_modified <- ggdag::dagify(
 
 tidy_hyp2_modified <- tidy_dagitty(hyp2_modified)
 
-# Add curvature selectively
-edges <- tidy_hyp2_modified$data %>%
-  filter(!is.na(to)) %>%
+################
+# Standardised #
+################
+nodes_hyp2 <- tidy_hyp2_modified$data %>%
+  filter(!duplicated(name)) %>%
+  transmute(
+    node_id = name,
+    x = x,
+    y = y,
+    label = label
+  )
+
+edges_hyp2 <- tidy_hyp2_modified$data %>%
   mutate(
     curvature = case_when(
       name == "MPVS12" & to == "MPVS16" ~ 1,
-      # name == "MPVS12" & to == "MPVS21" ~ 1,
       name == "MPVS14" & to == "MPVS21" ~ 1,
       name == "MPVS16" & to == "BDD" ~ 0,
       TRUE ~ 0 # default: straight
@@ -53,16 +63,8 @@ edges <- tidy_hyp2_modified$data %>%
     estimate = round(runif(n(), -0.5, 0.5), 2)
   )
 
-node_radius <- 0.80
-
-edges <- adjust_edges(
-  edges_df = edges,
-  node_radius = node_radius,
-  reduction_parameter = 0.2
-)
-
-edges <- left_join(
-  x = edges,
+edges_hyp2 <- left_join(
+  x = edges_hyp2,
   y = data.frame(
     add_labels_cols(
       parameters_fit_fiml_without_covid_MZ_standardized
@@ -75,28 +77,85 @@ edges <- left_join(
 )
 
 
-plot_fit_fiml_standardized <- draw_dag(
-  edges = edges,
-  tidy_model = tidy_hyp2_modified,
-  footnote = foonote_acronymns_for_dag_plots
-) +
-  coord_cartesian(xlim = c(-2, 14), ylim = c(1, 2.2))
+VERTICAL_LABEL_POSITION <- 0.3
+
+edges_hyp2 <- edges_hyp2 %>%
+  filter(!is.na(to)) %>%
+  transmute(
+    from = name,
+    to = to,
+    curvature = curvature,
+    pvalue = pvalue,
+    est = est.std,
+    ci.lower = ci.lower,
+    ci.upper = ci.upper
+  )
+
+edges_hyp2 <- edges_hyp2 %>%
+  mutate(
+    hjust = case_when(
+      curvature == 1 & pvalue <= 0.05 ~ 0.6,
+      curvature == 1 & pvalue > 0.05 ~ 0.5,
+      pvalue <= 0.05 ~ 0.5,
+      TRUE ~ 0.5,
+    )
+  ) %>%
+  mutate(
+    hjust = case_when(
+      # Granular control over relationships
+      from == "MPVS12" & to == "MPVS16" ~ 0.5,
+      .default = hjust
+    )
+  ) %>%
+  mutate(
+    vjust = case_when(
+      from == "MPVS12" & to == "MPVS16" ~ 0.5,
+      .default = 0.5
+    )
+  ) %>%
+  mutate(
+    vertical_label_position = case_when(
+      from == "MPVS12" & to == "MPVS16" ~ 0.5,
+      .default = 0.5
+    )
+  )
+
+
+p <- plot_dag(
+  nodes = nodes_hyp2,
+  edges = edges_hyp2,
+  label_size = 14 * 2,
+  label_size_unit = "pt",
+  text_size = 7,
+  xlim = c(-0.5, 14.3),
+  ylim = c(0.9, 2.2),
+  footnote = foonote_acronymns_for_dag_plots,
+  footnote_size = 14
+)
 
 save_dag(
   path = "img\\plot_fit_fiml_standardized.png",
-  plot = plot_fit_fiml_standardized
+  plot = p,
+  width = 50,
+  height = 25
 )
-
 
 ##################
 # Unstandardised #
 ##################
-edges <- tidy_hyp2_modified$data %>%
-  filter(!is.na(to)) %>%
+nodes_hyp2 <- tidy_hyp2_modified$data %>%
+  filter(!duplicated(name)) %>%
+  transmute(
+    node_id = name,
+    x = x,
+    y = y,
+    label = label
+  )
+
+edges_hyp2 <- tidy_hyp2_modified$data %>%
   mutate(
     curvature = case_when(
       name == "MPVS12" & to == "MPVS16" ~ 1,
-      # name == "MPVS12" & to == "MPVS21" ~ 1,
       name == "MPVS14" & to == "MPVS21" ~ 1,
       name == "MPVS16" & to == "BDD" ~ 0,
       TRUE ~ 0 # default: straight
@@ -104,17 +163,8 @@ edges <- tidy_hyp2_modified$data %>%
     estimate = round(runif(n(), -0.5, 0.5), 2)
   )
 
-node_radius <- 0.8
-# Calculate direction vector
-
-edges <- adjust_edges(
-  edges_df = edges,
-  node_radius = node_radius,
-  reduction_parameter = 0.2
-)
-
-edges <- left_join(
-  x = edges,
+edges_hyp2 <- left_join(
+  x = edges_hyp2,
   y = data.frame(
     add_labels_cols(
       parameters_fit_fiml_without_covid_MZ
@@ -126,13 +176,63 @@ edges <- left_join(
   )
 )
 
-plot_fit_fiml <- draw_dag(
-  edges = edges, tidy_model = tidy_hyp2_modified,
-  footnote = foonote_acronymns_for_dag_plots
-) +
-  coord_cartesian(xlim = c(-2, 14), ylim = c(1, 2.2))
+edges_hyp2 <- edges_hyp2 %>%
+  filter(!is.na(to)) %>%
+  transmute(
+    from = name,
+    to = to,
+    curvature = curvature,
+    pvalue = pvalue,
+    est = est,
+    ci.lower = ci.lower,
+    ci.upper = ci.upper
+  )
+
+edges_hyp2 <- edges_hyp2 %>%
+  mutate(
+    hjust = case_when(
+      curvature == 1 & pvalue <= 0.05 ~ 0.6,
+      curvature == 1 & pvalue > 0.05 ~ 0.5,
+      pvalue <= 0.05 ~ 0.5,
+      TRUE ~ 0.5,
+    )
+  ) %>%
+  mutate(
+    hjust = case_when(
+      # Granular control over relationships
+      from == "MPVS12" & to == "MPVS16" ~ 0.5,
+      .default = hjust
+    )
+  ) %>%
+  mutate(
+    vjust = case_when(
+      from == "MPVS12" & to == "MPVS16" ~ 0.5,
+      .default = 0.5
+    )
+  ) %>%
+  mutate(
+    vertical_label_position = case_when(
+      from == "MPVS12" & to == "MPVS16" ~ 0.5,
+      .default = 0.5
+    )
+  )
+
+
+p <- plot_dag(
+  nodes = nodes_hyp2,
+  edges = edges_hyp2,
+  label_size = 14 * 2,
+  label_size_unit = "pt",
+  text_size = 7,
+  xlim = c(-0.5, 14.3),
+  ylim = c(0.9, 2.2),
+  footnote = foonote_acronymns_for_dag_plots,
+  footnote_size = 14
+)
 
 save_dag(
   path = "img\\plot_fit_fiml.png",
-  plot = plot_fit_fiml
+  plot = p,
+  width = 50,
+  height = 25
 )

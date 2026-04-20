@@ -15,10 +15,10 @@ hyp2_modified <- ggdag::dagify(
   outcome = "BDD",
   coords = list(
     x = c(
-      MPVS12 = -2,
-      MPVS14 = 2,
-      MPVS16 = 6,
-      MPVS21 = 10,
+      MPVS12 = 0,
+      MPVS14 = 4,
+      MPVS16 = 8,
+      MPVS21 = 12,
       BDD = 14
     ),
     y = c(
@@ -40,6 +40,16 @@ hyp2_modified <- ggdag::dagify(
 
 tidy_hyp2_modified <- tidy_dagitty(hyp2_modified)
 
+nodes <- tidy_hyp2_modified$data %>%
+  filter(!duplicated(name)) %>%
+  transmute(
+    node_id = name,
+    x = x,
+    y = y,
+    label = label
+  )
+
+
 #############################################
 # Without eating disorders - unstandardised #
 #############################################
@@ -57,15 +67,6 @@ edges <- tidy_hyp2_modified$data %>%
     estimate = round(runif(n(), -0.5, 0.5), 2)
   )
 
-node_radius <- 0.8
-# Calculate direction vector
-
-edges <- adjust_edges(
-  edges_df = edges,
-  node_radius = node_radius,
-  reduction_parameter = 0.2
-)
-
 edges <- left_join(
   x = edges,
   y = data.frame(
@@ -79,20 +80,71 @@ edges <- left_join(
   )
 )
 
-plot_fit_fiml_diff_without_covid_ΜΖ_sensitivity <- draw_dag(
-  edges = edges, tidy_model = tidy_hyp2_modified,
-  footnote = foonote_acronymns_for_dag_plots
-) +
-  coord_cartesian(xlim = c(-2, 14), ylim = c(1, 2.2))
+edges <- edges %>%
+  filter(!is.na(to)) %>%
+  transmute(
+    from = name,
+    to = to,
+    curvature = curvature,
+    pvalue = pvalue,
+    est = est,
+    ci.lower = ci.lower,
+    ci.upper = ci.upper
+  )
+
+edges <- edges %>%
+  mutate(
+    hjust = case_when(
+      curvature == 1 & pvalue <= 0.05 ~ 0.6,
+      curvature == 1 & pvalue > 0.05 ~ 0.5,
+      pvalue <= 0.05 ~ 0.5,
+      TRUE ~ 0.5,
+    )
+  ) %>%
+  mutate(
+    hjust = case_when(
+      # Granular control over relationships
+      from == "MPVS12" & to == "MPVS16" ~ 0.5,
+      .default = hjust
+    )
+  ) %>%
+  mutate(
+    vjust = case_when(
+      from == "MPVS12" & to == "MPVS16" ~ 0.5,
+      .default = 0.5
+    )
+  ) %>%
+  mutate(
+    vertical_label_position = case_when(
+      from == "MPVS12" & to == "MPVS16" ~ 0.5,
+      .default = 0.5
+    )
+  )
+
+
+p <- plot_dag(
+  nodes = nodes,
+  edges = edges,
+  label_size = 14 * 2,
+  label_size_unit = "pt",
+  text_size = 7,
+  xlim = c(-0.5, 14.3),
+  ylim = c(0.9, 2.2),
+  footnote = foonote_acronymns_for_dag_plots,
+  footnote_size = 14
+)
 
 save_dag(
   path = "img\\plot_fit_fiml_diff_without_covid_ΜΖ_sensitivity.png",
-  plot = plot_fit_fiml_diff_without_covid_ΜΖ_sensitivity
+  plot = p,
+  width = 50,
+  height = 25
 )
 
 #############################################
 # Without eating disorders - Standardised #
 #############################################
+
 
 edges <- tidy_hyp2_modified$data %>%
   filter(!is.na(to)) %>%
@@ -107,15 +159,6 @@ edges <- tidy_hyp2_modified$data %>%
     estimate = round(runif(n(), -0.5, 0.5), 2)
   )
 
-node_radius <- 0.8
-# Calculate direction vector
-
-edges <- adjust_edges(
-  edges_df = edges,
-  node_radius = node_radius,
-  reduction_parameter = 0.2
-)
-
 edges <- left_join(
   x = edges,
   y = data.frame(
@@ -129,14 +172,63 @@ edges <- left_join(
   )
 )
 
-plot_fit_fiml_diff_without_covid_standardized_ΜΖ_sensitivity <- draw_dag(
+edges <- edges %>%
+  filter(!is.na(to)) %>%
+  transmute(
+    from = name,
+    to = to,
+    curvature = curvature,
+    pvalue = pvalue,
+    est = est.std,
+    ci.lower = ci.lower,
+    ci.upper = ci.upper
+  )
+
+edges <- edges %>%
+  mutate(
+    hjust = case_when(
+      curvature == 1 & pvalue <= 0.05 ~ 0.6,
+      curvature == 1 & pvalue > 0.05 ~ 0.5,
+      pvalue <= 0.05 ~ 0.5,
+      TRUE ~ 0.5,
+    )
+  ) %>%
+  mutate(
+    hjust = case_when(
+      # Granular control over relationships
+      from == "MPVS12" & to == "MPVS16" ~ 0.5,
+      .default = hjust
+    )
+  ) %>%
+  mutate(
+    vjust = case_when(
+      from == "MPVS12" & to == "MPVS16" ~ 0.5,
+      .default = 0.5
+    )
+  ) %>%
+  mutate(
+    vertical_label_position = case_when(
+      from == "MPVS12" & to == "MPVS16" ~ 0.5,
+      .default = 0.5
+    )
+  )
+
+
+p <- plot_dag(
+  nodes = nodes,
   edges = edges,
-  tidy_model = tidy_hyp2_modified,
-  footnote = foonote_acronymns_for_dag_plots
-) +
-  coord_cartesian(xlim = c(-2, 14), ylim = c(1, 2.2))
+  label_size = 14 * 2,
+  label_size_unit = "pt",
+  text_size = 7,
+  xlim = c(-0.5, 14.3),
+  ylim = c(0.9, 2.2),
+  footnote = foonote_acronymns_for_dag_plots,
+  footnote_size = 14
+)
 
 save_dag(
   path = "img\\plot_fit_fiml_diff_without_covid_standardized_ΜΖ_sensitivity.png",
-  plot = plot_fit_fiml_diff_without_covid_standardized_ΜΖ_sensitivity
+  plot = p,
+  width = 50,
+  height = 25
 )

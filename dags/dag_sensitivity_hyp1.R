@@ -20,16 +20,16 @@ hyp1_modified <- ggdag::dagify(
   outcome = "BDD",
   coords = list(
     x = c(
-      MPVS12 = -2,
-      MPVS14 = 2,
-      MPVS16 = 6,
-      MPVS21 = 10,
+      MPVS12 = 0,
+      MPVS14 = 4,
+      MPVS16 = 8,
+      MPVS21 = 12,
       BDD = 14,
       Sex = 2,
-      Age12 = -2,
-      Age14 = 2,
-      Age16 = 6,
-      Age21 = 10,
+      Age12 = 0,
+      Age14 = 4,
+      Age16 = 8,
+      Age21 = 12,
       Age26 = 14
     ),
     y = c(
@@ -63,8 +63,17 @@ hyp1_modified <- ggdag::dagify(
 
 tidy_hyp1_modified <- tidy_dagitty(hyp1_modified)
 
-node_radius <- 0.80
-reduction_parameter <- 0.2
+
+nodes_hyp1 <- tidy_hyp1_modified$data %>%
+  filter(!duplicated(name)) %>%
+  transmute(
+    node_id = name,
+    x = x,
+    y = y,
+    label = label
+  )
+
+
 #############################################
 # Without eating disorders - unstandardised #
 #############################################
@@ -84,12 +93,6 @@ edges <- tidy_hyp1_modified$data %>%
   )
 
 
-edges <- adjust_edges(
-  edges_df = edges,
-  node_radius = node_radius,
-  reduction_parameter = reduction_parameter
-)
-
 edges <- left_join(
   x = edges,
   y = data.frame(
@@ -103,17 +106,77 @@ edges <- left_join(
   )
 )
 
+edges <- edges %>%
+  filter(!is.na(to)) %>%
+  transmute(
+    from = name,
+    to = to,
+    curvature = curvature,
+    pvalue = pvalue,
+    est = est,
+    ci.lower = ci.lower,
+    ci.upper = ci.upper
+  )
 
-plot_fit_fiml_scaled_32_without_covid_without_ED <- draw_dag(
-  edges = edges, tidy_model = tidy_hyp1_modified,
-  footnote = foonote_acronymns_for_dag_plots
+edges <- edges %>%
+  mutate(
+    hjust = case_when(
+      curvature == 1 & pvalue <= 0.05 ~ 0.6,
+      curvature == 1 & pvalue > 0.05 ~ 0.5,
+      pvalue <= 0.05 ~ 0.5,
+      TRUE ~ 0.5,
+    )
+  ) %>%
+  mutate(
+    hjust = case_when(
+      # Granular control over relationships
+      from == "MPVS12" & to == "MPVS16" ~ 0.35,
+      from == "MPVS12" & to == "MPVS21" ~ 0.5,
+      from == "MPVS14" & to == "MPVS21" ~ 0.65,
+      from == "Sex" & to == "MPVS21" ~ 0.4,
+      from == "MPVS12" & to == "BDD" ~ 0.6,
+      from == "MPVS14" & to == "BDD" ~ 0.6,
+      from == "Age14" & to == "MPVS14" ~ 0.5,
+      from == "Age16" & to == "MPVS16" ~ 0.5,
+      .default = hjust
+    )
+  ) %>%
+  mutate(
+    vjust = case_when(
+      from == "MPVS12" & to == "MPVS16" ~ 0.8,
+      from == "MPVS14" & to == "MPVS21" ~ 0.8,
+      from == "Sex" & to == "MPVS12" ~ 0.5,
+      .default = 0.5
+    )
+  ) %>%
+  mutate(
+    vertical_label_position = case_when(
+      from == "Age14" & to == "MPVS14" ~ 0.4,
+      from == "Age16" & to == "MPVS16" ~ 0.4,
+      .default = 0.5
+    )
+  )
+
+
+
+p <- plot_dag(
+  nodes = nodes_hyp1,
+  edges = edges,
+  label_size = 15 * 2,
+  label_size_unit = "pt",
+  text_size = 7,
+  xlim = c(-0.3, 14.2),
+  ylim = c(0.5, 7.5),
+  footnote = foonote_acronymns_for_dag_plots,
+  footnote_size = 12
 )
 
 save_dag(
   path = "img\\plot_fit_fiml_scaled_32_without_covid_without_ED.png",
-  plot = plot_fit_fiml_scaled_32_without_covid_without_ED
+  plot = p,
+  width = 50,
+  height = 25
 )
-
 
 ###########################################
 # Without eating disorders - Standardised #
@@ -135,12 +198,6 @@ edges <- tidy_hyp1_modified$data %>%
   )
 
 
-edges <- adjust_edges(
-  edges_df = edges,
-  node_radius = node_radius,
-  reduction_parameter = reduction_parameter
-)
-
 edges <- left_join(
   x = edges,
   y = data.frame(
@@ -154,11 +211,70 @@ edges <- left_join(
   )
 )
 
+edges <- edges %>%
+  filter(!is.na(to)) %>%
+  transmute(
+    from = name,
+    to = to,
+    curvature = curvature,
+    pvalue = pvalue,
+    est = est.std,
+    ci.lower = ci.lower,
+    ci.upper = ci.upper
+  )
 
-plot_fit_fiml_scaled_32_without_covid_without_ED_standardized <- draw_dag(
-  edges = edges, tidy_model = tidy_hyp1_modified,
-  footnote = foonote_acronymns_for_dag_plots
+edges <- edges %>%
+  mutate(
+    hjust = case_when(
+      curvature == 1 & pvalue <= 0.05 ~ 0.6,
+      curvature == 1 & pvalue > 0.05 ~ 0.5,
+      pvalue <= 0.05 ~ 0.5,
+      TRUE ~ 0.5,
+    )
+  ) %>%
+  mutate(
+    hjust = case_when(
+      # Granular control over relationships
+      from == "MPVS12" & to == "MPVS16" ~ 0.35,
+      from == "MPVS12" & to == "MPVS21" ~ 0.5,
+      from == "MPVS14" & to == "MPVS21" ~ 0.65,
+      from == "Sex" & to == "MPVS21" ~ 0.4,
+      from == "MPVS12" & to == "BDD" ~ 0.6,
+      from == "MPVS14" & to == "BDD" ~ 0.6,
+      from == "Age14" & to == "MPVS14" ~ 0.5,
+      from == "Age16" & to == "MPVS16" ~ 0.5,
+      .default = hjust
+    )
+  ) %>%
+  mutate(
+    vjust = case_when(
+      from == "MPVS12" & to == "MPVS16" ~ 0.8,
+      from == "MPVS14" & to == "MPVS21" ~ 0.8,
+      from == "Sex" & to == "MPVS12" ~ 0.5,
+      .default = 0.5
+    )
+  ) %>%
+  mutate(
+    vertical_label_position = case_when(
+      from == "Age14" & to == "MPVS14" ~ 0.4,
+      from == "Age16" & to == "MPVS16" ~ 0.4,
+      .default = 0.5
+    )
+  )
+
+
+p <- plot_dag(
+  nodes = nodes_hyp1,
+  edges = edges,
+  label_size = 15 * 2,
+  label_size_unit = "pt",
+  text_size = 7,
+  xlim = c(-0.3, 14.2),
+  ylim = c(0.5, 7.5),
+  footnote = foonote_acronymns_for_dag_plots,
+  footnote_size = 12
 )
+
 
 save_dag(
   path = "img\\plot_fit_fiml_scaled_32_without_covid_without_ED_standardized.png",
