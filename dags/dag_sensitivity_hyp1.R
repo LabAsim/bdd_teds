@@ -165,14 +165,12 @@ p <- plot_dag(
   label_size = 15 * 2,
   label_size_unit = "pt",
   text_size = 7,
-  xlim = c(-0.3, 14.2),
-  ylim = c(0.5, 7.5),
-  footnote = foonote_acronymns_for_dag_plots,
-  footnote_size = 12
+  xlim = c(-0.5, 14.4),
+  ylim = c(0.5, 7.5)
 )
 
 save_dag(
-  path = "img\\plot_fit_fiml_scaled_32_without_covid_without_ED.png",
+  path = "img\\plot_fit_fiml_scaled_32_without_covid_without_ED.tiff",
   plot = p,
   width = 50,
   height = 25
@@ -269,14 +267,12 @@ p <- plot_dag(
   label_size = 15 * 2,
   label_size_unit = "pt",
   text_size = 7,
-  xlim = c(-0.3, 14.2),
-  ylim = c(0.5, 7.5),
-  footnote = foonote_acronymns_for_dag_plots,
-  footnote_size = 12
+  xlim = c(-0.5, 14.4),
+  ylim = c(0.5, 7.5)
 )
 
 
 save_dag(
-  path = "img\\plot_fit_fiml_scaled_32_without_covid_without_ED_standardized.png",
-  plot = plot_fit_fiml_scaled_32_without_covid_without_ED_standardized
+  path = "img\\plot_fit_fiml_scaled_32_without_covid_without_ED_standardized.tiff",
+  plot = p
 )

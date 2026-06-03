@@ -129,13 +129,11 @@ p <- plot_dag(
   label_size_unit = "pt",
   text_size = 7,
   xlim = c(-0.5, 14.3),
-  ylim = c(0.9, 2.2),
-  footnote = foonote_acronymns_for_dag_plots,
-  footnote_size = 14
+  ylim = c(0.9, 2.2)
 )
 
 save_dag(
-  path = "img\\plot_fit_fiml_diff_without_covid_ΜΖ_sensitivity.png",
+  path = "img\\plot_fit_fiml_diff_without_covid_ΜΖ_sensitivity.tiff",
   plot = p,
   width = 50,
   height = 25
@@ -220,14 +218,12 @@ p <- plot_dag(
   label_size = 14 * 2,
   label_size_unit = "pt",
   text_size = 7,
-  xlim = c(-0.5, 14.3),
-  ylim = c(0.9, 2.2),
-  footnote = foonote_acronymns_for_dag_plots,
-  footnote_size = 14
+  xlim = c(-0.6, 14.4),
+  ylim = c(0.9, 2.2)
 )
 
 save_dag(
-  path = "img\\plot_fit_fiml_diff_without_covid_standardized_ΜΖ_sensitivity.png",
+  path = "img\\plot_fit_fiml_diff_without_covid_standardized_ΜΖ_sensitivity.tiff",
   plot = p,
   width = 50,
   height = 25

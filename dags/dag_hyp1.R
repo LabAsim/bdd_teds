@@ -1,5 +1,6 @@
 library(ggplot2)
 library(ggdag)
+library(tidyverse)
 source("dags\\helper.R")
 hyp1_modified <- ggdag::dagify(
   BDD ~ MPVS12,
@@ -65,7 +66,7 @@ tidy_hyp1_modified <- tidy_dagitty(hyp1_modified)
 
 nodes_hyp1 <- tidy_hyp1_modified$data %>%
   filter(!duplicated(name)) %>%
-  transmute(
+  dplyr::transmute(
     node_id = name,
     x = x,
     y = y,
@@ -159,14 +160,12 @@ p <- plot_dag(
   label_size = 15 * 2,
   label_size_unit = "pt",
   text_size = 7,
-  xlim = c(-0.3, 14.2),
-  ylim = c(0.5, 7.5),
-  footnote = foonote_acronymns_for_dag_plots,
-  footnote_size = 12
+  xlim = c(-0.5, 14.4),
+  ylim = c(0.5, 7.5)
 )
 
 save_dag(
-  path = "img\\fit_fiml_without_covid_phenotypic_modified_standardized.png",
+  path = "img\\fit_fiml_without_covid_phenotypic_modified_standardized.tiff",
   plot = p,
   width = 50,
   height = 25
@@ -259,14 +258,14 @@ p <- plot_dag(
   label_size = 15 * 2,
   label_size_unit = "pt",
   text_size = 7,
-  xlim = c(-0.3, 14.2),
-  ylim = c(0.5, 7.5),
-  footnote = foonote_acronymns_for_dag_plots,
-  footnote_size = 12
+  xlim = c(-0.5, 14.4),
+  ylim = c(0.5, 7.5)
+  # footnote = foonote_acronymns_for_dag_plots,
+  # footnote_size = 14
 )
 
 save_dag(
-  path = "img\\fit_plot_scaled_32_without_covid_modified.png",
+  path = "img\\fit_plot_scaled_32_without_covid_modified.tiff",
   plot = p,
   width = 50,
   height = 25
