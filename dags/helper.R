@@ -118,14 +118,26 @@ draw_dag <- function(edges, tidy_model, footnote = NULL) {
   }
 }
 
-save_dag <- function(path, plot, width = 50, height = 25) {
-  png(
-    path,
-    width = width,
-    height = height,
-    units = "cm",
-    res = 300
-  )
+save_dag <- function(path, plot, type = "tiff", width = 50, height = 25) {
+  if (type == "tiff") {
+    tiff(
+      path,
+      width = width,
+      height = height,
+      units = "cm",
+      res = 300
+    )
+  } else if (type == "png") {
+    png(
+      path,
+      width = width,
+      height = height,
+      units = "cm",
+      res = 300
+    )
+  } else {
+    stop("Type not supported")
+  }
   print(plot)
   dev.off()
 }
@@ -350,6 +362,7 @@ plot_dag <- function(
     plot_height_cm = 12,
     footnote = NULL,
     footnote_size = 12) {
+  # First build the nodes
   nodes_boxes <- compute_node_boxes(
     nodes = nodes,
     label_col = "label",
@@ -369,10 +382,11 @@ plot_dag <- function(
       data = nodes_boxes,
       aes(x = x, y = y, label = label),
       size = label_size,
-      label.size = label_border_size,
+      linewidth = label_border_size,
       size.unit = label_size_unit,
       fontface = "bold"
     ) +
+    # Statistically significant lines
     geomtextpath::geom_textsegment(
       data = edges_adj %>%
         filter(curvature != 1, pvalue <= 0.05),
@@ -392,6 +406,7 @@ plot_dag <- function(
       linetype = 1,
       size = text_size
     ) +
+    # Non-vertical non-sig lines
     geomtextpath::geom_textsegment(
       data = edges_adj %>%
         filter(curvature != 1, pvalue > 0.05, !is_vertical),
@@ -406,11 +421,53 @@ plot_dag <- function(
         vjust = vjust
       ),
       arrow = arrow(length = unit(3, "mm"), type = "closed"),
-      linewidth = 1.25,
+      linewidth = 1,
       linetype = 2,
       size = text_size
     ) +
-    # Vertical lines are drawn separately
+
+    # We currently use ggarrow because the arrows used by
+    # geomtextpath::geom_textsegment are not drawn perfectly
+    # They are like two arrows drawn one upon another.
+    # ggarrow::geom_arrow_segment(
+    #   data = edges_adj %>%
+    #     filter(curvature != 1, pvalue > 0.05, !is_vertical),
+    #   aes(
+    #     x = xstart_adj,
+    #     y = ystart_adj,
+    #     xend = xend_adj,
+    #     yend = yend_adj
+    #   ),
+    #   linewidth = 1,
+    #   linetype = 2,
+    #   arrow_head = ggarrow::arrow_head_line()
+    # ) +
+    # geom_label(
+    #   data = edges_adj %>%
+    #     filter(curvature != 1, pvalue > 0.05, !is_vertical),
+    #   aes(
+    #     x = xstart_adj + (xend_adj - xstart_adj) * hjust,
+    #     y = ystart_adj + (yend_adj - ystart_adj) * hjust,
+    #     label = paste0(
+    #       est,
+    #       "\n(",
+    #       ci.lower,
+    #       " — ",
+    #       ci.upper,
+    #       ")"
+    #     ),
+    #     angle = atan2(
+    #       yend_adj - ystart_adj,
+    #       xend_adj - xstart_adj
+    #     ) * 180 / pi
+    #   ),
+    #   linewidth = 0, # removes border line
+    #   fill = "white", # background color
+    #   size = text_size
+    # ) +
+
+
+    # Vertical non-sig lines are drawn separately
     geom_segment(
       data = edges_adj %>% filter(curvature != 1, pvalue > 0.05, is_vertical),
       aes(
@@ -419,7 +476,9 @@ plot_dag <- function(
       ),
       arrow = arrow(length = unit(3, "mm"), type = "closed"),
       linewidth = 1,
-      linetype = 1
+      linetype = 2,
+      lineend = "butt",
+      linejoin = "bevel",
     ) +
     geom_label(
       data = edges_adj %>%
@@ -435,7 +494,7 @@ plot_dag <- function(
         vjust = vjust
       ),
       angle = 0,
-      label.size = 0, # removes border line
+      linewidth = 0, # removes border line
       fill = "white", # background color
       size = text_size
     ) +
@@ -455,6 +514,8 @@ plot_dag <- function(
       arrow = arrow(length = unit(3, "mm"), type = "closed"),
       linewidth = 1.5,
       linetype = 2,
+      lineend = "butt",
+      linejoin = "bevel",
       size = text_size
     ) +
     geomtextpath::geom_textcurve(
@@ -477,6 +538,15 @@ plot_dag <- function(
     ) +
     coord_cartesian(xlim = xlim, ylim = ylim) +
     theme_void()
+  duplicates <- edges_adj %>%
+    # filter(curvature != 1, pvalue > 0.05, !is_vertical) %>%
+    count(
+      xstart_adj, ystart_adj,
+      xend_adj, yend_adj
+    ) %>%
+    filter(n > 1)
+  print("Duplicates")
+  print(duplicates)
 
   if (is.null(footnote) == F) {
     to_return <- to_return +
