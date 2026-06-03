@@ -341,7 +341,7 @@ summary_all2 <- df_essential_vars %>%
     label = list(
       # school_cohort_fct ~ "School cohort",
       sex_1_fct ~ "Sex, n(%)",
-      eating_diagnosis_fct_26_1 ~ "Eating disorder diagnosis, n(%)",
+      eating_diagnosis_fct_26_1 ~ "Self-reported eating disorder diagnosis, n(%)",
       age_child_12_1 ~ "wave 12y",
       age_child_14_1 ~ "wave 14y",
       age_child_web_16_1 ~ "wave 16y",
@@ -352,7 +352,7 @@ summary_all2 <- df_essential_vars %>%
       mpvs_total_16_1 ~ "wave 16y",
       mpvs_total_phase_2_21_1 ~ "wave 21y",
       dcq_total_26_1 ~ "DCQ total score, M(SD)",
-      dcq_total_26_1_cutoff11 ~ "DCQ 11p-cutoff, n(%)"
+      dcq_total_26_1_cutoff11 ~ "Above DCQ cutoff, n(%)"
     )
   ) %>%
   bold_labels() %>%
@@ -429,14 +429,14 @@ summary_all2 <- df_essential_vars %>%
             "age_phase2_child_21_1",
             "age_26_1",
             "Study variables",
-            "eating_diagnosis_fct_26_1",
             "MPVS",
             "mpvs_total_12_1",
             "mpvs_total_child_14_1",
             "mpvs_total_16_1",
             "mpvs_total_phase_2_21_1",
             "dcq_total_26_1",
-            "dcq_total_26_1_cutoff11"
+            "dcq_total_26_1_cutoff11",
+            "eating_diagnosis_fct_26_1"
           )
         )
       )
