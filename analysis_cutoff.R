@@ -18,6 +18,9 @@ fit_mean_mpvs_scaled_32_cutoff11 <- glm(
 )
 summary(fit_mean_mpvs_scaled_32_cutoff11)
 
+fit_mean_mpvs_scaled_32_cutoff11_HL_test <- performance::performance_hosmer(
+  fit_mean_mpvs_scaled_32_cutoff11
+)
 
 # See https://stackoverflow.com/a/61052072
 # get results with clustered standard errors (of type HC0)
@@ -35,7 +38,21 @@ summary_fit_mean_mpvs_scaled_32_cutoff11 <- mets::summaryGLM(
 )
 summary_fit_mean_mpvs_scaled_32_cutoff11
 
-# 17p cutoff
+fit_mean_mpvs_scaled_32_cutoff11_omnibus <- residuals(
+  rms::lrm(
+    dcq_total_26_1_cutoff11 ~ mpvs_mean_scaled_32 + sex_1_fct,
+    data = df_essential_vars,
+    y = T,
+    x = T
+  ),
+  type = "gof"
+)
+
+
+
+
+
+# 17p cutoff #
 df_1 %>% explore::describe(dcq_total_26_1_cutoff17)
 
 fit_mean_mpvs_scaled_32_cutoff17 <- glm(
