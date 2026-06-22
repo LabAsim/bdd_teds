@@ -4,7 +4,7 @@ footnote_acronyms <- "'MZ: Monozygotic, DZ: Dizygotic, DCQ: Dysmorphic concerns 
 footnote_acronyms_2 <- "n refers to the number of individuals, MZ: Monozygotic, DZ: Dizygotic, DCQ: Dysmorphic concerns questionnaire, MPVS: Multidimensional peer victimization scale, y: year(s), M: mean, SD: standard deviation. At 16y MPVS had 6 items, whereas a 16-item version was used at all other waves. At age 26, there were no missing data because the missing values were replaced with the co-twin’s values. Pearson's Chi-squared test was used for categorical variables; Welch Two Sample t-test for continuous"
 footnote_acronyms_incompleteness <- "n refers to the number of individuals, MZ: Monozygotic, DZ: Dizygotic, DCQ: Dysmorphic concerns questionnaire, MPVS: Multidimensional peer victimization scale, y: year(s). At 16y MPVS had 6 items, whereas a 16-item version was used at all other waves."
 foonote_acronymns_for_dag_plots <- "DCQ: Dysmorphic concerns questionnaire, MPVS: Multidimensional peer victimization scale, y: year(s)
-Dashed lines: p-value>0.05. Solid lines: p-value<=0.05"
+Dashed lines: p-value>0.05. Solid lines: p-value<=0.05. Age had some variation at each timepoint and for this reason was added as a covariate."
 
 
 var_labels <- list(
