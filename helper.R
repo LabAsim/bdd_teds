@@ -2849,8 +2849,8 @@ modify_pred_matrix_scales_AB <- function(
 
   ##################################################################
   # 1.
-  #  Impute variable s  that are NOT items or totsromy scale given
-  # totals d other variables (not items!)
+  # Impute variables that are NOT items or totals from the scale given
+  # totals from this scales or other variables (not items!)
   ####################################################################
 
   # Twin 1
@@ -2909,7 +2909,7 @@ modify_pred_matrix_scales_AB <- function(
 
   #######################################################
   # 3. Totals are passive:
-  #    not predicd by anything
+  #    not predicted by anything
   #######################################################
 
   pred_matrix[total_vars_1, ] <- 0
