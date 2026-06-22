@@ -952,7 +952,7 @@ summary_twin_pairs_incompleteness <- twin_pairs_incompleteness %>%
   # This functions converts gtsummary to gt
   bstfun::bold_italicize_group_labels(bold = T) %>%
   gt::tab_header(
-    title = "Table 1. Participants characteristics",
+    title = "",
     subtitle = ""
   ) %>%
   gt::tab_options(heading.subtitle.font.size = "20px") %>%
@@ -962,3 +962,83 @@ summary_twin_pairs_incompleteness <- twin_pairs_incompleteness %>%
   )
 
 summary_twin_pairs_incompleteness
+
+#############
+# Normality #
+#############
+
+library(psych)
+#
+vars <- df_essential_vars[, c(
+  "dcq_total_26_1",
+  "mpvs_total_12_1_scaled_32",
+  "mpvs_total_child_14_1_scaled_32",
+  "mpvs_total_16_1_scaled_32",
+  "mpvs_total_phase_2_21_1_scaled_32",
+  "age_child_12_1",
+  "age_child_14_1",
+  "age_child_web_16_1",
+  "age_phase2_child_21_1",
+  "age_26_1"
+)]
+#
+# desc <- psych::describe(vars)
+#
+# desc[, c("mean", "sd", "skew", "kurtosis")]
+#
+# desc$skew_z <- desc$skew / sqrt(6 / nrow(vars))
+# desc$kurt_z <- desc$kurtosis / sqrt(24 / nrow(vars))
+# desc[, c("mean", "sd", "skew", "kurtosis", "skew_z", "kurt_z")]
+#
+#
+# for (v in 1:length(vars)) {
+#   print(
+#     ggplot(vars, aes(x = .data[[colnames(vars)[v]]])) +
+#       geom_histogram(aes(y = after_stat(density)),
+#         bins = 50,
+#         fill = "lightblue",
+#         color = "black"
+#       ) +
+#       geom_density(color = "red", linewidth = 1) +
+#       ggtitle(paste("Histogram + Density:", colnames(vars)[v])) +
+#       theme_minimal()
+#   )
+# }
+
+library(tidyr)
+library(ggplot2)
+
+
+
+data_long <- vars |>
+  pivot_longer(
+    cols = everything(),
+    names_to = "variable",
+    values_to = "value"
+  )
+
+uni_normal_facet <- ggplot(data_long, aes(x = value)) +
+  geom_histogram(aes(y = after_stat(density)),
+    bins = 50,
+    fill = "lightblue",
+    color = "black"
+  ) +
+  geom_density(color = "red", linewidth = 1) +
+  facet_wrap(~variable, scales = "free") +
+  theme_minimal() +
+  labs(
+    x = "Value",
+    y = "Density",
+    title = "Univariate Distribution of Study Variables"
+  )
+
+
+source("dags\\helper.R")
+save_dag(
+  path = "img\\uni_normal_facet.tiff",
+  plot = uni_normal_facet,
+  width = 52,
+  height = 25
+)
+
+mvn_results <- MVN::mvn(vars, mvn_test = "mardia")
