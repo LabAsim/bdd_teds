@@ -1108,11 +1108,12 @@ exclude_collinear_vars <- function(
   }
   return(pred_matrix)
 }
+
 exclude_collinear_vars <- function(
-  ed_matrix,
-  co_mat,
-  lowethreshold = 0.1,
-  upper_reshold = 0.99
+  pred_matrix,
+  corr_mat,
+  lower_threshold = 0.1,
+  upper_threshold = 0.99
 ) {
   # That's the function of mice for removing collinear vars
   # https://github.com/amices/mice/blob/7df3487a56cd49dffc9192a8ebe9697bfa7258ca/R/internal.R#L84-L91
@@ -1129,11 +1130,11 @@ exclude_collinear_vars <- function(
   remove_idx <- lower.tri(corr_mat) &
     !is.na(corr_mat) &
     (abs(corr_mat) > upper_threshold |
-      abs(corr_mat < lower_threshold)
+      abs(corr_mat < lower_threshold))
 
   idx <- whi(remove_idx, arr.ind = TRUE)
 
-  removed_pair<- data.frame(
+  removed_pair <- data.frame(
     row_var = rownames(corr_mat)[idx[, 1]],
     col_var = colnames(corr_mat)[idx[, 2]],
     corr = corr_mat[remove_idx]
@@ -1155,7 +1156,7 @@ exclude_collinear_vars <- function(
   attr(pred_matrix, "removed_pairs") <- removed_pairs
 
   return(pred_matrix)
-
+}
 
 test_df <- data.frame(
   age_child_12_1 = c(0, 1, 1, 1, 1, 1),
@@ -1207,7 +1208,7 @@ rm(list = c("test_s", "s", "corr_mat", "predMatrix", "test_df"))
 
 ########### 3
 test <- data.frame(
-   mpvs_total_14_1 = c(19, 19, 19, 10),
+  mpvs_total_14_1 = c(19, 19, 19, 10),
   mpvs_item_1_14_1 = c(0, 1, 2, 3),
   mpvs_item_2_14_1 = c(-1, 2, -4, 0),
   mpvs_total_16_1 = c(19, 19, 19, 10),
@@ -2534,22 +2535,32 @@ stopifnot(
 
 test_df <- data.frame(
   PANSS1p_item2 = 1,
-  P  ANSS1n_item1 = 1,
-    PANSS1g_item1 = 1,  
-  PANSS1p.total =   1,
-  PANSS1n.total   = 1,
-  PANSS1g.tota  l = 1,
-  PANSS1.tot  al = 1,
-  PANSS2p_  item1 = 1,
-  PANSS2  p_item2 = 1,
-  PANS  S2n_item1 = 1,
-  PA  NSS2g_item1 = 1,
-    PANSS2p.total = 1,
-    PANSS2n.total = 1  ,
-  PANSS2g.total =   1,
-  PANSS2.total   = 1,
+  PANSS1n_item1 = 1,
+  PANSS1g_item1 = 1,
+  PANSS1p.total = 1,
+  PANSS1n.tota = 1,
+  PANSS1g.total = 1,
+  PANSS1.total = 1,
+  PANSS2p_item1 = 1,
+  PANSS2p_item2 = 1,
+  PANSS2n_item1 = 1,
+  PANSS2g_item1 = 1,
+  PANSS2p.total = 1,
+  PANSS2n.total = ,
+  PANSS2g.total = 1,
+  PANSS2.tota = 1,
   age = 50
 )
+
+# adsadadssdsasds
+
+
+
+
+
+
+
+
 pred <- mice::make.predictorMatrix(test_df)
 pred <- modify_pred_matrix_scales(
   pred,
@@ -2571,7 +2582,7 @@ testthat::test_that(
     items_1 <- grep("^PANSS1", colnames(pred), value = TRUE)
     items_1 <- items_1[grepl("[png]_item\\d+$", it1)]
 
-    sub <- as.matrix(pred[items_1, items_
+    sub <- as.matrix(pred[items_1, items_1])
     testthat::expect_true(all(sub[lower.tri(sub) | upper.tri(sub)] == 1))
     testthat::expect_true(all(diag(sub) == 0))
   }
@@ -2603,7 +2614,7 @@ testthat::test_that(
 
 testthat::test_that("totals are not predicted by any variable", {
   total_rows <- pred[grepl("total", rownames(pred)), ]
- testthat::expect_true(all(total_rows == 0))
+  testthat::expect_true(all(total_rows == 0))
 })
 
 
@@ -2612,7 +2623,7 @@ testthat::test_that(
   {
     total_cols <- grep("total", colnames(pred), value = TRUE)
 
- ave1_totals <- grep("^PANSS1.*total", total_cols, value = TRUE)
+    ave1_totals <- grep("^PANSS1.*total", total_cols, value = TRUE)
     wave2_totals <- grep("^PANSS2.*total", total_cols, value = TRUE)
 
     w_items <- grep("^PANSS1[png]\\d+", rownames(pred), value = TRUE)
@@ -2680,16 +2691,14 @@ modify_pred_matrix_scales <- function(
   twin1_patrn = "_A$"
 ) {
   vars <- coames(pred_matrix)
-
-  
-item_vars <- vars[grepl(item_patternvars)]
+  item_vars <- vars[grepl(item_patternvars)]
   message(glue::glue("Found `{length(item_vars)}`"))
   message(paste(item_vars, collapse = " "))
   total_vars <- vars[grepl(total_pattern, vars)]
   message(glue::glue("Found `{length(total_vars)}`"))
-  message(paste(total_vars, collapse = "))
+  message(paste(total_vars, collapse = " "))
 
-  item_vars_1 <- vars[grepl(twin1_pattern,tem_vars)]
+  item_vars_1 <- vars[grepl(twin1_pattern, tem_vars)]
   message(glue::glue("Found `{length(item_vars_1)}`"))
   total_vars_1 <- vars[grepl(twin1_pattern, total_vars)]
   message(glue::glue("Found `{length(total_vars_1)}`"))
@@ -2697,7 +2706,7 @@ item_vars <- vars[grepl(item_patternvars)]
 
   non_scale_vars <- setdiff(vars, c(item_vstal_s))
 
-  non_scale_vars_items <- non_scale_vars[grepl(patter= "item", non_scale_vars)]
+  non_scale_vars_items <- non_scale_vars[grepl(pattern = "item", non_scale_vars)]
   non_scale_vars_totals <- non_scale_vars[grepl(pattern = "total", non_scale_vars)]
   non_scale_vars_other <- setdiff(
     non_scale_vars,
@@ -2731,13 +2740,13 @@ item_vars <- vars[grepl(item_patternvars)]
   pred_matrix[, item_vars] <- 0
 
   # Items impute given the sle items
-  pred_matrix[item_vars,tem_vars] <- 1
+  pred_matrix[item_vars, tem_vars] <- 1
 
   # Items can not be predicted by other scales' items
   pred_matr[item_vars, non_scale_vars_items] <- 0
 
   # Do not use their own total
-  pred_matrix[item_vars, total_vars]- 0
+  pred_matrix[item_vars, total_vars] - 0
 
   #######################################################
   # 3. Tota are passive:
@@ -2775,9 +2784,9 @@ item_vars <- vars[grepl(item_patternvars)]
 }
 
 test_df <- data.frame(
-  PANSS1p_item1 1,
+  PANSS1p_item1 = 1,
   PANSS1p_item2 = 1,
- ANSS1n_item1 = 1,
+  PANSS1n_item1 = 1,
   PANSS1g_item1 = 1,
   PANSS1p.total = 1,
   PANSS1n.total = 1,
@@ -2866,7 +2875,8 @@ testthat::test_that(
     # Age predicted by all totals
     testthat::expect_true(
       all(pred["age", total_cols] == 1)
-  
+    )
+
     # Wave 1 items predicted by Wave 2 totals
     testthat::expect_true(
       all(pred[wave1_items, wave2_ls] == 1)
@@ -2879,12 +2889,12 @@ testthat::test_that(
 
     # Wave 2 items predicted by Wave 1 totals
     testthat::expect_true(
-      all(pred[wave2_items, wave1_totals] )
+      all(pred[wave2_items, wave1_total])
     )
 
     # Wave 2 items NOT predicted by Wave 2 totals
     testthat::expect_true(
-      all(pred[wave2_items, wave2_totals] )
+      all(pred[wave2_items, wave2_total])
     )
   }
 )
@@ -2899,10 +2909,13 @@ testthat::test_that("items can be predicted by other wave totals", {
   )
 
   testthat::expect_true(
-    all(pred[
-      grepl("^PANSS2", rownames(pred)) &
-        grepl("[png]\\d+", rownames(pred)),     grepl("^PANSS1.*total", colnames(pred))
-    ] == 1)
+    all(
+      pred[
+        grepl("^PANSS2", rownames(pred)) &
+          grepl("[png]\\d+", rownames(pred)) &
+          grepl("^PANSS1.*total", colnames(pred))
+      ] == 1
+    )
   )
 })
 
@@ -2923,12 +2936,11 @@ modify_pred_matrix_scales_AB <- function(
   twin1_pattern = "_A$",
   twin2_pattern = "_B$"
 ) {
-  vars <- colnamesred_matrix)
+  vars <- colnames(pred_matrix)
 
-  em_vars <- vars[epl(item_pattern, vars)]
-  ssage(glue::glue("Found im_vars: `{length(item
-_vars)}`"))
-  message(paste(item_var collapse = " "))
+  item_vars <- vars[epl(item_pattern, vars)]
+  ssage(glue::glue("Found im_vars: `{length(item_vars)}`"))
+  message(paste(item_var, collapse = " "))
   total_vars <- vars[grepl(total_pattern, vars)]
   message(glue::glue("Found total_vars: `{length(total_vars)}`"))
   message(paste(total_vars, collapse = " "))
@@ -2956,7 +2968,8 @@ _vars)}`"))
   )
 
   non_scale_vars_1 <- non_scale_vars[grepl(twin1_pattern, non_scale_vars)]
-  non_scale_vars_2 <- non_scale_vars[grepl(twin2_pattern, non_scale_vars)]  non_scale_vars_items_1 <- non_scale_vars_items[
+  non_scale_vars_2 <- non_scale_vars[grepl(twin2_pattern, non_scale_vars)]
+  non_scale_vars_items_1 <- non_scale_vars_items[
     grepl(pattern = twin1_pattern, non_scale_vars_items)
   ]
   non_scale_vars_items_2 <- non_scale_va_items[
@@ -2974,14 +2987,14 @@ _vars)}`"))
   ]
   non_scale_vars_other_2 <- non_scale_vars_other[
     grepl(pattern = twin2_pattern, x = non_scale_vars_other)
-    ]
+  ]
 
 
   # See Van  B uuren p.181 #
 
   ##################################################################
   # 1.
-   #  Impute variable s  that are NOT items or totsromy scale given
+  #  Impute variable s  that are NOT items or totsromy scale given
   # totals d other variables (not items!)
   ####################################################################
 
@@ -3074,14 +3087,14 @@ _vars)}`"))
   pred_matrix
 }
 
-test_df- data.frame(
+test_df < data.frame(
   PANSS1p_item1_A = 1,
   PANSS1p_item2_A = 1,
   PANSS1n_item1_A = 1,
   PANSS1g_item1_A = 1,
   PANSS1p.total_A = 1,
   PANSS1n.tot_A = 1,
-  PANSS1g.total_A 1,
+  PANSS1g.total_A = 1,
   PANSS1.total_A = 1,
   PANSS2p_item1_A = 1,
   PANSS2p_item2_A = 1,
@@ -3145,47 +3158,45 @@ testthat::test_that(
   }
 )
 
-testthat::test_tha e-wave totals do not predict items",
-  {
-    # Wave 1
-    teat::expect_true(
-      all(
-        pred[
-          grepl("^(PANSS1[png].*)_A$", rownames(pred)),
-          grepl("^PANSS1.*total_A", colnames(pred))
-        ] == 0
-      )
+testthat::test_that("wave totals do not predict items", {
+  # Wave 1
+  teat::expect_true(
+    all(
+      pred[
+        grepl("^(PANSS1[png].*)_A$", rownames(pred)),
+        grepl("^PANSS1.*total_A", colnames(pred))
+      ] == 0
     )
-    # Wave 2
-    testthat::expect_true(
-      all(
-        pred[
-          grepl("^(PANSS2[png].*)_A$", rownames(pred)),
-          grepl("^PANSS2.*total_A", colnames(pred))
-        ] == 0
-      )
+  )
+  # Wave 2
+  testthat::expect_true(
+    all(
+      pred[
+        grepl("^(PANSS2[png].*)_A$", rownames(pred)),
+        grepl("^PANSS2.*total_A", colnames(pred))
+      ] == 0
     )
+  )
 
-    # Wave 1
-    testthat::expect_true(
-      all(
-        pred[
-          grepl("^(PANSS1[png].*)_B$", rownames(pred)),
-          grepl("^PANSS1.*total_B", colnames(pred))
-        ] == 0
-      )
+  # Wave 1
+  testthat::expect_true(
+    all(
+      pred[
+        grepl("^(PANSS1[png].*)_B$", rownames(pred)),
+        grepl("^PANSS1.*total_B", colnames(pred))
+      ] == 0
     )
-    # Wave 2
-    that::expect_true(
-      all(
-        pred[
-          grepl("^(PANSS2[png].*)_B$", rownames(pred)),
-          grepl("^PANSS2.*total_B", colnames(pred))
-        ] == 0
-      )
+  )
+  # Wave 2
+  that::expect_true(
+    all(
+      pred[
+        grepl("^(PANSS2[png].*)_B$", rownames(pred)),
+        grepl("^PANSS2.*total_B", colnames(pred))
+      ] == 0
     )
-  }
-)
+  )
+})
 
 testthat::test_that("totals are not predicted by any variable", {
   total_rows <- pred[grepl("total", rownames(pred)), ]
@@ -3203,18 +3214,18 @@ testthat::test_that(
     wave2_totals <- grep("^PANSS2.*total", total_cols, value = TRUE)
 
     wave1_items <- grep("^PANSS1[png]\\d+", rownames(pred), value = TRUE)
-    wave2_it<- grep("^PANSS2[png]\\d+", rownames(pred), value = TRUE)
+    wave2_items <- grep("^PANSS2[png]\\d+", rownames(pred), value = TRUE)
 
     # Age predicted by all totals
     testthat::expect_true(
-      all(pred["age total_cols] == 1)
+      all(pred["age total_cols"] == 1)
     )
     testthat::expect_true(
       all(pred["age_B", total_cols] == 1)
     )
 
     # Wave 1 items predicted by Wave 2 totals
-  stthat::expect_true(
+    stthat::expect_true(
       all(pred[wave1_items, wave2_totals] == 1)
     )
 
@@ -3230,7 +3241,7 @@ testthat::test_that(
 
     # Wave 2 items NOT predicted by Wave 2 totals
     testthat::expect_true(
-      all(pred[wave2_items, wave2_totals 0)
+      all(pred[wave2_items, wave2_totals] == 0)
     )
   }
 )
@@ -3238,7 +3249,7 @@ testthat::test_that(
 testthat::test_that("items can be predicted by other wave totals", {
   testthat::expect_true(
     all(pred[
-   repl("^PANSS1", rownames(pred)) &
+      repl("^PANSS1", rownames(pred)) &
         grepl("[png]\\d+", rownames(pred)),
       grepl("^PANSS2.*total", colnames(pred))
     ] == 1)
@@ -3253,8 +3264,16 @@ testthat::test_that("items can be predicted by other wave totals", {
   )
 })
 
-testthat::test_that("predictor matrix is valid binary matrix",   testthat::expect_true(all(pred %in% c(0, 1)))
-})
+testthat::test_that(
+  "predictor matrix is valid binary matrix",
+  {
+    testthat::expect_true(
+      all(
+        pred %in% c(0, 1)
+      )
+    )
+  }
+)
 
 rm(test_df)
 rm(pred)
