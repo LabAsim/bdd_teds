@@ -69,7 +69,6 @@ modindices(fit_fiml_scaled_32_without_covid, sort = T)
 resid(fit_fiml_scaled_32_without_covid, type = "cor.bollen")
 
 
-
 fit_fiml_scaled_32_without_covid_residuals <- round(
   change_df_labels(
     df = extract_cov_residuals(
@@ -124,14 +123,15 @@ fit_fiml_scaled_32_without_covid_modified <- sem(
   model = model_scaled_32_without_covid_modified,
   data = df_essential_vars,
   cluster = "fam_id",
-  missing = "fiml"
+  missing = "fiml",
+  estimator = "MLR"
 )
 fit_fiml_scaled_32_without_covid_modified_sumary <- summary(
   fit_fiml_scaled_32_without_covid_modified,
   standardized = T,
   fit.measures = TRUE
 )
-
+fit_fiml_scaled_32_without_covid_modified_sumary
 
 parameters_fit_fiml_without_covid_modified_phenotypic <- modify_parameter_estimates(
   df = parameterestimates(
@@ -152,12 +152,10 @@ parameters_fit_fiml_without_covid_phenotypic_modified_standardized <- modify_par
 )
 
 
-
 resid(fit_fiml_scaled_32_without_covid_modified, type = "cor.bollen")
 # lavResiduals(fit_fiml_scaled_32_without_covid_modified)
 # residuals(fit_fiml_scaled_32_without_covid_modified, type = "standardized")
 # residuals(fit_fiml_scaled_32_without_covid_modified, type = "normalized")
-
 
 
 fit_fiml_scaled_32_without_covid_modified_residuals <- round(
@@ -172,7 +170,6 @@ fit_fiml_scaled_32_without_covid_modified_residuals <- round(
   ),
   digits = 3
 )
-
 
 
 color_corr_residuals(
@@ -229,7 +226,6 @@ fit_plot_scaled_32_without_covid_modified_standardized_lavaanplot
 
 
 source("dags\\dag_hyp1.R")
-
 
 
 # The rows in the analysis above are the following;
@@ -335,9 +331,12 @@ summary(fit_ml_scaled_32_without_covid)
 #   }
 #
 #   # Do not use semTools, it's deprecated
-#   library(lavaan.mi)
+# library(lavaan.mi)
 #
-#   fit_mi <- sem.mi(model = model_scaled_32_without_covid, data = imp_data_derived)
-#   summary(fit_mi)
-#   parameterEstimates.mi(fit_mi)
+# fit_mi <- sem.mi(
+#   model = model_scaled_32_without_covid_modified, data = long_list,
+#   cluster = "fam_id"
+# )
+# summary(fit_mi)
+# parameterEstimates.mi(fit_mi)
 # }
