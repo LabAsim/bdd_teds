@@ -16,39 +16,101 @@ library(gtsummary)
 library(tidyverse)
 library(lavaan)
 source("constants.R")
+vars <- c(
+  "mpvs_total_12_1",
+  "mpvs_total_child_14_1",
+  "mpvs_total_16_1",
+  "mpvs_total_phase_2_21_1",
+  "dcq_total_26_1"
+)
+
+needed <- df_essential_vars %>% select(
+  all_of(vars)
+  # all_of(
+  #   c(
+  #     "dcq_total_26_1",
+  #     colnames(df_1)[grepl(pattern = "mpvs_total", x = colnames(df_1))]
+  #   )
+  # )
+)
+
 corr_mat <- cor(
-  df_essential_vars %>% select(
-    all_of(
-      c(
-        "dcq_total_26_1",
-        colnames(df_1)[grepl(pattern = "mpvs_total", x = colnames(df_1))]
-      )
-    )
-  ),
+  needed,
   use = "pairwise.complete.obs",
   method = "spearman"
 )
 
-corr_mat_mpvs_dcq <- cor(
-  df_essential_vars %>% select(
-    all_of(
-      c(
-        "mpvs_total_12_1", "mpvs_total_child_14_1",
-        "mpvs_total_16_1", "mpvs_total_phase_2_21_1",
-        "dcq_total_26_1"
-      )
-    )
-  ),
-  use = "pairwise.complete.obs"
+
+# P-values
+p_mat <- matrix(
+  NA,
+  nrow = ncol(needed),
+  ncol = ncol(needed),
+  dimnames = list(vars, vars)
 )
 
-# We need only two digits for the publication
-corr_mat_mpvs_dcq <- round(corr_mat_mpvs_dcq, digits = 2)
 
-# We don't need the upper part of the matrix
-corr_mat_mpvs_dcq[upper.tri(corr_mat_mpvs_dcq)] <- ""
+for (i in seq_along(vars)) {
+  for (j in seq_along(vars)) {
+    p_mat[i, j] <- cor.test(
+      needed[[i]],
+      needed[[j]],
+      method = "spearman",
+      exact = FALSE
+    )$p.value
+  }
+}
 
-table_corr_mat_mpvs_dcq <- corr_mat_mpvs_dcq %>%
+# extract raw p-values
+pvals <- p_mat[lower.tri(p_mat)]
+
+pvals_adj <- p.adjust(
+  pvals,
+  method = "BH"
+)
+
+# Recreate the matrix with the adjusted p-values
+p_mat_adj <- p_mat
+p_mat_adj[lower.tri(p_mat)] <- pvals_adj
+p_mat_adj[upper.tri(p_mat_adj)] <- NA
+diag(p_mat_adj) <- NA
+
+# The correlation matrix to be displayed
+# Converted to characters
+corr_display <- matrix(
+  sprintf("%.2f", corr_mat),
+  nrow = nrow(corr_mat),
+  dimnames = dimnames(corr_mat)
+)
+# Add significance
+# corr_display[pvals_adj < .05] <- paste0(corr_display[pvals_adj < .05], "*")
+# corr_display[pvals_adj < .01] <- paste0(sprintf("%.2f", corr_mat[pvals_adj < .01]), "**")
+# corr_display[pvals_adj < .001] <- paste0(sprintf("%.2f", corr_mat[pvals_adj < .001]), "***")
+
+corr_display[upper.tri(corr_display)] <- ""
+diag(corr_display) <- ""
+
+#
+# corr_mat_mpvs_dcq <- cor(
+#   df_essential_vars %>% select(
+#     all_of(
+#       c(
+#         "mpvs_total_12_1", "mpvs_total_child_14_1",
+#         "mpvs_total_16_1", "mpvs_total_phase_2_21_1",
+#         "dcq_total_26_1"
+#       )
+#     )
+#   ),
+#   use = "pairwise.complete.obs"
+# )
+#
+# # We need only two digits for the publication
+# corr_mat_mpvs_dcq <- round(corr_mat_mpvs_dcq, digits = 2)
+#
+# # We don't need the upper part of the matrix
+# corr_mat_mpvs_dcq[upper.tri(corr_mat_mpvs_dcq)] <- ""
+
+table_corr_mat_mpvs_dcq <- corr_display %>%
   as.data.frame() %>%
   gt::gt(
     # https://stackoverflow.com/questions/75260770/how-to-add-the-row-names-to-my-gt-table
@@ -86,9 +148,42 @@ table_corr_mat_mpvs_dcq <- corr_mat_mpvs_dcq %>%
     subtitle = ""
   ) %>%
   gt::tab_footnote(
-    footnote = "DCQ: Dysmorphic concerns questionnaire, MPVS: Multidimensional peer victimization scale, y: year(s)",
+    footnote = paste(
+      "DCQ: Dysmorphic concerns questionnaire;",
+      "MPVS: Multidimensional peer victimization scale;",
+      "y: year(s).",
+      "Bold coefficients indicate p-value <0.05",
+      # "* p < .05, ** p < .01, *** p < .001",
+      "(Adjusted for multiple testing using Benjamini & Hochberg procedure)."
+    ),
     locations = NULL
   )
+
+
+# Bold cells for p-value <0.05
+sig_idx <- which(
+  p_mat_adj < .05 &
+    lower.tri(p_mat_adj),
+  arr.ind = TRUE
+)
+
+for (k in seq_len(nrow(sig_idx))) {
+  row_name <- rownames(p_mat_adj)[sig_idx[k, "row"]]
+  col_name <- colnames(p_mat_adj)[sig_idx[k, "col"]]
+
+  table_corr_mat_mpvs_dcq <- table_corr_mat_mpvs_dcq %>%
+    gt::tab_style(
+      style = gt::cell_text(weight = "bold"),
+      locations = gt::cells_body(
+        rows = row_name,
+        columns = col_name
+      )
+    )
+}
+
+
+
+
 
 summary <- gtsummary::tbl_summary(
   data = df_essential_vars %>% select(
