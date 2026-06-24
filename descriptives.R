@@ -26,12 +26,6 @@ vars <- c(
 
 needed <- df_essential_vars %>% select(
   all_of(vars)
-  # all_of(
-  #   c(
-  #     "dcq_total_26_1",
-  #     colnames(df_1)[grepl(pattern = "mpvs_total", x = colnames(df_1))]
-  #   )
-  # )
 )
 
 corr_mat <- cor(
@@ -182,9 +176,6 @@ for (k in seq_len(nrow(sig_idx))) {
 }
 
 
-
-
-
 summary <- gtsummary::tbl_summary(
   data = df_essential_vars %>% select(
     colnames(df_1)[grepl(pattern = "mpvs_total", x = colnames(df_1))],
@@ -293,8 +284,6 @@ summary_by_cohort <- gtsummary::tbl_summary(
   )
 
 
-
-
 summary_all <- df_essential_vars %>%
   select(
     c(
@@ -386,6 +375,7 @@ summary_all <- df_essential_vars %>%
     pvalue_fun = label_style_pvalue(digits = 3)
   ) %>%
   # This functions converts gtsummary to gt
+  # devtools::install_github("MSKCC-Epi-Bio/bstfun")
   bstfun::bold_italicize_group_labels(bold = T) %>%
   gt::tab_header(
     title = "",
@@ -628,7 +618,6 @@ summary_all2 <- df_essential_vars %>%
 summary_all2
 
 
-
 df_essential_vars_long <- pivot_longer(
   df_essential_vars,
   colnames(df_1)[grepl(pattern = "mpvs_total", x = colnames(df_1))],
@@ -808,7 +797,6 @@ df_1_compl_cases <- df_1_compl_cases[
 ]
 
 
-
 df_all_diffs_long <- pivot_longer(
   data = df_all_diffs %>% select(
     all_of(
@@ -981,55 +969,59 @@ vars <- df_essential_vars[, c(
   "age_phase2_child_21_1",
   "age_26_1"
 )]
-#
-# desc <- psych::describe(vars)
-#
-# desc[, c("mean", "sd", "skew", "kurtosis")]
-#
-# desc$skew_z <- desc$skew / sqrt(6 / nrow(vars))
-# desc$kurt_z <- desc$kurtosis / sqrt(24 / nrow(vars))
-# desc[, c("mean", "sd", "skew", "kurtosis", "skew_z", "kurt_z")]
-#
-#
-# for (v in 1:length(vars)) {
-#   print(
-#     ggplot(vars, aes(x = .data[[colnames(vars)[v]]])) +
-#       geom_histogram(aes(y = after_stat(density)),
-#         bins = 50,
-#         fill = "lightblue",
-#         color = "black"
-#       ) +
-#       geom_density(color = "red", linewidth = 1) +
-#       ggtitle(paste("Histogram + Density:", colnames(vars)[v])) +
-#       theme_minimal()
-#   )
-# }
-
-library(tidyr)
-library(ggplot2)
-
-
 
 data_long <- vars |>
-  pivot_longer(
+  tidyr::pivot_longer(
     cols = everything(),
     names_to = "variable",
     values_to = "value"
   )
 
+
+facet_titles <- c(
+  age_child_12_1 = "Age 12 years",
+  age_child_14_1 = "Age 14 years",
+  age_child_web_16_1 = "Age 16 years",
+  age_phase2_child_21_1 = "Age 21 years",
+  age_26_1 = "Age 26 years",
+  mpvs_total_12_1_scaled_32 = "Total MPVS score at 12 years",
+  mpvs_total_child_14_1_scaled_32 = "Total MPVS score at 14 years",
+  mpvs_total_16_1_scaled_32 = "Total MPVS score at 16 years",
+  mpvs_total_phase_2_21_1_scaled_32 = "Total MPVS score at 21 years",
+  dcq_total_26_1 = "Total DCQ score"
+)
+
 uni_normal_facet <- ggplot(data_long, aes(x = value)) +
-  geom_histogram(aes(y = after_stat(density)),
+  geom_histogram(
+    aes(y = after_stat(density)),
     bins = 50,
     fill = "lightblue",
     color = "black"
   ) +
   geom_density(color = "red", linewidth = 1) +
-  facet_wrap(~variable, scales = "free") +
+  facet_wrap(
+    ~variable,
+    scales = "free",
+    labeller = as_labeller(facet_titles)
+  ) +
   theme_minimal() +
   labs(
     x = "Value",
     y = "Density",
-    title = "Univariate Distribution of Study Variables"
+    title = "Univariate Distribution of Study Variables \n",
+    caption = "Note: MPVS scores were scaled to a maximum of 32 points."
+  ) +
+  theme(
+    plot.title = element_text(
+      hjust = 0.5,
+      size = 20,
+      face = "bold"
+    ),
+    plot.caption = element_text(
+      hjust = 0,
+      size = 12,
+      face = "italic"
+    )
   )
 
 
