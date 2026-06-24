@@ -36,10 +36,19 @@ fill_single_var_twin_from_cotwin2 <- function(df, var) {
         twin_df[2, var] <- twin_df[1, var]
       }
 
-      df[getElement(df, "fam_id") == f_id & getElement(df, "twin_id") == twin_df[1, "twin_id"], var] <- twin_df[1, var]
-      df[getElement(df, "fam_id") == f_id & getElement(df, "twin_id") == twin_df[2, "twin_id"], var] <- twin_df[2, var]
+      df[
+        getElement(df, "fam_id") == f_id &
+          getElement(df, "twin_id") == twin_df[1, "twin_id"],
+        var
+      ] <- twin_df[1, var]
+      df[
+        getElement(df, "fam_id") == f_id &
+          getElement(df, "twin_id") == twin_df[2, "twin_id"],
+        var
+      ] <- twin_df[2, var]
       calculate <- rbind(
-        calculate, data.frame(f_id = f_id)
+        calculate,
+        data.frame(f_id = f_id)
       )
     }
   }
@@ -101,7 +110,8 @@ fill_single_var_twin_from_cotwin <- function(df, var) {
 }
 
 s <- fill_single_var_twin_from_cotwin(
-  df = test, var = "test_var"
+  df = test,
+  var = "test_var"
 )
 
 stopifnot(
@@ -253,7 +263,16 @@ fill_age_cov2 <- function(df, order = "ascending") {
     extracted <- extract_unique_nums_probs(df = df, var = "diffcov21")
     probs <- extracted$probs
     sorted_nums <- extracted$sorted_nums
-    df[is.na(df[, c("age_cov2_child_21_1")]), "age_cov2_child_21_1"] <- df[is.na(df[, c("age_cov2_child_21_1")]), "age_cov1_child_21_1"] + resample(x = sorted_nums, prob = probs, replace = T, size = dim(df[is.na(df[, c("age_cov2_child_21_1")]), ])[1])
+    df[is.na(df[, c("age_cov2_child_21_1")]), "age_cov2_child_21_1"] <- df[
+      is.na(df[, c("age_cov2_child_21_1")]),
+      "age_cov1_child_21_1"
+    ] +
+      resample(
+        x = sorted_nums,
+        prob = probs,
+        replace = T,
+        size = dim(df[is.na(df[, c("age_cov2_child_21_1")]), ])[1]
+      )
     return(df)
   }
   #######################
@@ -267,7 +286,16 @@ fill_age_cov2 <- function(df, order = "ascending") {
   extracted <- extract_unique_nums_probs(df = df, var = "diffcov12")
   probs <- extracted$probs
   sorted_nums <- extracted$sorted_nums
-  df[is.na(df[, c("age_cov1_child_21_1")]), "age_cov1_child_21_1"] <- df[is.na(df[, c("age_cov1_child_21_1")]), "age_cov2_child_21_1"] + resample(x = sorted_nums, prob = probs, replace = T, size = dim(df[is.na(df[, c("age_cov1_child_21_1")]), ])[1])
+  df[is.na(df[, c("age_cov1_child_21_1")]), "age_cov1_child_21_1"] <- df[
+    is.na(df[, c("age_cov1_child_21_1")]),
+    "age_cov2_child_21_1"
+  ] +
+    resample(
+      x = sorted_nums,
+      prob = probs,
+      replace = T,
+      size = dim(df[is.na(df[, c("age_cov1_child_21_1")]), ])[1]
+    )
   return(df)
 }
 
@@ -287,7 +315,16 @@ fill_age_cov3 <- function(df, order = "ascending") {
     extracted <- extract_unique_nums_probs(df = df, var = "diffcov32")
     probs <- extracted$probs
     sorted_nums <- extracted$sorted_nums
-    df[is.na(df[, c("age_cov3_child_21_1")]), "age_cov3_child_21_1"] <- df[is.na(df[, c("age_cov3_child_21_1")]), "age_cov2_child_21_1"] + resample(x = sorted_nums, prob = probs, replace = T, size = dim(df[is.na(df[, c("age_cov3_child_21_1")]), ])[1])
+    df[is.na(df[, c("age_cov3_child_21_1")]), "age_cov3_child_21_1"] <- df[
+      is.na(df[, c("age_cov3_child_21_1")]),
+      "age_cov2_child_21_1"
+    ] +
+      resample(
+        x = sorted_nums,
+        prob = probs,
+        replace = T,
+        size = dim(df[is.na(df[, c("age_cov3_child_21_1")]), ])[1]
+      )
     return(df)
   }
   #######################
@@ -301,7 +338,16 @@ fill_age_cov3 <- function(df, order = "ascending") {
   extracted <- extract_unique_nums_probs(df = df, var = "diffcov23")
   probs <- extracted$probs
   sorted_nums <- extracted$sorted_nums
-  df[is.na(df[, c("age_cov2_child_21_1")]), "age_cov2_child_21_1"] <- df[is.na(df[, c("age_cov2_child_21_1")]), "age_cov3_child_21_1"] + resample(x = sorted_nums, prob = probs, replace = T, size = dim(df[is.na(df[, c("age_cov2_child_21_1")]), ])[1])
+  df[is.na(df[, c("age_cov2_child_21_1")]), "age_cov2_child_21_1"] <- df[
+    is.na(df[, c("age_cov2_child_21_1")]),
+    "age_cov3_child_21_1"
+  ] +
+    resample(
+      x = sorted_nums,
+      prob = probs,
+      replace = T,
+      size = dim(df[is.na(df[, c("age_cov2_child_21_1")]), ])[1]
+    )
   return(df)
 }
 
@@ -321,7 +367,16 @@ fill_age_cov4 <- function(df, order = "ascending") {
     extracted <- extract_unique_nums_probs(df = df, var = "diffcov43")
     probs <- extracted$probs
     sorted_nums <- extracted$sorted_nums
-    df[is.na(df[, c("age_cov4_child_21_1")]), "age_cov4_child_21_1"] <- df[is.na(df[, c("age_cov4_child_21_1")]), "age_cov3_child_21_1"] + resample(x = sorted_nums, prob = probs, replace = T, size = dim(df[is.na(df[, c("age_cov4_child_21_1")]), ])[1])
+    df[is.na(df[, c("age_cov4_child_21_1")]), "age_cov4_child_21_1"] <- df[
+      is.na(df[, c("age_cov4_child_21_1")]),
+      "age_cov3_child_21_1"
+    ] +
+      resample(
+        x = sorted_nums,
+        prob = probs,
+        replace = T,
+        size = dim(df[is.na(df[, c("age_cov4_child_21_1")]), ])[1]
+      )
     return(df)
   }
   #######################
@@ -335,7 +390,16 @@ fill_age_cov4 <- function(df, order = "ascending") {
   extracted <- extract_unique_nums_probs(df = df, var = "diffcov34")
   probs <- extracted$probs
   sorted_nums <- extracted$sorted_nums
-  df[is.na(df[, c("age_cov3_child_21_1")]), "age_cov3_child_21_1"] <- df[is.na(df[, c("age_cov3_child_21_1")]), "age_cov4_child_21_1"] + resample(x = sorted_nums, prob = probs, replace = T, size = dim(df[is.na(df[, c("age_cov3_child_21_1")]), ])[1])
+  df[is.na(df[, c("age_cov3_child_21_1")]), "age_cov3_child_21_1"] <- df[
+    is.na(df[, c("age_cov3_child_21_1")]),
+    "age_cov4_child_21_1"
+  ] +
+    resample(
+      x = sorted_nums,
+      prob = probs,
+      replace = T,
+      size = dim(df[is.na(df[, c("age_cov3_child_21_1")]), ])[1]
+    )
   return(df)
 }
 
@@ -351,44 +415,83 @@ create_test_df <- function() {
 
 testit <- create_test_df()
 testit <- fill_age_cov2(df = testit)
-stopifnot(all.equal(testit$age_cov1_child_21_1, c(NA, 18.5, 19.0, NA, NA, NA, NA)))
-stopifnot(all.equal(testit$age_cov2_child_21_1, c(20, 20.5, 21, 20.5, 23, NA, NA)))
+stopifnot(all.equal(
+  testit$age_cov1_child_21_1,
+  c(NA, 18.5, 19.0, NA, NA, NA, NA)
+))
+stopifnot(all.equal(
+  testit$age_cov2_child_21_1,
+  c(20, 20.5, 21, 20.5, 23, NA, NA)
+))
 stopifnot(all.equal(testit$age_cov3_child_21_1, c(21, 21, NA, 21, NA, 23, NA)))
 stopifnot(all.equal(testit$age_cov4_child_21_1, c(22, NA, 22, NA, 24, 24, 25)))
 
 
 testit <- create_test_df()
 testit <- fill_age_cov2(df = testit, order = "desc")
-stopifnot(all.equal(testit$age_cov1_child_21_1, c(18, 18.5, 19.0, 18.5, 21, NA, NA)))
-stopifnot(all.equal(testit$age_cov2_child_21_1, c(20, 20.5, NA, 20.5, 23, NA, NA)))
+stopifnot(all.equal(
+  testit$age_cov1_child_21_1,
+  c(18, 18.5, 19.0, 18.5, 21, NA, NA)
+))
+stopifnot(all.equal(
+  testit$age_cov2_child_21_1,
+  c(20, 20.5, NA, 20.5, 23, NA, NA)
+))
 stopifnot(all.equal(testit$age_cov3_child_21_1, c(21, 21, NA, 21, NA, 23, NA)))
 stopifnot(all.equal(testit$age_cov4_child_21_1, c(22, NA, 22, NA, 24, 24, 25)))
 
 testit <- create_test_df()
 testit <- fill_age_cov3(df = testit)
-stopifnot(all.equal(testit$age_cov1_child_21_1, c(NA, 18.5, 19, NA, NA, NA, NA)))
-stopifnot(all.equal(testit$age_cov2_child_21_1, c(20, 20.5, NA, 20.5, 23, NA, NA)))
-stopifnot(all.equal(testit$age_cov3_child_21_1, c(21, 21, NA, 21, 23.5, 23, NA)))
+stopifnot(all.equal(
+  testit$age_cov1_child_21_1,
+  c(NA, 18.5, 19, NA, NA, NA, NA)
+))
+stopifnot(all.equal(
+  testit$age_cov2_child_21_1,
+  c(20, 20.5, NA, 20.5, 23, NA, NA)
+))
+stopifnot(all.equal(
+  testit$age_cov3_child_21_1,
+  c(21, 21, NA, 21, 23.5, 23, NA)
+))
 stopifnot(all.equal(testit$age_cov4_child_21_1, c(22, NA, 22, NA, 24, 24, 25)))
 
 testit <- create_test_df()
 testit <- fill_age_cov3(df = testit, order = "desc")
-stopifnot(all.equal(testit$age_cov1_child_21_1, c(NA, 18.5, 19, NA, NA, NA, NA)))
-stopifnot(all.equal(testit$age_cov2_child_21_1, c(20, 20.5, NA, 20.5, 23, 22, NA)))
+stopifnot(all.equal(
+  testit$age_cov1_child_21_1,
+  c(NA, 18.5, 19, NA, NA, NA, NA)
+))
+stopifnot(all.equal(
+  testit$age_cov2_child_21_1,
+  c(20, 20.5, NA, 20.5, 23, 22, NA)
+))
 stopifnot(all.equal(testit$age_cov3_child_21_1, c(21, 21, NA, 21, NA, 23, NA)))
 stopifnot(all.equal(testit$age_cov4_child_21_1, c(22, NA, 22, NA, 24, 24, 25)))
 
 testit <- create_test_df()
 testit <- fill_age_cov4(df = testit)
-stopifnot(all.equal(testit$age_cov1_child_21_1, c(NA, 18.5, 19, NA, NA, NA, NA)))
-stopifnot(all.equal(testit$age_cov2_child_21_1, c(20, 20.5, NA, 20.5, 23, NA, NA)))
+stopifnot(all.equal(
+  testit$age_cov1_child_21_1,
+  c(NA, 18.5, 19, NA, NA, NA, NA)
+))
+stopifnot(all.equal(
+  testit$age_cov2_child_21_1,
+  c(20, 20.5, NA, 20.5, 23, NA, NA)
+))
 stopifnot(all.equal(testit$age_cov3_child_21_1, c(21, 21, NA, 21, NA, 23, NA)))
 stopifnot(all.equal(testit$age_cov4_child_21_1, c(22, 22, 22, 22, 24, 24, 25)))
 
 testit <- create_test_df()
 testit <- fill_age_cov4(df = testit, order = "desc")
-stopifnot(all.equal(testit$age_cov1_child_21_1, c(NA, 18.5, 19, NA, NA, NA, NA)))
-stopifnot(all.equal(testit$age_cov2_child_21_1, c(20, 20.5, NA, 20.5, 23, NA, NA)))
+stopifnot(all.equal(
+  testit$age_cov1_child_21_1,
+  c(NA, 18.5, 19, NA, NA, NA, NA)
+))
+stopifnot(all.equal(
+  testit$age_cov2_child_21_1,
+  c(20, 20.5, NA, 20.5, 23, NA, NA)
+))
 stopifnot(all.equal(testit$age_cov3_child_21_1, c(21, 21, 21, 21, 23, 23, 24)))
 stopifnot(all.equal(testit$age_cov4_child_21_1, c(22, NA, 22, NA, 24, 24, 25)))
 
@@ -409,21 +512,35 @@ fill_age_covid_21 <- function(df, order = "ascending") {
 
 testit <- create_test_df()
 testit <- fill_age_covid_21(df = testit)
-stopifnot(all.equal(testit$age_cov1_child_21_1, c(NA, 18.5, 19.0, NA, NA, NA, NA)))
-stopifnot(all.equal(testit$age_cov2_child_21_1, c(20, 20.5, 21.0, 20.5, 23, NA, NA)))
-stopifnot(all.equal(testit$age_cov3_child_21_1, c(21, 21, 22, 21, 23.5, 23, NA)))
+stopifnot(all.equal(
+  testit$age_cov1_child_21_1,
+  c(NA, 18.5, 19.0, NA, NA, NA, NA)
+))
+stopifnot(all.equal(
+  testit$age_cov2_child_21_1,
+  c(20, 20.5, 21.0, 20.5, 23, NA, NA)
+))
+stopifnot(all.equal(
+  testit$age_cov3_child_21_1,
+  c(21, 21, 22, 21, 23.5, 23, NA)
+))
 stopifnot(all.equal(testit$age_cov4_child_21_1, c(22, 22, 22, 22, 24, 24, 25)))
 
 testit <- create_test_df()
 testit <- fill_age_covid_21(df = testit, order = "descending")
-stopifnot(all.equal(testit$age_cov1_child_21_1, c(18, 18.5, 19.0, 19, 21, 20.5, 22.0)))
-stopifnot(all.equal(testit$age_cov2_child_21_1, c(20, 20.5, 20.5, 20.5, 23, 22, 23.5)))
+stopifnot(all.equal(
+  testit$age_cov1_child_21_1,
+  c(18, 18.5, 19.0, 19, 21, 20.5, 22.0)
+))
+stopifnot(all.equal(
+  testit$age_cov2_child_21_1,
+  c(20, 20.5, 20.5, 20.5, 23, 22, 23.5)
+))
 stopifnot(all.equal(testit$age_cov3_child_21_1, c(21, 21, 21, 21, 23, 23, 24)))
 stopifnot(all.equal(testit$age_cov4_child_21_1, c(22, NA, 22, NA, 24, 24, 25)))
 
 rm(list = c("testit", "create_test_df"))
 ##############################################################################
-
 
 #####################################################################
 # Some twin pairs have the same values,
@@ -455,7 +572,8 @@ drop_identical_values <- function(
   }
   dflist <- split(df, f = list(df[, c(group_var)]), drop = TRUE)
   to_return <- lapply(
-    X = dflist, FUN = function(df) {
+    X = dflist,
+    FUN = function(df) {
       # If either of the twins has NA, drop both
       if (drop_na == T) {
         if (is.na(df[1, var]) == T | is.na(df[2, var]) == T) {
@@ -520,7 +638,8 @@ stopifnot(class(testit) == "data.frame")
 stopifnot(dim(testit) == c(4, dim(test)[2]))
 stopifnot(
   all.equal(
-    testit, data.frame(
+    testit,
+    data.frame(
       fam_id = c(3, 3, 4, 4),
       test_var = c(14, NA, NA, NA)
     )
@@ -536,10 +655,11 @@ testit <- drop_identical_values(
 
 stopifnot(dim(testit) == c(4, dim(test)[2]))
 stopifnot(
-  testit == data.frame(
-    fam_id = c(1, 1, 2, 2),
-    test_var = c(12, 12, 13, 13)
-  )
+  testit ==
+    data.frame(
+      fam_id = c(1, 1, 2, 2),
+      test_var = c(12, 12, 13, 13)
+    )
 )
 
 testit <- drop_identical_values(
@@ -599,7 +719,8 @@ fix_different_twins_values <- function(
   }
   dflist <- split(df, f = list(df[, c(group_var)]), drop = TRUE)
   to_return <- lapply(
-    X = dflist, FUN = function(df) {
+    X = dflist,
+    FUN = function(df) {
       # Check for NAs
       if (is.na(df[1, var]) == T | is.na(df[2, var]) == T) {
         if (replace_na == F) {
@@ -676,7 +797,8 @@ subtract_twins_values <- function(
   # dflist <- split(df, f = list(df[,c(group_var)]), drop = TRUE)
   dflist <- split(data.table::as.data.table(df), by = group_var)
   to_return <- lapply(
-    X = seq_along(dflist), FUN = function(index) {
+    X = seq_along(dflist),
+    FUN = function(index) {
       inner_df <- dflist[[index]]
       inner_df <- as.data.frame(inner_df)
       message("\r", "Family ID:", inner_df[1, "fam_id"], appendLF = FALSE)
@@ -734,7 +856,8 @@ subtract_mz_twins_values <- function(
   dflist <- split(data.table::as.data.table(df), by = group_var)
   message(glue::glue("Column: {var}"))
   to_return <- lapply(
-    X = seq_along(dflist), FUN = function(index) {
+    X = seq_along(dflist),
+    FUN = function(index) {
       inner_df <- dflist[[index]]
       inner_df <- as.data.frame(inner_df)
       message("\r", "Family ID:", inner_df[1, group_var], appendLF = FALSE)
@@ -767,7 +890,11 @@ test <- data.frame(
   sex = c(0, 0, 1, 1, 0, 1),
   test_var = c(1:6)
 )
-test_diff <- subtract_mz_twins_values(df = test, var = "test_var", sex_var = "sex")
+test_diff <- subtract_mz_twins_values(
+  df = test,
+  var = "test_var",
+  sex_var = "sex"
+)
 stopifnot(class(test_diff) == "data.frame")
 stopifnot(dim(test_diff) == c(2, 2))
 stopifnot(test_diff$variable == c(-1, -1))
@@ -779,7 +906,11 @@ subtract_mz_twins_values_decorated <- time_and_beep(
   f = subtract_mz_twins_values
 )
 
-left_join_df_diff_twin_values <- function(left_df, right_df, join_by_var = "fam_id") {
+left_join_df_diff_twin_values <- function(
+  left_df,
+  right_df,
+  join_by_var = "fam_id"
+) {
   df <- left_join(
     x = left_df,
     y = right_df,
@@ -812,7 +943,9 @@ stopifnot(test$fam_id == c(1:3))
 
 
 left_join_multiple_df_diff_twin_values <- function(
-  left_df, right_dfs, join_by_var = "fam_id"
+  left_df,
+  right_dfs,
+  join_by_var = "fam_id"
 ) {
   stopifnot(class(right_dfs) == "list")
   if (class(right_dfs[[1]]) != "data.frame") {
@@ -901,7 +1034,8 @@ test <- data.frame(
   test_var2 = seq(from = 10, to = 20, by = 2)
 )
 test <- create_df_subtract_mz_twins_values(
-  df = test, vars = c("test_var", "test_var2")
+  df = test,
+  vars = c("test_var", "test_var2")
 )
 
 stopifnot(class(test) == "data.frame")
@@ -925,7 +1059,8 @@ test <- data.frame(
   test_var2 = seq(from = 10, to = 20, by = 2)
 )
 test <- create_df_subtract_mz_twins_values_decorated(
-  df = test, vars = c("test_var", "test_var2")
+  df = test,
+  vars = c("test_var", "test_var2")
 )
 
 stopifnot(class(test) == "data.frame")
@@ -952,8 +1087,10 @@ scale_mpvs <- function(df, from_vars, scale_size = 32) {
   to_vars <- paste0(from_vars, "_scaled")
   for (num in 1:length(from_vars)) {
     df <- create_scaled_var(
-      df = df, from_var = from_vars[num],
-      to_var = to_vars[num], scale_size = scale_size
+      df = df,
+      from_var = from_vars[num],
+      to_var = to_vars[num],
+      scale_size = scale_size
     )
   }
   return(df)
@@ -972,49 +1109,91 @@ test <- data.frame(
 )
 
 testit <- scale_mpvs(
-  df = test, scale_size = 32,
+  df = test,
+  scale_size = 32,
   from_vars = c(
-    "mpvs_total_12_1", "mpvs_total_14_1", "mpvs_total_16_1",
-    "mpvs_total_phase_2_21_1", "mpvs_total_cov1_21_1",
-    "mpvs_total_cov2_21_1", "mpvs_total_cov3_21_1", "mpvs_total_cov4_21_1"
+    "mpvs_total_12_1",
+    "mpvs_total_14_1",
+    "mpvs_total_16_1",
+    "mpvs_total_phase_2_21_1",
+    "mpvs_total_cov1_21_1",
+    "mpvs_total_cov2_21_1",
+    "mpvs_total_cov3_21_1",
+    "mpvs_total_cov4_21_1"
   )
 )
 stopifnot(testit$mpvs_total_12_1_scaled == test$mpvs_total_12_1 / 32)
 stopifnot(testit$mpvs_total_14_1_scaled == test$mpvs_total_14_1 / 32)
 stopifnot(testit$mpvs_total_16_1_scaled == test$mpvs_total_16_1 / 12)
-stopifnot(testit$mpvs_total_phase_2_21_1_scaled == test$mpvs_total_phase_2_21_1 / 32)
+stopifnot(
+  testit$mpvs_total_phase_2_21_1_scaled == test$mpvs_total_phase_2_21_1 / 32
+)
 stopifnot(testit$mpvs_total_cov1_21_1_scaled == test$mpvs_total_cov1_21_1 / 24)
 stopifnot(testit$mpvs_total_cov2_21_1_scaled == test$mpvs_total_cov2_21_1 / 24)
 stopifnot(testit$mpvs_total_cov3_21_1_scaled == test$mpvs_total_cov3_21_1 / 24)
 stopifnot(testit$mpvs_total_cov4_21_1_scaled == test$mpvs_total_cov4_21_1 / 24)
 
 scale_size <- 32
-stopifnot(testit$mpvs_total_12_1_scaled_32 == test$mpvs_total_12_1_scaled * scale_size)
-stopifnot(testit$mpvs_total_14_1_scaled_32 == test$mpvs_total_14_1_scaled * scale_size)
-stopifnot(testit$mpvs_total_16_1_scaled_32 == test$mpvs_total_16_1_scaled * scale_size)
-stopifnot(testit$mpvs_total_phase_2_21_1_scaled_32 == test$mpvs_total_phase_2_21_1_scaled * scale_size)
-stopifnot(testit$mpvs_total_cov1_21_1_scaled_32 == test$mpvs_total_cov1_21_1_scaled * scale_size)
-stopifnot(testit$mpvs_total_cov2_21_1_scaled_32 == test$mpvs_total_cov2_21_1_scaled * scale_size)
-stopifnot(testit$mpvs_total_cov3_21_1_scaled_32 == test$mpvs_total_cov3_21_1_scaled * scale_size)
-stopifnot(testit$mpvs_total_cov4_21_1_scaled_32 == test$mpvs_total_cov4_21_1_scaled * scale_size)
+stopifnot(
+  testit$mpvs_total_12_1_scaled_32 == test$mpvs_total_12_1_scaled * scale_size
+)
+stopifnot(
+  testit$mpvs_total_14_1_scaled_32 == test$mpvs_total_14_1_scaled * scale_size
+)
+stopifnot(
+  testit$mpvs_total_16_1_scaled_32 == test$mpvs_total_16_1_scaled * scale_size
+)
+stopifnot(
+  testit$mpvs_total_phase_2_21_1_scaled_32 ==
+    test$mpvs_total_phase_2_21_1_scaled * scale_size
+)
+stopifnot(
+  testit$mpvs_total_cov1_21_1_scaled_32 ==
+    test$mpvs_total_cov1_21_1_scaled * scale_size
+)
+stopifnot(
+  testit$mpvs_total_cov2_21_1_scaled_32 ==
+    test$mpvs_total_cov2_21_1_scaled * scale_size
+)
+stopifnot(
+  testit$mpvs_total_cov3_21_1_scaled_32 ==
+    test$mpvs_total_cov3_21_1_scaled * scale_size
+)
+stopifnot(
+  testit$mpvs_total_cov4_21_1_scaled_32 ==
+    test$mpvs_total_cov4_21_1_scaled * scale_size
+)
 stopifnot(dim(testit) == c(1, 24))
 stopifnot(
   c(
-    "mpvs_total_12_1_scaled", "mpvs_total_14_1_scaled",
-    "mpvs_total_16_1_scaled", "mpvs_total_phase_2_21_1_scaled",
-    "mpvs_total_cov1_21_1_scaled", "mpvs_total_cov2_21_1_scaled",
-    "mpvs_total_cov3_21_1_scaled", "mpvs_total_cov4_21_1_scaled",
-    "mpvs_total_12_1_scaled_32", "mpvs_total_14_1_scaled_32",
-    "mpvs_total_16_1_scaled_32", "mpvs_total_phase_2_21_1_scaled_32",
-    "mpvs_total_cov1_21_1_scaled_32", "mpvs_total_cov2_21_1_scaled_32",
-    "mpvs_total_cov3_21_1_scaled_32", "mpvs_total_cov4_21_1_scaled_32"
-  ) %in% colnames(testit)
+    "mpvs_total_12_1_scaled",
+    "mpvs_total_14_1_scaled",
+    "mpvs_total_16_1_scaled",
+    "mpvs_total_phase_2_21_1_scaled",
+    "mpvs_total_cov1_21_1_scaled",
+    "mpvs_total_cov2_21_1_scaled",
+    "mpvs_total_cov3_21_1_scaled",
+    "mpvs_total_cov4_21_1_scaled",
+    "mpvs_total_12_1_scaled_32",
+    "mpvs_total_14_1_scaled_32",
+    "mpvs_total_16_1_scaled_32",
+    "mpvs_total_phase_2_21_1_scaled_32",
+    "mpvs_total_cov1_21_1_scaled_32",
+    "mpvs_total_cov2_21_1_scaled_32",
+    "mpvs_total_cov3_21_1_scaled_32",
+    "mpvs_total_cov4_21_1_scaled_32"
+  ) %in%
+    colnames(testit)
 )
 
 rm(list = c("test", "testit", "scale_size"))
 
 
-drop_identical_fix_different_values <- function(df, fix_vec, drop_identical_vec) {
+drop_identical_fix_different_values <- function(
+  df,
+  fix_vec,
+  drop_identical_vec
+) {
   for (var in fix_vec) {
     df <- df %>%
       fix_different_twins_values(var = var)
@@ -1036,10 +1215,14 @@ test <- data.frame(
 )
 
 calculate_items <- function(
-  df, target_phrase, target_phrase2 = "item", output_var
+  df,
+  target_phrase,
+  target_phrase2 = "item",
+  output_var
 ) {
   x <- df[, colnames(df)[grepl(
-    pattern = (paste0(target_phrase, "$")), x = colnames(df)
+    pattern = (paste0(target_phrase, "$")),
+    x = colnames(df)
   )]]
   x <- x[, colnames(x)[grepl(pattern = (target_phrase2), x = colnames(x))]]
   message(glue::glue("Found {dim(x)[2]} columns;"))
@@ -1096,9 +1279,14 @@ exclude_collinear_vars <- function(
   for (colvar in colnames(corr_mat)) {
     for (rowvar in rownames(corr_mat)) {
       if (!is.na(corr_mat[rowvar, colvar])) {
-        if ((abs(corr_mat[rowvar, colvar]) > upper_threshold) | abs(corr_mat[rowvar, colvar]) < lower_threshold) {
+        if (
+          (abs(corr_mat[rowvar, colvar]) > upper_threshold) |
+            abs(corr_mat[rowvar, colvar]) < lower_threshold
+        ) {
           message(
-            glue::glue("Removing; `{rowvar} - {colvar}` with corr={corr_mat[rowvar, colvar]}")
+            glue::glue(
+              "Removing; `{rowvar} - {colvar}` with corr={corr_mat[rowvar, colvar]}"
+            )
           )
           pred_matrix[rowvar, colvar] <- 0
           pred_matrix[colvar, rowvar] <- 0
@@ -1129,10 +1317,8 @@ exclude_collinear_vars <- function(
   # Just e the lower triangle of the matrix
   remove_idx <- lower.tri(corr_mat) &
     !is.na(corr_mat) &
-    (
-      abs(corr_mat) > upper_threshold |
-        abs(corr_mat) < lower_threshold
-    )
+    (abs(corr_mat) > upper_threshold |
+      abs(corr_mat) < lower_threshold)
 
   idx <- which(remove_idx, arr.ind = TRUE)
 
@@ -1221,13 +1407,17 @@ test <- data.frame(
 )
 predMatrix <- mice::make.predictorMatrix(test)
 modify_pred_matrix_items_predict_nothing <- function(
-  df, target_phrase, target_phrase2
+  df,
+  target_phrase,
+  target_phrase2
 ) {
   all_items <- df[, colnames(df)[grepl(
-    pattern = target_phrase, x = colnames(df)
+    pattern = target_phrase,
+    x = colnames(df)
   )]]
   all_items <- all_items[, colnames(all_items)[grepl(
-    pattern = target_phrase2, x = colnames(all_items)
+    pattern = target_phrase2,
+    x = colnames(all_items)
   )]]
   # Individual items can predict ONLY items from the same wave, nothing else
   df[colnames(all_items), colnames(all_items)] <- 0
@@ -1237,13 +1427,19 @@ modify_pred_matrix_items_predict_nothing <- function(
 }
 
 modify_pred_matrix <- function(
-  df, target_phrase, target_phrase2 = "item",
+  df,
+  target_phrase,
+  target_phrase2 = "item",
   target_phrase_total
 ) {
   x <- df[, colnames(df)[grepl(
-    pattern = (paste0(target_phrase, "$")), x = colnames(df)
+    pattern = (paste0(target_phrase, "$")),
+    x = colnames(df)
   )]]
-  total_score <- colnames(x)[grepl(pattern = (target_phrase_total), x = colnames(x))]
+  total_score <- colnames(x)[grepl(
+    pattern = (target_phrase_total),
+    x = colnames(x)
+  )]
   message(
     glue::glue("Found {length(total_score)} `{target_phrase_total}` columns;")
   )
@@ -1256,7 +1452,6 @@ modify_pred_matrix <- function(
   # but they can predict others, including items from other waves.
   # Individual items can predict ONLY items from the same wave, nothing else
   # Individual items can be predicted by other waves' total and other vars
-
 
   # Items from the same wave can predict other items from the same wave
   # But not themselves
@@ -1274,16 +1469,19 @@ modify_pred_matrix <- function(
 }
 
 to_test <- modify_pred_matrix_items_predict_nothing(
-  df = predMatrix, target_phrase = "mpvs",
+  df = predMatrix,
+  target_phrase = "mpvs",
   target_phrase2 = "item"
 )
 
 to_test <- modify_pred_matrix(
-  df = to_test, target_phrase = "14_1",
+  df = to_test,
+  target_phrase = "14_1",
   target_phrase_total = "total"
 )
 to_test <- modify_pred_matrix(
-  df = to_test, target_phrase = "16_1",
+  df = to_test,
+  target_phrase = "16_1",
   target_phrase_total = "total"
 )
 
@@ -1350,12 +1548,16 @@ remove_twins_without_var <- function(
   }
   to_return <- lapply(
     # X=dflist, FUN=function(inner_df){
-    X = seq_along(dflist), FUN = function(index) {
+    X = seq_along(dflist),
+    FUN = function(index) {
       inner_df <- dflist[[index]]
       inner_df <- as.data.frame(inner_df)
       # df_twin_1 <- inner_df[1,colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]]
       # df_twin_2 <- inner_df[2,colnames(inner_df)[grepl(pattern=pattern, x=colnames(inner_df))]]
-      columns <- colnames(inner_df)[grepl(pattern = pattern, x = colnames(inner_df))]
+      columns <- colnames(inner_df)[grepl(
+        pattern = pattern,
+        x = colnames(inner_df)
+      )]
       if (index == length(dflist)) {
         to_print <- paste(capture.output(columns))
         message("\n Initial columns:", to_print)
@@ -1446,8 +1648,14 @@ remove_twins_without_var_parallel <- function(
     cl = cl,
     X = dflist,
     fun = function(inner_df, NA_threshold, pattern, keep_empty_cotwin) {
-      N_NA_twin_1 <- sum(is.na(inner_df[1, colnames(inner_df)[grepl(pattern = pattern, x = colnames(inner_df))]]))
-      N_NA_twin_2 <- sum(is.na(inner_df[2, colnames(inner_df)[grepl(pattern = pattern, x = colnames(inner_df))]]))
+      N_NA_twin_1 <- sum(is.na(inner_df[
+        1,
+        colnames(inner_df)[grepl(pattern = pattern, x = colnames(inner_df))]
+      ]))
+      N_NA_twin_2 <- sum(is.na(inner_df[
+        2,
+        colnames(inner_df)[grepl(pattern = pattern, x = colnames(inner_df))]
+      ]))
 
       if ((N_NA_twin_1 == NA_threshold) & (N_NA_twin_2 == NA_threshold)) {
         return(NULL)
@@ -1469,8 +1677,14 @@ remove_twins_without_var_parallel <- function(
 }
 
 inner <- function(inner_df, pattern, NA_threshold, keep_empty_cotwin) {
-  N_NA_twin_1 <- sum(is.na(inner_df[1, colnames(inner_df)[grepl(pattern = pattern, x = colnames(inner_df))]]))
-  N_NA_twin_2 <- sum(is.na(inner_df[2, colnames(inner_df)[grepl(pattern = pattern, x = colnames(inner_df))]]))
+  N_NA_twin_1 <- sum(is.na(inner_df[
+    1,
+    colnames(inner_df)[grepl(pattern = pattern, x = colnames(inner_df))]
+  ]))
+  N_NA_twin_2 <- sum(is.na(inner_df[
+    2,
+    colnames(inner_df)[grepl(pattern = pattern, x = colnames(inner_df))]
+  ]))
   if ((N_NA_twin_1 == NA_threshold) & (N_NA_twin_2 == NA_threshold)) {
     return(data.frame(NULL))
   }
@@ -1538,8 +1752,11 @@ test <- data.frame(
   test_var3 = c(1, NA, 1, NA, 1, NA, NA, NA)
 )
 testit <- remove_twins_without_var(
-  df = test, keep_empty_cotwin = T,
-  sex_var = "sex", NA_threshold = 3, pattern = "test"
+  df = test,
+  keep_empty_cotwin = T,
+  sex_var = "sex",
+  NA_threshold = 3,
+  pattern = "test"
 )
 stopifnot(
   all.equal(
@@ -1556,8 +1773,11 @@ stopifnot(
 
 
 testit <- remove_twins_without_var(
-  df = test, keep_empty_cotwin = F,
-  sex_var = "sex", NA_threshold = 3, pattern = "test"
+  df = test,
+  keep_empty_cotwin = F,
+  sex_var = "sex",
+  NA_threshold = 3,
+  pattern = "test"
 )
 
 stopifnot(
@@ -1580,8 +1800,11 @@ test <- data.frame(
 )
 
 testit <- remove_twins_without_var(
-  df = test, keep_empty_cotwin = T,
-  sex_var = "sex", NA_threshold = 1, pattern = "test"
+  df = test,
+  keep_empty_cotwin = T,
+  sex_var = "sex",
+  NA_threshold = 1,
+  pattern = "test"
 )
 stopifnot(
   all.equal(
@@ -1602,8 +1825,12 @@ test <- data.frame(
   test_var3 = c(1, NA, 1, NA, 1, NA, NA, NA)
 )
 testit <- remove_twins_without_var(
-  df = test, keep_empty_cotwin = T,
-  sex_var = "sex", NA_threshold = 2, pattern = "test", antipattern = "var3"
+  df = test,
+  keep_empty_cotwin = T,
+  sex_var = "sex",
+  NA_threshold = 2,
+  pattern = "test",
+  antipattern = "var3"
 )
 stopifnot(
   all.equal(
@@ -1627,8 +1854,11 @@ test <- data.frame(
   test_var3 = c(1, NA, 1, NA, 1, NA, NA, NA)
 )
 testit <- remove_twins_without_var(
-  df = test, keep_empty_cotwin = T,
-  sex_var = "sex", NA_threshold = 1, pattern = "test",
+  df = test,
+  keep_empty_cotwin = T,
+  sex_var = "sex",
+  NA_threshold = 1,
+  pattern = "test",
   antipattern = list("var1", "var3")
 )
 stopifnot(
@@ -1658,8 +1888,12 @@ test <- data.frame(
   test_var3 = c(1, NA, 1, NA, 1, NA, NA, NA)
 )
 testit <- remove_twins_without_var_parallel(
-  df = test, keep_empty_cotwin = T,
-  sex_var = "sex", NA_threshold = 3, pattern = "test", cl = cl
+  df = test,
+  keep_empty_cotwin = T,
+  sex_var = "sex",
+  NA_threshold = 3,
+  pattern = "test",
+  cl = cl
 )
 stopifnot(
   all.equal(
@@ -1675,8 +1909,12 @@ stopifnot(
 )
 
 testit <- remove_twins_without_var_parallel(
-  df = test, keep_empty_cotwin = F,
-  sex_var = "sex", NA_threshold = 3, pattern = "test", cl = cl
+  df = test,
+  keep_empty_cotwin = F,
+  sex_var = "sex",
+  NA_threshold = 3,
+  pattern = "test",
+  cl = cl
 )
 
 stopifnot(
@@ -1723,7 +1961,9 @@ test <- data.frame(
 )
 
 testit <- extract_columns_name(
-  df = test, pattern = "test_var", antipattern_list = ""
+  df = test,
+  pattern = "test_var",
+  antipattern_list = ""
 )
 
 stopifnot(
@@ -1734,7 +1974,9 @@ stopifnot(
 )
 
 testit <- extract_columns_name(
-  df = test, pattern = "test_var", antipattern_list = list("2", "3")
+  df = test,
+  pattern = "test_var",
+  antipattern_list = list("2", "3")
 )
 stopifnot(
   all.equal(
@@ -1753,7 +1995,8 @@ stopifnot(
 #   mpvs_item_1_12_1 = c()
 # )
 create_flag_mpvs_at_least_one_mpvs_scale <- function(
-  df, include_covid = F
+  df,
+  include_covid = F
 ) {
   #####################################################################
   # !! Parents & teacher questionnaires are not taken into account !! #
@@ -1761,102 +2004,110 @@ create_flag_mpvs_at_least_one_mpvs_scale <- function(
 
   df$flag_mpvs_item_12 <- NA^rowSums(
     is.na(
-      df %>% select(
-        colnames(df)[str_detect(
-          string = colnames(df),
-          pattern = "mpvs_item_[\\d]+_12_1"
-        )]
-      )
+      df %>%
+        select(
+          colnames(df)[str_detect(
+            string = colnames(df),
+            pattern = "mpvs_item_[\\d]+_12_1"
+          )]
+        )
     )
   )
   df$flag_mpvs_item_14 <- NA^rowSums(
     is.na(
-      df %>% select(
-        colnames(df)[str_detect(
-          string = colnames(df),
-          pattern = "mpvs_item_[\\d]+_child_14_1"
-        )]
-      )
+      df %>%
+        select(
+          colnames(df)[str_detect(
+            string = colnames(df),
+            pattern = "mpvs_item_[\\d]+_child_14_1"
+          )]
+        )
     )
   )
   df$flag_mpvs_item_16 <- NA^rowSums(
     is.na(
-      df %>% select(
-        colnames(df)[str_detect(
-          string = colnames(df),
-          pattern = "mpvs_item_[\\d]+_16_1"
-        )]
-      )
+      df %>%
+        select(
+          colnames(df)[str_detect(
+            string = colnames(df),
+            pattern = "mpvs_item_[\\d]+_16_1"
+          )]
+        )
     )
   )
   df$flag_mpvs_item_phase2_21 <- NA^rowSums(
     is.na(
-      df %>% select(
-        colnames(df)[str_detect(
-          string = colnames(df),
-          pattern = "mpvs_item_[\\d]+_phase_2_21_1"
-        )]
-      )
+      df %>%
+        select(
+          colnames(df)[str_detect(
+            string = colnames(df),
+            pattern = "mpvs_item_[\\d]+_phase_2_21_1"
+          )]
+        )
     )
   )
   if (include_covid == T) {
     df$flag_mpvs_item_cov1_21 <- NA^rowSums(
       is.na(
-        df %>% select(
-          colnames(df)[str_detect(
-            string = colnames(df),
-            pattern = "mpvs_item_[\\d]+_cov1_21_1"
-          )]
-        )
+        df %>%
+          select(
+            colnames(df)[str_detect(
+              string = colnames(df),
+              pattern = "mpvs_item_[\\d]+_cov1_21_1"
+            )]
+          )
       )
     )
 
     df$flag_mpvs_item_cov2_21 <- NA^rowSums(
       is.na(
-        df %>% select(
-          colnames(df)[str_detect(
-            string = colnames(df),
-            pattern = "mpvs_item_[\\d]+_cov2_21_1"
-          )]
-        )
+        df %>%
+          select(
+            colnames(df)[str_detect(
+              string = colnames(df),
+              pattern = "mpvs_item_[\\d]+_cov2_21_1"
+            )]
+          )
       )
     )
 
     df$flag_mpvs_item_cov3_21 <- NA^rowSums(
       is.na(
-        df %>% select(
-          colnames(df)[str_detect(
-            string = colnames(df),
-            pattern = "mpvs_item_[\\d]+_cov3_21_1"
-          )]
-        )
+        df %>%
+          select(
+            colnames(df)[str_detect(
+              string = colnames(df),
+              pattern = "mpvs_item_[\\d]+_cov3_21_1"
+            )]
+          )
       )
     )
 
     df$flag_mpvs_item_cov4_21 <- NA^rowSums(
       is.na(
-        df %>% select(
-          colnames(df)[str_detect(
-            string = colnames(df),
-            pattern = "mpvs_item_[\\d]+_cov4_21_1"
-          )]
-        )
+        df %>%
+          select(
+            colnames(df)[str_detect(
+              string = colnames(df),
+              pattern = "mpvs_item_[\\d]+_cov4_21_1"
+            )]
+          )
       )
     )
   }
-
 
   # If a row does NOT contain ANY NA's, then the rowsum is 0, and NA^0 = 1
   # Otherwise, NA^any_number = NA
   # 1 means that the row contain NO NA's in the flag vars
   df$flag_mpvs <- NA^rowSums(
     is.na(
-      df %>% select(
-        colnames(df)[str_detect(
-          string = colnames(df),
-          pattern = "flag_mpvs_"
-        )]
-      )
+      df %>%
+        select(
+          colnames(df)[str_detect(
+            string = colnames(df),
+            pattern = "flag_mpvs_"
+          )]
+        )
     )
   )
 
@@ -1883,7 +2134,11 @@ create_flag_mpvs_at_least_one_mpvs_scale <- function(
   mpvs_cols <- extract_columns_name(
     df = df,
     pattern = "^mpvs_total",
-    antipattern_list = if (include_covid == F) list("cov", "parent", "teacher") else list("parent", "teacher")
+    antipattern_list = if (include_covid == F) {
+      list("cov", "parent", "teacher")
+    } else {
+      list("parent", "teacher")
+    }
   )
   df <- df %>%
     mutate(
@@ -1898,10 +2153,10 @@ create_flag_mpvs_at_least_one_mpvs_scale <- function(
     table(
       df$flag_NA_mpvs_total,
       df$flag_mpvs,
-      useNA = "always", deparse.level = 2
+      useNA = "always",
+      deparse.level = 2
     )
   )
-
 
   df <- df %>%
     mutate(
@@ -1911,7 +2166,11 @@ create_flag_mpvs_at_least_one_mpvs_scale <- function(
         .default = T
       )
     )
-  message(table(df$flag_mpvs_item_total_incomplete, useNA = "always", deparse.level = 2))
+  message(table(
+    df$flag_mpvs_item_total_incomplete,
+    useNA = "always",
+    deparse.level = 2
+  ))
   return(df)
 }
 
@@ -1928,9 +2187,13 @@ use_mean_imputation <- function(df, vars_to_impute) {
   for (column in colnames(df)) {
     if (column %in% vars_to_impute & is.numeric(df[, column])) {
       message(glue::glue("\t{column}"))
-      message(glue::glue("Before imputation, rows with NA: {sum(is.na(df[, column]))}"))
+      message(glue::glue(
+        "Before imputation, rows with NA: {sum(is.na(df[, column]))}"
+      ))
       df[is.na(df[, column]) == T, column] <- mean(df[, column], na.rm = T)
-      message(glue::glue("After imputation, rows with NA: {sum(is.na(df[, column]))}"))
+      message(glue::glue(
+        "After imputation, rows with NA: {sum(is.na(df[, column]))}"
+      ))
       message("\n")
     }
   }
@@ -1946,25 +2209,29 @@ testit <- use_mean_imputation(
 
 stopifnot(
   all.equal(
-    mean(testit$test_var), mean(test$test_var, na.rm = T)
+    mean(testit$test_var),
+    mean(test$test_var, na.rm = T)
   )
 )
 
 stopifnot(
   all.equal(
-    mean(testit$test_var2), mean(test$test_var2, na.rm = T)
+    mean(testit$test_var2),
+    mean(test$test_var2, na.rm = T)
   )
 )
 
 stopifnot(
   all.equal(
-    sum(is.na(testit$test_var)), 0
+    sum(is.na(testit$test_var)),
+    0
   )
 )
 
 stopifnot(
   all.equal(
-    sum(is.na(testit$test_var2)), 0
+    sum(is.na(testit$test_var2)),
+    0
   )
 )
 stopifnot(
@@ -2028,18 +2295,25 @@ remove_twins_with_this_level <- function(
   dflist <- split(data.table::as.data.table(df), by = "fam_id")
   message("Splitted")
   to_return <- lapply(
-    X = seq_along(dflist), FUN = function(index) {
+    X = seq_along(dflist),
+    FUN = function(index) {
       inner_df <- dflist[[index]]
       inner_df <- as.data.frame(inner_df)
       inner_df[, target_var] <- as.character(inner_df[, target_var])
       message("\r", "Family ID:", inner_df[1, "fam_id"], appendLF = F)
       flush.console()
-      if ((is.na(inner_df[1, target_var]) == T) & (is.na(inner_df[2, target_var]) == T)) {
+      if (
+        (is.na(inner_df[1, target_var]) == T) &
+          (is.na(inner_df[2, target_var]) == T)
+      ) {
         return(NULL)
       }
       if (keep_different_cotwin == F) {
         # If one of them is NA, drop both
-        if ((is.na(inner_df[1, target_var]) == T) | (is.na(inner_df[2, target_var]) == T)) {
+        if (
+          (is.na(inner_df[1, target_var]) == T) |
+            (is.na(inner_df[2, target_var]) == T)
+        ) {
           return(NULL)
         }
       }
@@ -2063,7 +2337,9 @@ remove_twins_with_this_level <- function(
         }
       }
       # Both cotwins don't have the desired level
-      if ((inner_df[1, target_var] != level) & (inner_df[2, target_var] != level)) {
+      if (
+        (inner_df[1, target_var] != level) & (inner_df[2, target_var] != level)
+      ) {
         return(NULL)
       } else {
         return(inner_df)
@@ -2091,7 +2367,8 @@ test <- data.frame(
   test_var = c(1, 1, 2, 2, 3:4, NA, NA)
 )
 testit <- remove_twins_with_this_level(
-  df = test, keep_different_cotwin = T,
+  df = test,
+  keep_different_cotwin = T,
   sex_var = "sex",
   target_var = "test_var",
   level = 1
@@ -2108,7 +2385,8 @@ stopifnot(
 )
 
 testit <- remove_twins_with_this_level(
-  df = test, keep_different_cotwin = T,
+  df = test,
+  keep_different_cotwin = T,
   sex_var = "sex",
   target_var = "test_var",
   level = 2
@@ -2130,7 +2408,8 @@ test <- data.frame(
   test_var = c(1, 1, 2, 2, 3:4, 1, NA)
 )
 testit <- remove_twins_with_this_level(
-  df = test, keep_different_cotwin = F,
+  df = test,
+  keep_different_cotwin = F,
   sex_var = "sex",
   target_var = "test_var",
   level = 1
@@ -2148,7 +2427,8 @@ stopifnot(
 )
 
 testit <- remove_twins_with_this_level(
-  df = test, keep_different_cotwin = T,
+  df = test,
+  keep_different_cotwin = T,
   sex_var = "sex",
   target_var = "test_var",
   level = 1
@@ -2170,7 +2450,8 @@ test <- data.frame(
   test_var = c(1, 1, 2, 2, 3:4, 1, NA, "yes", NA)
 )
 testit <- remove_twins_with_this_level(
-  df = test, keep_different_cotwin = F,
+  df = test,
+  keep_different_cotwin = F,
   sex_var = "sex",
   target_var = "test_var",
   level = 1
@@ -2192,7 +2473,8 @@ test <- data.frame(
   test_var = c(1, 1, 2, 2, 3:4, 1, NA, "yes", NA)
 )
 testit <- remove_twins_with_this_level(
-  df = test, keep_different_cotwin = T,
+  df = test,
+  keep_different_cotwin = T,
   sex_var = "sex",
   target_var = "test_var",
   level = 1
@@ -2214,7 +2496,11 @@ test <- data.frame(
   pvalue = c(0, 1, 0.001, 0.1, 0.5, 0.0001)
 )
 
-modify_parameter_estimates <- function(df, round_digits = 3, add_equal_sign = T) {
+modify_parameter_estimates <- function(
+  df,
+  round_digits = 3,
+  add_equal_sign = T
+) {
   df[] <- lapply(
     X = df[],
     FUN = function(x) {
@@ -2266,7 +2552,8 @@ find_complete <- function(df, var) {
   message("Splitted")
   to_return <- lapply(
     # X=dflist, FUN=function(inner_df){
-    X = seq_along(dflist), FUN = function(index) {
+    X = seq_along(dflist),
+    FUN = function(index) {
       inner_df <- dflist[[index]]
       inner_df <- as.data.frame(inner_df)
       message("\r", "Family ID:", inner_df[1, "fam_id"], appendLF = F)
@@ -2313,8 +2600,20 @@ stopifnot(
       fam_id = c(1, 1, 2, 2, 5),
       sex = c(0, 0, 1, 1, 0),
       test_var = c(NA, 1, 2, 2, 3),
-      pairs_flag_test_var = c("incomplete", "incomplete", "complete", "complete", NA),
-      pairs_flag = c("complete", "complete", "complete", "complete", "incomplete")
+      pairs_flag_test_var = c(
+        "incomplete",
+        "incomplete",
+        "complete",
+        "complete",
+        NA
+      ),
+      pairs_flag = c(
+        "complete",
+        "complete",
+        "complete",
+        "complete",
+        "incomplete"
+      )
     )
   )
 )
@@ -2336,10 +2635,13 @@ change_df_labels <- function(df, labels) {
 
 
 test <- data.frame(
-  mpvs_total_child_14_1_scaled_32   = c(1, 2),
-  mpvs_total_16_1_scaled_32         = c(2, 1)
+  mpvs_total_child_14_1_scaled_32 = c(1, 2),
+  mpvs_total_16_1_scaled_32 = c(2, 1)
 )
-rownames(test) <- c("mpvs_total_child_14_1_scaled_32", "mpvs_total_16_1_scaled_32")
+rownames(test) <- c(
+  "mpvs_total_child_14_1_scaled_32",
+  "mpvs_total_16_1_scaled_32"
+)
 
 testit <- data.frame(
   A = c(1, 2),
@@ -2528,7 +2830,8 @@ specify_decimal <- function(number, digits) {
 stopifnot(
   all.equal(
     specify_decimal(
-      0.9, 2
+      0.9,
+      2
     ),
     "0.90"
   )
@@ -2566,10 +2869,15 @@ modify_pred_matrix_scales_AB <- function(
   message(glue::glue("Found total_vars_2: `{length(total_vars_2)}`"))
   message(paste(total_vars_2, collapse = " "))
 
-
   non_scale_vars <- setdiff(vars, c(item_vars, total_vars))
-  non_scale_vars_items <- non_scale_vars[grepl(pattern = "item", non_scale_vars)]
-  non_scale_vars_totals <- non_scale_vars[grepl(pattern = "total", non_scale_vars)]
+  non_scale_vars_items <- non_scale_vars[grepl(
+    pattern = "item",
+    non_scale_vars
+  )]
+  non_scale_vars_totals <- non_scale_vars[grepl(
+    pattern = "total",
+    non_scale_vars
+  )]
   non_scale_vars_other <- setdiff(
     non_scale_vars,
     c(non_scale_vars_items, non_scale_vars_totals)
@@ -2596,7 +2904,6 @@ modify_pred_matrix_scales_AB <- function(
   non_scale_vars_other_2 <- non_scale_vars_other[
     grepl(pattern = twin2_pattern, x = non_scale_vars_other)
   ]
-
 
   # See Van  B uuren p.181 #
 
@@ -2637,7 +2944,6 @@ modify_pred_matrix_scales_AB <- function(
   #      - other totals!
   #######################################################
 
-
   # Twin 1 #
   # Items be imputed given the scale items
   pred_matrix[, item_vars_1] <- 0
@@ -2667,14 +2973,14 @@ modify_pred_matrix_scales_AB <- function(
 
   pred_matrix[total_vars_1, ] <- 0
   pred_matrix[total_vars_2, ] <- 0
-  # The rest of `non_scale_vars_totals` will be handled seperately
-  # It is not necessary to handle them in this eration
+  # The rest of `non_scale_vars_totals` will be handled separately
+  # It is not necessary to handle them in this iteration
   # pred_matrix[non_scale_vars_totals, ] <- 0
 
   # IMPORTANT #
   # if there are any subtotals, pls modify the predMatrix accordingly
   # Subtotals should not predict or be predicted by anything, because
-  # they are linear transformaon of other variables and collinearity issues
+  # they are linear transformations of other variables and collinearity issues
   # will arise if you leave both the subtotals and the scale total.
 
   # ------------------------------------------------------
@@ -2682,7 +2988,7 @@ modify_pred_matrix_scales_AB <- function(
   #    predicted only by non-scale vars + totals
   # -----------------------------------------------------
   pred_matrix[non_scale_vars_other, item_vars] <- 0
-  # The rest of `non_scale_vars_items` will be handled seperately
+  # The rest of `non_scale_vars_items` will be handled separately
   # It is not necessary to handle them in this iteration
   # pred_matrixon_scale_vars_other, non_scale_vars_items] <- 0
 
@@ -2746,26 +3052,22 @@ pred <- modify_pred_matrix_scales_AB(
     total_pattern = "^PANSS2[png]?.*total"
   )
 
-testthat::test_that(
-  "items can predict within wave but not self",
-  {
-    items_PANSS1 <- grep("^PANSS1", colnames(pred), value = TRUE)
-    items_PANSS1 <- items_PANSS1[grepl("[png]_item\\d+", items_PANSS1)]
-    items_PANSS1_1 <- items_PANSS1[grepl("_A$", items_PANSS1)]
-    items_PANSS1_2 <- items_PANSS1[grepl("_B$", items_PANSS1)]
+testthat::test_that("items can predict within wave but not self", {
+  items_PANSS1 <- grep("^PANSS1", colnames(pred), value = TRUE)
+  items_PANSS1 <- items_PANSS1[grepl("[png]_item\\d+", items_PANSS1)]
+  items_PANSS1_1 <- items_PANSS1[grepl("_A$", items_PANSS1)]
+  items_PANSS1_2 <- items_PANSS1[grepl("_B$", items_PANSS1)]
 
-    sub <- as.matrix(pred[items_PANSS1_1, items_PANSS1_1])
+  sub <- as.matrix(pred[items_PANSS1_1, items_PANSS1_1])
 
-    testthat::expect_true(all(sub[lower.tri(sub) | upper.tri(sub)] == 1))
-    testthat::expect_true(all(diag(sub) == 0))
+  testthat::expect_true(all(sub[lower.tri(sub) | upper.tri(sub)] == 1))
+  testthat::expect_true(all(diag(sub) == 0))
 
+  sub <- as.matrix(pred[items_PANSS1_2, items_PANSS1_2])
 
-    sub <- as.matrix(pred[items_PANSS1_2, items_PANSS1_2])
-
-    testthat::expect_true(all(sub[lower.tri(sub) | upper.tri(sub)] == 1))
-    testthat::expect_true(all(diag(sub) == 0))
-  }
-)
+  testthat::expect_true(all(sub[lower.tri(sub) | upper.tri(sub)] == 1))
+  testthat::expect_true(all(diag(sub) == 0))
+})
 
 testthat::test_that("wave totals do not predict items", {
   # Wave 1
@@ -2774,7 +3076,8 @@ testthat::test_that("wave totals do not predict items", {
       pred[
         grepl("^(PANSS1[png].*)_A$", rownames(pred)),
         grepl("^PANSS1.*total_A", colnames(pred))
-      ] == 0
+      ] ==
+        0
     )
   )
   # Wave 2
@@ -2783,7 +3086,8 @@ testthat::test_that("wave totals do not predict items", {
       pred[
         grepl("^(PANSS2[png].*)_A$", rownames(pred)),
         grepl("^PANSS2.*total_A", colnames(pred))
-      ] == 0
+      ] ==
+        0
     )
   )
 
@@ -2793,7 +3097,8 @@ testthat::test_that("wave totals do not predict items", {
       pred[
         grepl("^(PANSS1[png].*)_B$", rownames(pred)),
         grepl("^PANSS1.*total_B", colnames(pred))
-      ] == 0
+      ] ==
+        0
     )
   )
   # Wave 2
@@ -2802,7 +3107,8 @@ testthat::test_that("wave totals do not predict items", {
       pred[
         grepl("^(PANSS2[png].*)_B$", rownames(pred)),
         grepl("^PANSS2.*total_B", colnames(pred))
-      ] == 0
+      ] ==
+        0
     )
   )
 })
@@ -2814,75 +3120,75 @@ testthat::test_that("totals are not predicted by any variable", {
 })
 
 
-testthat::test_that(
-  "age is predicted by all totals and items only by other-wave totals",
-  {
-    total_cols <- grep("total", colnames(pred), value = TRUE)
+testthat::test_that("age is predicted by all totals and items only by other-wave totals", {
+  total_cols <- grep("total", colnames(pred), value = TRUE)
 
-    wave1_totals <- grep("^PANSS1.*total", total_cols, value = TRUE)
-    wave2_totals <- grep("^PANSS2.*total", total_cols, value = TRUE)
+  wave1_totals <- grep("^PANSS1.*total", total_cols, value = TRUE)
+  wave2_totals <- grep("^PANSS2.*total", total_cols, value = TRUE)
 
-    wave1_items <- grep("^PANSS1[png]\\d+", rownames(pred), value = TRUE)
-    wave2_items <- grep("^PANSS2[png]\\d+", rownames(pred), value = TRUE)
+  wave1_items <- grep("^PANSS1[png]\\d+", rownames(pred), value = TRUE)
+  wave2_items <- grep("^PANSS2[png]\\d+", rownames(pred), value = TRUE)
 
-    # Age predicted by all totals
-    testthat::expect_true(
-      all(pred["age_B", total_cols] == 1)
-    )
-    testthat::expect_true(
-      all(pred["age_B", total_cols] == 1)
-    )
-
-    # Wave 1 items predicted by Wave 2 totals
-    testthat::expect_true(
-      all(pred[wave1_items, wave2_totals] == 1)
-    )
-
-    # Wave 1 items NOT predicted by Wave 1 totals
-    testthat::expect_true(
-      all(pred[wave1_items, wave1_totals] == 0)
-    )
-
-    # Wave 2 items predicted by Wave 1 totals
-    testthat::expect_true(
-      all(pred[wave2_items, wave1_totals] == 1)
-    )
-
-    # Wave 2 items NOT predicted by Wave 2 totals
-    testthat::expect_true(
-      all(pred[wave2_items, wave2_totals] == 0)
-    )
-  }
-)
-
-testthat::test_that("items can be predicted by other wave totals", {
+  # Age predicted by all totals
   testthat::expect_true(
-    all(pred[
-      grepl("^PANSS1", rownames(pred)) &
-        grepl("[png]\\d+", rownames(pred)),
-      grepl("^PANSS2.*total", colnames(pred))
-    ] == 1)
+    all(pred["age_B", total_cols] == 1)
+  )
+  testthat::expect_true(
+    all(pred["age_B", total_cols] == 1)
   )
 
+  # Wave 1 items predicted by Wave 2 totals
   testthat::expect_true(
-    all(pred[
-      grepl("^PANSS2", rownames(pred)) &
-        grepl("[png]\\d+", rownames(pred)),
-      grepl("^PANSS1.*total", colnames(pred))
-    ] == 1)
+    all(pred[wave1_items, wave2_totals] == 1)
+  )
+
+  # Wave 1 items NOT predicted by Wave 1 totals
+  testthat::expect_true(
+    all(pred[wave1_items, wave1_totals] == 0)
+  )
+
+  # Wave 2 items predicted by Wave 1 totals
+  testthat::expect_true(
+    all(pred[wave2_items, wave1_totals] == 1)
+  )
+
+  # Wave 2 items NOT predicted by Wave 2 totals
+  testthat::expect_true(
+    all(pred[wave2_items, wave2_totals] == 0)
   )
 })
 
-testthat::test_that(
-  "predictor matrix is valid binary matrix",
-  {
-    testthat::expect_true(
-      all(
-        pred %in% c(0, 1)
-      )
+testthat::test_that("items can be predicted by other wave totals", {
+  testthat::expect_true(
+    all(
+      pred[
+        grepl("^PANSS1", rownames(pred)) &
+          grepl("[png]\\d+", rownames(pred)),
+        grepl("^PANSS2.*total", colnames(pred))
+      ] ==
+        1
     )
-  }
-)
+  )
+
+  testthat::expect_true(
+    all(
+      pred[
+        grepl("^PANSS2", rownames(pred)) &
+          grepl("[png]\\d+", rownames(pred)),
+        grepl("^PANSS1.*total", colnames(pred))
+      ] ==
+        1
+    )
+  )
+})
+
+testthat::test_that("predictor matrix is valid binary matrix", {
+  testthat::expect_true(
+    all(
+      pred %in% c(0, 1)
+    )
+  )
+})
 
 rm(test_df)
 rm(pred)
